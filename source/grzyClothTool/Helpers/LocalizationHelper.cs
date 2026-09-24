@@ -116,7 +116,7 @@ public static class LocalizationHelper
         ["Низкий LOD"] = new("Низький LOD", "Low LOD"),
         ["Лимит полигонов для верхнего уровня детализации."] = new("Ліміт полігонів для верхнього рівня деталізації.", "Polygon limit for the highest detail level."),
         ["Лимит полигонов для среднего уровня детализации."] = new("Ліміт полігонів для середнього рівня деталізації.", "Polygon limit for the medium detail level."),
-        ["Лимит полигонов для низкого уровня детализации."] = new("Ліміт полігонів для низького рівня деталізації.", "Polygon limit for the lowest detail level."),
+        ["Лимит полигонов для нижнего уровня детализации."] = new("Ліміт полігонів для нижнього рівня деталізації.", "Polygon limit for the lowest detail level."),
         ["Максимальное разрешение текстур"] = new("Максимальна роздільність текстур", "Maximum texture resolution"),
         ["Если размер изображения превышает лимит, редактор покажет предупреждение."] = new("Якщо розмір зображення перевищує ліміт, редактор покаже попередження.", "If an image exceeds the limit, the editor will show a warning."),
         ["Рабочие папки"] = new("Робочі папки", "Working folders"),
