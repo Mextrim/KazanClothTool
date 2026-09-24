@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>KazanClothTool.Shared</AssemblyName>
+    <RootNamespace>grzyClothTool.Shared</RootNamespace>
+    <Product>KazanClothTool</Product>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyVersion>0.1</AssemblyVersion>
+    <FileVersion>0.1</FileVersion>
+  </PropertyGroup>
+
+</Project>

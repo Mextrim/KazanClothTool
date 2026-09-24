@@ -1,0 +1,37 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Dark.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+    <SolidColorBrush x:Key="Brush50" Color="#07111F" />
+    <SolidColorBrush x:Key="Brush75" Color="#0B1729" />
+    <SolidColorBrush x:Key="Brush100" Color="#0F2038" />
+    <SolidColorBrush x:Key="Brush125" Color="#142947" />
+    <SolidColorBrush x:Key="Brush150" Color="#1A3357" />
+    <SolidColorBrush x:Key="Brush175" Color="#23416B" />
+    <SolidColorBrush x:Key="Brush200" Color="#2C4F7F" />
+    <SolidColorBrush x:Key="Brush250" Color="#385F95" />
+    <SolidColorBrush x:Key="Brush300" Color="#4C74AE" />
+    <SolidColorBrush x:Key="Brush350" Color="#648BC4" />
+    <SolidColorBrush x:Key="Brush400" Color="#7FA3D6" />
+    <SolidColorBrush x:Key="Brush450" Color="#9AB9E2" />
+    <SolidColorBrush x:Key="Brush500" Color="#B5CEEB" />
+    <SolidColorBrush x:Key="Brush600" Color="#D0E1F3" />
+    <SolidColorBrush x:Key="Brush700" Color="#E6EFFA" />
+    <SolidColorBrush x:Key="Brush800" Color="#F2F7FD" />
+    <SolidColorBrush x:Key="Brush900" Color="#F7FAFF" />
+    <SolidColorBrush x:Key="Brush950" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="AccentBrush" Color="#60A5FA" />
+    <SolidColorBrush x:Key="AccentHoverBrush" Color="#93C5FD" />
+    <SolidColorBrush x:Key="AccentPressedBrush" Color="#3B82F6" />
+    <SolidColorBrush x:Key="AccentDimBrush" Color="#1E3A5F" />
+    <SolidColorBrush x:Key="OnPrimaryBrush" Color="#071426" />
+    <SolidColorBrush x:Key="ViewportBackgroundBrush" Color="#030812" />
+    <SolidColorBrush x:Key="SecondaryBrush" Color="#22D3EE" />
+    <SolidColorBrush x:Key="SecondaryHoverBrush" Color="#67E8F9" />
+    <SolidColorBrush x:Key="SecondaryDimBrush" Color="#164E63" />
+    <SolidColorBrush x:Key="SuccessBrush" Color="#86EFAC" />
+    <SolidColorBrush x:Key="WarningBrush" Color="#FDE68A" />
+    <SolidColorBrush x:Key="DangerBrush" Color="#FDA4AF" />
+    <SolidColorBrush x:Key="GroupBoxBorder" Color="#385F95" />
+</ResourceDictionary>

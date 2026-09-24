@@ -1,0 +1,405 @@
+﻿<UserControl x:Class="grzyClothTool.Views.Home"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:icons="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
+             xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
+             mc:Ignorable="d"
+             d:DesignHeight="820"
+             d:DesignWidth="1280"
+             Background="{DynamicResource Brush50}"
+             UseLayoutRounding="True"
+             SnapsToDevicePixels="True"
+             TextOptions.TextFormattingMode="Display">
+
+    <UserControl.Resources>
+        <Style x:Key="HomeActionButton" TargetType="Button">
+            <Setter Property="Height" Value="44" />
+            <Setter Property="MinWidth" Value="140" />
+            <Setter Property="Padding" Value="17,0" />
+            <Setter Property="Margin" Value="0,0,10,0" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Background" Value="{DynamicResource Brush150}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush950}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush350}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ActionBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="11">
+                            <ContentPresenter Margin="{TemplateBinding Padding}"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              RecognizesAccessKey="True" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ActionBorder" Property="Background" Value="{DynamicResource Brush200}" />
+                                <Setter TargetName="ActionBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ActionBorder" Property="Background" Value="{DynamicResource Brush250}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PrimaryHomeActionButton" TargetType="Button" BasedOn="{StaticResource HomeActionButton}">
+            <Setter Property="MinWidth" Value="158" />
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource OnPrimaryBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="RecentProjectButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ProjectBorder"
+                                Background="{DynamicResource Brush75}"
+                                BorderBrush="{DynamicResource Brush300}"
+                                BorderThickness="1"
+                                CornerRadius="12"
+                                Padding="14">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ProjectBorder" Property="Background" Value="{DynamicResource Brush100}" />
+                                <Setter TargetName="ProjectBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ProjectBorder" Property="Background" Value="{DynamicResource Brush150}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid Margin="28,24,28,32" MaxWidth="1320" HorizontalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0"
+                    Background="{DynamicResource Brush100}"
+                    BorderBrush="{DynamicResource Brush300}"
+                    BorderThickness="1"
+                    CornerRadius="20"
+                    Padding="30">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="26" ShadowDepth="7" Opacity="0.22" Color="Black" />
+                </Border.Effect>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,30,0">
+                        <Border Background="{DynamicResource AccentDimBrush}"
+                                BorderBrush="{DynamicResource AccentBrush}"
+                                BorderThickness="1"
+                                CornerRadius="12"
+                                Padding="10,5"
+                                HorizontalAlignment="Left"
+                                Margin="0,0,0,16">
+                            <StackPanel Orientation="Horizontal">
+                                <icons:MaterialIcon Kind="Circle" Width="8" Height="8" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="3D-РЕДАКТОР ОДЕЖДЫ"
+                                           Margin="7,0,0,0"
+                                           FontSize="10"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource AccentBrush}" />
+                            </StackPanel>
+                        </Border>
+
+                        <TextBlock Text="Kazan Cloth Tool"
+                                   FontFamily="Segoe UI Variable Display, Segoe UI"
+                                   FontSize="32"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Brush950}" />
+
+                        <TextBlock Margin="0,10,0,0"
+                                   MaxWidth="720"
+                                   TextWrapping="Wrap"
+                                   Text="Создавайте, просматривайте и редактируйте элементы одежды, текстуры и физику в едином проекте. KazanClothTool показывает изменения в 3D и сразу проверяет файлы перед сборкой."
+                                   FontSize="14"
+                                   LineHeight="22"
+                                   Foreground="{DynamicResource Brush600}" />
+
+                        <StackPanel Orientation="Horizontal" Margin="0,22,0,0">
+                            <Button Style="{StaticResource PrimaryHomeActionButton}" Click="CreateNew_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <fa:IconBlock Icon="Plus" IconFont="Solid" Width="18" Height="18" Margin="0,0,8,0" />
+                                    <TextBlock Text="Новый проект" FontWeight="SemiBold" />
+                                </StackPanel>
+                            </Button>
+                            <Button Style="{StaticResource HomeActionButton}" Click="OpenAddon_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <fa:IconBlock Icon="FolderOpen" IconFont="Solid" Width="18" Height="18" Margin="0,0,8,0" />
+                                    <TextBlock Text="Открыть набор" />
+                                </StackPanel>
+                            </Button>
+                            <Button Style="{StaticResource HomeActionButton}" Click="ImportProject_Click" Margin="0">
+                                <StackPanel Orientation="Horizontal">
+                                    <fa:IconBlock Icon="FileImport" IconFont="Solid" Width="18" Height="18" Margin="0,0,8,0" />
+                                    <TextBlock Text="Импорт" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Grid Grid.Column="1" Width="230" Height="210" VerticalAlignment="Center">
+                        <Ellipse Width="210" Height="210" Fill="{DynamicResource Brush75}" Stroke="{DynamicResource Brush250}" StrokeThickness="1" />
+                        <Ellipse Width="164" Height="164" Fill="{DynamicResource Brush50}" Stroke="{DynamicResource AccentDimBrush}" StrokeThickness="2" />
+                        <icons:MaterialIcon Kind="Hanger"
+                                            Width="106"
+                                            Height="106"
+                                            Foreground="{DynamicResource AccentBrush}"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center" />
+                        <Border Background="{DynamicResource Brush200}"
+                                BorderBrush="{DynamicResource Brush350}"
+                                BorderThickness="1"
+                                CornerRadius="10"
+                                Padding="10,6"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top">
+                            <TextBlock Text="{Binding LatestVersion, StringFormat='v{0}'}"
+                                       Foreground="{DynamicResource Brush700}"
+                                       FontSize="10" />
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1" Margin="0,22,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2.2*" />
+                    <ColumnDefinition Width="18" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0"
+                        Background="{DynamicResource Brush75}"
+                        BorderBrush="{DynamicResource Brush300}"
+                        BorderThickness="1"
+                        CornerRadius="16"
+                        Padding="18">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0" Margin="2,0,2,14">
+                            <StackPanel Orientation="Horizontal">
+                                <icons:MaterialIcon Kind="History" Width="20" Height="20" Foreground="{DynamicResource AccentBrush}" />
+                                <TextBlock Text="Недавние проекты" Margin="9,0,0,0" FontSize="17" FontWeight="SemiBold" />
+                            </StackPanel>
+                            <Button Style="{StaticResource HomeActionButton}"
+                                    Height="34"
+                                    Padding="12,0"
+                                    Margin="0"
+                                    HorizontalAlignment="Right"
+                                    Click="OpenSave_Click"
+                                    ToolTip="Открыть файл проекта вручную">
+                                <StackPanel Orientation="Horizontal">
+                                    <icons:MaterialIcon Kind="FolderOpen" Width="16" Height="16" Margin="0,0,6,0" />
+                                    <TextBlock Text="Открыть файл" FontSize="11" />
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+
+                        <Border Grid.Row="1" Height="1" Background="{DynamicResource Brush300}" Margin="0,0,0,12" />
+
+                        <Grid Grid.Row="2" MinHeight="180">
+                            <ItemsControl ItemsSource="{Binding RecentlyOpened}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Style="{StaticResource RecentProjectButton}"
+                                                Margin="0,0,0,9"
+                                                Click="RecentProject_Click"
+                                                Tag="{Binding FilePath}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <Border Grid.Column="0"
+                                                        Width="44"
+                                                        Height="44"
+                                                        Background="{DynamicResource AccentDimBrush}"
+                                                        BorderBrush="{DynamicResource AccentBrush}"
+                                                        BorderThickness="1"
+                                                        CornerRadius="12">
+                                                    <icons:MaterialIcon Kind="FolderOutline" Width="23" Height="23" Foreground="{DynamicResource AccentBrush}" />
+                                                </Border>
+
+                                                <StackPanel Grid.Column="1" Margin="13,0,10,0" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding ProjectName}"
+                                                               FontSize="14"
+                                                               FontWeight="SemiBold"
+                                                               Foreground="{DynamicResource Brush950}"
+                                                               TextTrimming="CharacterEllipsis" />
+                                                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                                        <icons:MaterialIcon Kind="ClockOutline" Width="13" Height="13" Foreground="{DynamicResource Brush600}" />
+                                                        <TextBlock Text="{Binding LastModified, StringFormat='{}изменён {0:dd.MM.yyyy HH:mm}'}"
+                                                                   Margin="5,0,0,0"
+                                                                   FontSize="10"
+                                                                   Foreground="{DynamicResource Brush600}" />
+                                                    </StackPanel>
+                                                </StackPanel>
+
+                                                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Border Background="{DynamicResource Brush200}" CornerRadius="8" Padding="8,3" Margin="0,0,8,0">
+                                                        <TextBlock Foreground="{DynamicResource Brush700}" FontSize="10">
+                                                            <Run Text="{Binding AddonCount}" />
+                                                            <Run Text=" аддонов" />
+                                                        </TextBlock>
+                                                    </Border>
+                                                    <Border Background="{DynamicResource Brush200}" CornerRadius="8" Padding="8,3" Margin="0,0,8,0">
+                                                        <TextBlock Foreground="{DynamicResource Brush700}" FontSize="10">
+                                                            <Run Text="{Binding DrawableCount}" />
+                                                            <Run Text=" вещей" />
+                                                        </TextBlock>
+                                                    </Border>
+                                                    <Button Width="32" Height="32" Padding="0" Background="Transparent" BorderThickness="0" Cursor="Hand"
+                                                            Click="RemoveRecentProject_Click" Tag="{Binding FilePath}" ToolTip="Убрать из списка">
+                                                        <icons:MaterialIcon Kind="Close" Width="16" Height="16" Foreground="{DynamicResource Brush600}" />
+                                                    </Button>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <StackPanel VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        Visibility="{Binding ShowNoRecentProjects, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <icons:MaterialIcon Kind="FolderOpenOutline" Width="48" Height="48" Foreground="{DynamicResource Brush400}" HorizontalAlignment="Center" />
+                                <TextBlock Text="Здесь появятся недавние проекты" Margin="0,12,0,0" Foreground="{DynamicResource Brush600}" HorizontalAlignment="Center" />
+                                <TextBlock Text="Создайте первый проект или откройте готовый набор одежды" Margin="0,5,0,0" FontSize="11" Foreground="{DynamicResource Brush500}" HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <StackPanel Grid.Column="2">
+                    <Border Background="{DynamicResource Brush100}"
+                            BorderBrush="{DynamicResource Brush300}"
+                            BorderThickness="1"
+                            CornerRadius="16"
+                            Padding="18">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <icons:MaterialIcon Kind="LightbulbOnOutline" Width="20" Height="20" Foreground="{DynamicResource AccentBrush}" />
+                                <TextBlock Text="ПОДСКАЗКА" Margin="9,0,0,0" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding QuickTip}"
+                                       Margin="0,12,0,0"
+                                       TextWrapping="Wrap"
+                                       FontSize="13"
+                                       LineHeight="20"
+                                       Foreground="{DynamicResource Brush800}" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Margin="0,16,0,0"
+                            Background="{DynamicResource Brush75}"
+                            BorderBrush="{DynamicResource Brush300}"
+                            BorderThickness="1"
+                            CornerRadius="16"
+                            Padding="18">
+                        <StackPanel>
+                            <TextBlock Text="Рабочий процесс" FontSize="15" FontWeight="SemiBold" />
+                            <Border Height="1" Background="{DynamicResource Brush300}" Margin="0,12,0,12" />
+
+                            <StackPanel Orientation="Horizontal">
+                                <Border Width="28" Height="28" Background="{DynamicResource AccentDimBrush}" CornerRadius="8">
+                                    <TextBlock Text="1" Foreground="{DynamicResource AccentBrush}" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <TextBlock Text="Добавьте YDD и текстуры" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="12" Foreground="{DynamicResource Brush700}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                                <Border Width="28" Height="28" Background="{DynamicResource AccentDimBrush}" CornerRadius="8">
+                                    <TextBlock Text="2" Foreground="{DynamicResource AccentBrush}" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <TextBlock Text="Настройте свойства и теги" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="12" Foreground="{DynamicResource Brush700}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                                <Border Width="28" Height="28" Background="{DynamicResource AccentDimBrush}" CornerRadius="8">
+                                    <TextBlock Text="3" Foreground="{DynamicResource AccentBrush}" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <TextBlock Text="Проверьте в 3D и соберите" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="12" Foreground="{DynamicResource Brush700}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+
+            <Grid Grid.Row="2" Margin="0,18,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <icons:MaterialIcon Kind="ShieldCheckOutline" Width="14" Height="14" Foreground="{DynamicResource Brush500}" />
+                    <TextBlock Text="Проекты сохраняются локально и автоматически"
+                               Margin="6,0,0,0"
+                               Foreground="{DynamicResource Brush500}"
+                               FontSize="10" />
+                </StackPanel>
+                <Border Grid.Column="1"
+                        Padding="12,7"
+                        Background="{DynamicResource Brush75}"
+                        BorderBrush="{DynamicResource Brush300}"
+                        BorderThickness="1"
+                        CornerRadius="10">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:IconBlock Icon="Code"
+                                      IconFont="Solid"
+                                      Width="14"
+                                      Height="14"
+                                      Foreground="{DynamicResource AccentBrush}" />
+                        <TextBlock Text="© 2026 MeX · ПО переделал MeX под чутким руководством Evelentdev"
+                                   Margin="7,0,0,0"
+                                   Foreground="{DynamicResource Brush600}"
+                                   FontSize="10"
+                                   FontWeight="SemiBold" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,87 @@
+name: Import grzyClothTool upstream
+
+on:
+  push:
+    paths:
+      - ".github/workflows/import-upstream.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Import upstream source
+        run: |
+          set -e
+          WORKDIR="$(mktemp -d)"
+          git clone --depth 1 https://github.com/grzybeek/grzyClothTool.git "$WORKDIR/upstream"
+
+          find . -mindepth 1 \
+            ! -path './.git' \
+            ! -path './.git/*' \
+            ! -path './.github' \
+            ! -path './.github/*' \
+            -exec rm -rf {} +
+
+          rsync -a --delete \
+            --exclude '.git' \
+            "$WORKDIR/upstream/" ./
+
+          cat > README.md <<'EOF'
+          # KazanClothTool
+
+          KazanClothTool is a fork of [grzyClothTool](https://github.com/grzybeek/grzyClothTool) by [grzybeek](https://github.com/grzybeek).
+
+          The original project is an open-source tool for creating and managing GTA V addon clothing packs.
+
+          ## Purpose of this fork
+
+          This fork is intended to experiment with features useful for RAGE:MP clothing workflows, especially:
+
+          - faster clothing preview workflow
+          - automatic component preview
+          - batch screenshot/export ideas
+          - cleaner CDN-ready clothing image generation
+          - easier handling of drawable/texture previews
+
+          ## Original project
+
+          Original repository: https://github.com/grzybeek/grzyClothTool  
+          Original author: https://github.com/grzybeek
+
+          ## License
+
+          This project remains licensed under the GNU General Public License v3.0.
+
+          Because the original project is GPL-3.0, this fork and any distributed modified versions must also remain GPL-3.0 and provide source code.
+
+          See [LICENSE](./LICENSE) for details.
+
+          ## Status
+
+          Work in progress.
+          EOF
+
+          # Remove indentation caused by YAML heredoc placement.
+          sed -i 's/^          //' README.md
+
+      - name: Commit imported source
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Import grzyClothTool as KazanClothTool fork"
+            git push
+          fi
