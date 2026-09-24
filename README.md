@@ -2,6 +2,14 @@
 
 KazanClothTool — редактор одежды для GTA V с просмотром, редактированием свойств, проверкой файлов и сборкой ресурсов.
 
+## Скачать
+
+Готовая portable-сборка для Windows x64 доступна в GitHub Releases:
+
+[Скачать KazanClothTool v1.2.1](https://github.com/Mextrim/KazanClothTool/releases/download/v1.2.1/KazanClothTool-v1.2.1-win-x64.zip)
+
+Исходный код v1.2.1 можно скачать автоматическим архивом GitHub: [архив исходников](https://github.com/Mextrim/KazanClothTool/archive/refs/tags/v1.2.1.zip).
+
 ## Запуск
 
 Готовая сборка находится в папке `KazanClothTool`:
@@ -30,7 +38,7 @@ dotnet publish .\source\grzyClothTool\grzyClothTool.csproj -c Release -r win-x64
 
 ## C++-версия
 
-Параллельная миграция на C++20/Qt 6 находится в `source/KazanClothToolCpp`. Текущая WPF-сборка в `KazanClothTool` сохраняется рабочей до завершения переноса.
+Параллельная миграция на C++20/Qt 6 находится в `source/KazanClothToolCpp`. Текущая WPF-сборка в `KazanClothTool` остаётся рабочей и обновлённой; C++-каркас пока не собирался в окружении без Qt 6 SDK.
 
 ## Авторы и оформление
 
