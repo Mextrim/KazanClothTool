@@ -139,6 +139,26 @@ Bootstrap 5 *(по умолчанию)* · Flat UI · iOS 16 · Horizon UI · Ma
 
 Neon Glow · Carbon Gray 100 · iOS 16 Dark · Radix Themes Dark · Fluent 2 · DesignCode · Графит · Material Design · Океан · Закат · Лес · Неон · Аврора · Рубин · Кобальт
 
+### Темы из наборов Figma
+
+Палитра каждой темы снята с обложки набора, а не подобрана на глаз. У темы своя геометрия: скругления, плотность и глубина — от полностью плоского Carbon до цветных свечений Neon Glow.
+
+| Тема | Акцент | Набор |
+| --- | --- | --- |
+| Bootstrap 5 | `#0D6EFD` | Bootstrap 5.3 |
+| Flat UI | `#3F5A9E` | [Flat UI Design - Android](https://www.figma.com/community/file/1083794404404732707/flat-ui-design-android) |
+| iOS 16 / Dark | `#007AFF` / `#0A84FF` | [iOS 16 Themes and Wallpapers](https://www.figma.com/community/file/1143305808235927276/ios-16-themes-and-wallpapers) |
+| Horizon UI | `#4318FF` | Horizon UI admin template |
+| Material UI | `#0072E5` | [Material UI for Figma and MUI X](https://www.figma.com/community/file/912837788133317724/material-ui-for-figma-and-mui-x) |
+| Untitled UI | `#6941C6` | Untitled UI design system |
+| Ant Design | `#1677FF` | Ant Design |
+| IBM Carbon | `#0F62FE` | [IBM Carbon (Gray 100)](https://www.figma.com/community/file/1037014841172716183/ibm-carbon-design-system-gray-100-theme) |
+| Carbon Gray 100 | `#FFFFFF` | тот же набор, монохромная версия |
+| Radix Themes / Dark | `#3E63DD` | [Radix Themes v3](https://www.figma.com/community/file/1280428825266545105/radix-themes) |
+| Neon Glow | `#22D3EE` | [Glowing Buttons in Neon Gradients](https://www.figma.com/community/file/1286189692919271469/glowing-buttons-in-neon-gradients) |
+| Fluent 2 | `#479EF5` | Microsoft Fluent 2 |
+| PrimeVue Aura · Mantine · Bulma · Spectre · shadcn/ui · GitHub Primer | `#10B981` … | официальные дизайн-системы |
+
 </details>
 
 **3 языка:** русский · українська · English
@@ -156,7 +176,7 @@ Neon Glow · Carbon Gray 100 · iOS 16 Dark · Radix Themes Dark · Fluent 2 · 
 - клик по иконке копирует готовый XAML в буфер обмена
 - ссылка на исходный набор в подвале окна
 
-Открыть: **Настройки → Каталог иконок Material**.
+Открыть: **Настройки → Каталог иконок Material**. Показаны первые 320 иконок — уточните поиск, чтобы сузить список; счётчик показывает, сколько отображается из общего числа.
 
 ```xml
 <icons:MaterialIcon Kind="TshirtV" Width="24" Height="24" />
