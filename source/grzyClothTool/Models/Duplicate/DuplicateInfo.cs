@@ -1,0 +1,173 @@
+﻿using grzyClothTool.Helpers;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
+
+namespace grzyClothTool.Models.Duplicate;
+
+public class DuplicateInfo : INotifyPropertyChanged
+{
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    public DuplicateInfo()
+    {
+        LocalizationHelper.LanguageChanged += (_, _) => OnPropertyChanged(nameof(DuplicateTooltip));
+    }
+
+    private object _ownerItem;
+    
+    public void SetOwner(object owner)
+    {
+        _ownerItem = owner;
+        OnPropertyChanged(nameof(DuplicateTooltip));
+    }
+
+    private string _duplicateGroupId;
+    public string DuplicateGroupId
+    {
+        get => _duplicateGroupId;
+        set
+        {
+            if (_duplicateGroupId != value)
+            {
+                _duplicateGroupId = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsDuplicate));
+                OnPropertyChanged(nameof(DuplicateColor));
+            }
+        }
+    }
+
+    private int _duplicateCount;
+    public int DuplicateCount
+    {
+        get => _duplicateCount;
+        set
+        {
+            if (_duplicateCount != value)
+            {
+                _duplicateCount = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsDuplicate));
+                OnPropertyChanged(nameof(DuplicateColor));
+                OnPropertyChanged(nameof(DuplicateTooltip));
+            }
+        }
+    }
+
+    public bool IsDuplicate => !string.IsNullOrEmpty(DuplicateGroupId) && DuplicateCount > 1;
+
+    public string DuplicateTooltip
+    {
+        get
+        {
+            if (!IsDuplicate || _ownerItem == null)
+                return LocalizationHelper.Format("Дубликат (всего: {0})", DuplicateCount);
+
+            var duplicates = GetAllDuplicatesForOwner();
+            if (duplicates == null || duplicates.Count <= 1)
+                return LocalizationHelper.Format("Дубликат (всего: {0})", DuplicateCount);
+
+            return GenerateDuplicateTooltip(duplicates);
+        }
+    }
+
+    private List<object> GetAllDuplicatesForOwner()
+    {
+        if (_ownerItem is Drawable.GDrawable)
+        {
+            var hash = DuplicateGroupId;
+            return Helpers.DuplicateDetector.GetDrawablesInGroup(hash)?.Cast<object>().ToList();
+        }
+        return null;
+    }
+
+    private string GenerateDuplicateTooltip(List<object> duplicates)
+    {
+        var lines = new List<string> { LocalizationHelper.Translate("Дублирующийся элемент:") };
+
+        foreach (var duplicate in duplicates)
+        {
+            var isCurrent = ReferenceEquals(duplicate, _ownerItem);
+            var location = GetItemLocation(duplicate);
+            var sex = GetItemSex(duplicate);
+            var marker = isCurrent ? " " + LocalizationHelper.Translate("(этот элемент)") : "";
+            lines.Add($"  [{sex}] {location}{marker}");
+        }
+
+        return string.Join("\n", lines);
+    }
+
+    private static string GetItemSex(object item)
+    {
+        if (item is Drawable.GDrawable drawable)
+        {
+            return drawable.SexName?.ToLowerInvariant() switch
+            {
+                "male" => LocalizationHelper.Translate("мужской"),
+                "female" => LocalizationHelper.Translate("женский"),
+                _ => LocalizationHelper.Translate("неизвестно")
+            };
+        }
+        return LocalizationHelper.Translate("Неизвестно");
+    }
+
+    public string DuplicateColor
+    {
+        get
+        {
+            if (!IsDuplicate || string.IsNullOrEmpty(DuplicateGroupId))
+                return "Transparent";
+            
+            try
+            {
+                var hashBytes = Convert.FromBase64String(DuplicateGroupId);
+                return $"#FF{(hashBytes[0] & 0xEF):X2}{(hashBytes[1] & 0xEF):X2}{(hashBytes[2] & 0xEF):X2}";
+            }
+            catch
+            {
+                return "#FF9CA3AF";
+            }
+        }
+    }
+
+    private static string GetItemLocation(object item)
+    {
+        if (MainWindow.AddonManager?.Addons == null)
+            return LocalizationHelper.Translate("Неизвестно");
+
+        var addons = MainWindow.AddonManager.Addons;
+        
+        for (int i = 0; i < addons.Count; i++)
+        {
+            var addon = addons[i];
+            
+            if (item is Drawable.GDrawable drawable)
+            {
+                if (addon.Drawables.Contains(drawable))
+                {
+                    return LocalizationHelper.Format("Аддон {0}: {1}", i + 1, drawable.Name);
+                }
+            }
+            else if (item is Texture.GTexture texture)
+            {
+                foreach (var draw in addon.Drawables)
+                {
+                    if (draw.Textures.Contains(texture))
+                    {
+                        return LocalizationHelper.Format("Аддон {0}: {1} → {2}", i + 1, draw.Name, texture.DisplayName);
+                    }
+                }
+            }
+        }
+
+        return LocalizationHelper.Translate("Неизвестно");
+    }
+
+    protected void OnPropertyChanged([CallerMemberName] string name = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    }
+}

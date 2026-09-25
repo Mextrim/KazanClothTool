@@ -1,0 +1,506 @@
+﻿<Window x:Class="grzyClothTool.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:helpers="clr-namespace:grzyClothTool.Helpers"
+        xmlns:icons="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
+         xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
+        xmlns:controls="clr-namespace:grzyClothTool.Controls"
+        xmlns:ad="https://github.com/Dirkster99/AvalonDock"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        d:DataContext="{d:DesignInstance Type=helpers:NavigationHelper, IsDesignTimeCreatable=True}"
+        mc:Ignorable="d"
+        Title="KazanClothTool"
+        Height="900"
+        Width="1440"
+        MinWidth="1180"
+        MinHeight="720"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        ResizeMode="CanResize"
+        Background="{DynamicResource Brush50}"
+        Foreground="{DynamicResource Brush950}"
+        TextOptions.TextFormattingMode="Display"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        Closed="Window_Closed"
+        Closing="Window_Closing">
+
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome CaptionHeight="0"
+                            CornerRadius="12"
+                            GlassFrameThickness="0"
+                            ResizeBorderThickness="6"
+                            UseAeroCaptionButtons="False" />
+    </shell:WindowChrome.WindowChrome>
+
+    <Window.Resources>
+        <Style x:Key="TopBarButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="36" />
+            <Setter Property="MinWidth" Value="36" />
+            <Setter Property="Padding" Value="12,0" />
+            <Setter Property="Margin" Value="2,0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush800}" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontFamily" Value="{DynamicResource DisplayFontFamily}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="9"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource Brush150}" />
+                                <Setter Property="Foreground" Value="{DynamicResource Brush950}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource Brush200}" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource Brush75}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.4" />
+                                <Setter Property="Cursor" Value="Arrow" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TopBarActionButtonStyle" TargetType="Button" BasedOn="{StaticResource TopBarButtonStyle}">
+            <Setter Property="Background" Value="{DynamicResource Brush75}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush300}" />
+            <Setter Property="Padding" Value="12,0" />
+        </Style>
+
+        <Style x:Key="TopBarPrimaryActionButtonStyle" TargetType="Button" BasedOn="{StaticResource TopBarActionButtonStyle}">
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource OnPrimaryBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource OnPrimaryBrush}" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource AccentPressedBrush}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="TopBarIconActionButtonStyle" TargetType="Button" BasedOn="{StaticResource TopBarActionButtonStyle}">
+            <Setter Property="Width" Value="38" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
+
+        <Style x:Key="HomeNavigationButtonStyle" TargetType="Button" BasedOn="{StaticResource TopBarButtonStyle}">
+            <Setter Property="MinWidth" Value="92" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding DataContext.IsHomePage, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ProjectNavigationButtonStyle" TargetType="Button" BasedOn="{StaticResource TopBarButtonStyle}">
+            <Setter Property="MinWidth" Value="98" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding DataContext.IsProjectPage, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="SettingsNavigationButtonStyle" TargetType="Button" BasedOn="{StaticResource TopBarButtonStyle}">
+            <Setter Property="MinWidth" Value="104" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding DataContext.IsSettingsPage, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="TopBarGroupStyle" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource Brush75}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush300}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="4" />
+        </Style>
+
+        <Style x:Key="TopBarSeparatorStyle" TargetType="Border">
+            <Setter Property="Width" Value="1" />
+            <Setter Property="Height" Value="22" />
+            <Setter Property="Margin" Value="5,0" />
+            <Setter Property="Background" Value="{DynamicResource Brush300}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style x:Key="WindowControlButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="46" />
+            <Setter Property="Height" Value="54" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush700}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="WindowButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="WindowButtonBorder" Property="Background" Value="{DynamicResource Brush200}" />
+                                <Setter Property="Foreground" Value="{DynamicResource Brush950}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="WindowButtonBorder" Property="Background" Value="{DynamicResource Brush250}" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="WindowButtonBorder" Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+                                <Setter TargetName="WindowButtonBorder" Property="BorderThickness" Value="1" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CloseWindowButtonStyle" TargetType="Button" BasedOn="{StaticResource WindowControlButtonStyle}">
+            <Setter Property="Foreground" Value="{DynamicResource Brush700}" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#E5484D" />
+                    <Setter Property="Foreground" Value="{DynamicResource OnPrimaryBrush}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Border BorderBrush="{DynamicResource Brush300}"
+            BorderThickness="1"
+            Background="{DynamicResource Brush50}"
+            CornerRadius="12">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="30" ShadowDepth="8" Opacity="0.26" Color="Black" />
+        </Border.Effect>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="54" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="32" />
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0"
+                    Background="{DynamicResource Brush100}"
+                    BorderBrush="{DynamicResource Brush250}"
+                    BorderThickness="0,0,0,1"
+                    CornerRadius="11,11,0,0"
+                    MouseLeftButtonDown="TitleBar_MouseDown">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="230" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0"
+                                Orientation="Horizontal"
+                                Margin="16,0,10,0"
+                                VerticalAlignment="Center">
+                        <Border Width="36"
+                                Height="36"
+                                Background="{DynamicResource Brush50}"
+                                BorderBrush="{DynamicResource AccentBrush}"
+                                BorderThickness="1"
+                                CornerRadius="11">
+                            <Image Width="28" Source="pack://application:,,,/Resources/KazanClothTool.png" />
+                        </Border>
+                        <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="KazanClothTool"
+                                       FontFamily="{DynamicResource DisplayFontFamily}"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource Brush950}" />
+                            <TextBlock Text="РЕДАКТОР ОДЕЖДЫ"
+                                       FontSize="8"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource AccentBrush}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Border Grid.Column="1"
+                            Style="{StaticResource TopBarGroupStyle}"
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="HomeNavigationButton"
+                                    Style="{StaticResource HomeNavigationButtonStyle}"
+                                    Click="Navigation_Click"
+                                    Tag="Home"
+                                    ToolTip="Главная"
+                                    AutomationProperties.Name="Главная">
+                                <StackPanel Orientation="Horizontal">
+                                    <fa:IconBlock Icon="House"
+                                                  IconFont="Solid"
+                                                  Width="16"
+                                                  Height="16"
+                                                  Margin="0,0,7,0"
+                                                  Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                                    <TextBlock Text="Главная"
+                                               FontSize="12"
+                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="ProjectNavigationButton"
+                                    Style="{StaticResource ProjectNavigationButtonStyle}"
+                                    Click="Navigation_Click"
+                                    Tag="Project"
+                                    ToolTip="Редактор одежды"
+                                    AutomationProperties.Name="Редактор одежды">
+                                <StackPanel Orientation="Horizontal">
+                                    <fa:IconBlock Icon="PersonDress"
+                                                  IconFont="Solid"
+                                                  Width="16"
+                                                  Height="16"
+                                                  Margin="0,0,7,0"
+                                                  Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                                    <TextBlock Text="Редактор"
+                                               FontSize="12"
+                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="SettingsNavigationButton"
+                                    Style="{StaticResource SettingsNavigationButtonStyle}"
+                                    Click="Navigation_Click"
+                                    Tag="Settings"
+                                    ToolTip="Настройки"
+                                    AutomationProperties.Name="Настройки">
+                                <StackPanel Orientation="Horizontal">
+                                    <fa:IconBlock Icon="Gear"
+                                                  IconFont="Solid"
+                                                  Width="16"
+                                                  Height="16"
+                                                  Margin="0,0,7,0"
+                                                  Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                                    <TextBlock Text="Настройки"
+                                               FontSize="12"
+                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="3"
+                            Style="{StaticResource TopBarGroupStyle}"
+                            Margin="10,0,4,0"
+                            VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="OpenProjectButton"
+                                    Style="{StaticResource TopBarActionButtonStyle}"
+                                    Click="OpenAddon_Click"
+                                    ToolTip="Открыть набор одежды (.meta)"
+                                    AutomationProperties.Name="Открыть набор одежды">
+                                <StackPanel Orientation="Horizontal">
+                                    <fa:IconBlock Icon="FolderOpen"
+                                                  IconFont="Solid"
+                                                  Width="16"
+                                                  Height="16"
+                                                  Margin="0,0,6,0"
+                                                  Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                                    <TextBlock Text="Открыть"
+                                               FontSize="12"
+                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="ImportProjectButton"
+                                    Style="{StaticResource TopBarActionButtonStyle}"
+                                    Click="ImportProject_Click"
+                                    ToolTip="Импортировать проект"
+                                    AutomationProperties.Name="Импортировать проект">
+                                <StackPanel Orientation="Horizontal">
+                                    <fa:IconBlock Icon="FileImport"
+                                                  IconFont="Solid"
+                                                  Width="16"
+                                                  Height="16"
+                                                  Margin="0,0,6,0"
+                                                  Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                                    <TextBlock Text="Импорт"
+                                               FontSize="12"
+                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="SaveProjectButton"
+                                    Style="{StaticResource TopBarPrimaryActionButtonStyle}"
+                                    Click="Save_Click"
+                                    ToolTip="Сохранить проект (Ctrl+S)"
+                                    AutomationProperties.Name="Сохранить проект">
+                                <StackPanel Orientation="Horizontal">
+                                    <fa:IconBlock Icon="FloppyDisk"
+                                                  IconFont="Solid"
+                                                  Width="16"
+                                                  Height="16"
+                                                  Margin="0,0,6,0"
+                                                  Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                                    <TextBlock Text="Сохранить"
+                                               FontSize="12"
+                                               FontWeight="SemiBold"
+                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                                </StackPanel>
+                            </Button>
+                            <Border Style="{StaticResource TopBarSeparatorStyle}" />
+                            <Button x:Name="ExportProjectButton"
+                                    Style="{StaticResource TopBarIconActionButtonStyle}"
+                                    Click="ExportProject_Click"
+                                    ToolTip="Экспортировать проект"
+                                    AutomationProperties.Name="Экспортировать проект">
+                                <fa:IconBlock Icon="BoxOpen"
+                                              IconFont="Solid"
+                                              Width="17"
+                                              Height="17"
+                                              Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <StackPanel Grid.Column="4" Orientation="Horizontal">
+                        <Button x:Name="MinimizeWindowButton"
+                                Style="{StaticResource WindowControlButtonStyle}"
+                                Click="MinimizeWindow_Click"
+                                ToolTip="Свернуть"
+                                AutomationProperties.Name="Свернуть">
+                            <icons:MaterialIcon Kind="Minus" Width="18" Height="18" />
+                        </Button>
+                        <Button x:Name="MaximizeWindowButton"
+                                Style="{StaticResource WindowControlButtonStyle}"
+                                Click="MaximizeWindow_Click"
+                                ToolTip="Развернуть"
+                                AutomationProperties.Name="Развернуть">
+                            <icons:MaterialIcon x:Name="MaximizeRestoreIcon" Kind="RectangleOutline" Width="16" Height="16" />
+                        </Button>
+                        <Button x:Name="CloseWindowButton"
+                                Style="{StaticResource CloseWindowButtonStyle}"
+                                Click="CloseWindow_Click"
+                                ToolTip="Закрыть"
+                                AutomationProperties.Name="Закрыть">
+                            <icons:MaterialIcon Kind="Close" Width="18" Height="18" />
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <ad:DockingManager x:Name="DockManager"
+                               Grid.Row="1"
+                               AllowMixedOrientation="True"
+                               Background="{DynamicResource Brush50}">
+                <ad:LayoutRoot>
+                    <ad:LayoutPanel Orientation="Horizontal">
+                        <ad:LayoutDocumentPane DockWidth="*" ShowHeader="False">
+                            <ad:LayoutDocument ContentId="MainContent" Title="KazanClothTool">
+                                <ContentControl x:Name="MainWindowContentControl" Content="{Binding CurrentPage}" />
+                            </ad:LayoutDocument>
+                        </ad:LayoutDocumentPane>
+
+                        <ad:LayoutAnchorablePane DockWidth="500">
+                            <ad:LayoutAnchorable x:Name="PreviewAnchorable"
+                                                 ContentId="PreviewAnchorable"
+                                                 Title="3D ПРЕДПРОСМОТР"
+                                                 CanClose="True"
+                                                 CanHide="True"
+                                                 CanFloat="True"
+                                                 AutoHideWidth="500"
+                                                 FloatingWidth="820"
+                                                 FloatingHeight="620"
+                                                 IsVisible="False">
+                                <controls:PreviewWindowHost x:Name="PreviewHost" />
+                            </ad:LayoutAnchorable>
+                        </ad:LayoutAnchorablePane>
+                    </ad:LayoutPanel>
+                </ad:LayoutRoot>
+            </ad:DockingManager>
+
+            <Border Grid.Row="2"
+                    Background="{DynamicResource Brush100}"
+                    BorderBrush="{DynamicResource Brush250}"
+                    BorderThickness="0,1,0,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="2" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="12,0,8,0" VerticalAlignment="Center">
+                        <controls:AutoSaveIndicator x:Name="AutoSaveIndicator" Visibility="Collapsed" Margin="0,0,8,0" />
+                        <icons:MaterialIcon x:Name="logBarIcon"
+                                            Kind="InformationOutline"
+                                            Visibility="Hidden"
+                                            Width="15"
+                                            Height="15"
+                                            Foreground="{DynamicResource AccentBrush}" />
+                        <TextBlock x:Name="logBar"
+                                   Text="Готово"
+                                   Foreground="{DynamicResource Brush700}"
+                                   FontSize="11"
+                                   VerticalAlignment="Center"
+                                   Margin="7,0,0,0"
+                                   TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="0,0,12,0" VerticalAlignment="Center">
+                        <Border Background="{DynamicResource Brush200}" CornerRadius="8" Padding="8,2">
+                            <TextBlock Text="{Binding AppVersion, RelativeSource={RelativeSource AncestorType=Window}}"
+                                       Foreground="{DynamicResource Brush600}"
+                                       FontSize="10" />
+                        </Border>
+                    </StackPanel>
+
+                    <ProgressBar x:Name="progressBar"
+                                 Grid.Row="1"
+                                 Grid.ColumnSpan="2"
+                                 Height="2"
+                                 Background="Transparent"
+                                 Foreground="{DynamicResource AccentBrush}"
+                                 BorderThickness="0"
+                                 Visibility="Hidden"
+                                 IsIndeterminate="True" />
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

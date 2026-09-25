@@ -1,0 +1,114 @@
+﻿<Window x:Class="grzyClothTool.Controls.CustomMessageBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Диалог сообщения"
+        Width="620"
+        MinWidth="420"
+        MaxWidth="820"
+        MinHeight="210"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True">
+    <Grid Margin="12">
+        <Border Background="{DynamicResource Brush50}"
+                BorderBrush="{DynamicResource Brush300}"
+                BorderThickness="1"
+                CornerRadius="16">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="26"
+                                  ShadowDepth="7"
+                                  Opacity="0.28"
+                                  Color="Black" />
+            </Border.Effect>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="52" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="64" />
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0"
+                        Background="{DynamicResource Brush100}"
+                        BorderBrush="{DynamicResource Brush300}"
+                        BorderThickness="0,0,0,1"
+                        CornerRadius="16,16,0,0"
+                        MouseLeftButtonDown="OnCaptionPress">
+                    <Grid Margin="20,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="4" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="4"
+                                Margin="0,14"
+                                Background="{DynamicResource AccentBrush}"
+                                CornerRadius="2" />
+                        <TextBlock x:Name="CMBCaption"
+                                   Grid.Column="1"
+                                   VerticalAlignment="Center"
+                                   Text="Заголовок сообщения"
+                                   Foreground="{DynamicResource Brush950}"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   TextTrimming="CharacterEllipsis" />
+                    </Grid>
+                </Border>
+
+                <Grid Grid.Row="1" Margin="22,18,22,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="42" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Image x:Name="CMBIcon"
+                           Width="30"
+                           Height="30"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Top"
+                           Margin="2,2,0,0"
+                           SnapsToDevicePixels="True" />
+                    <ScrollViewer Grid.Column="1"
+                                  VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  Focusable="False">
+                        <StackPanel>
+                            <TextBlock x:Name="CMBMessage"
+                                       Text="Текст сообщения"
+                                       Foreground="{DynamicResource Brush950}"
+                                       FontSize="13"
+                                       LineHeight="21"
+                                       TextWrapping="Wrap"
+                                       TextAlignment="Left" />
+                            <TextBox x:Name="CMBTextBox"
+                                     Height="36"
+                                     Margin="0,12,0,0"
+                                     Padding="10,6"
+                                     VerticalContentAlignment="Center"
+                                     Visibility="Collapsed" />
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+
+                <Border Grid.Row="2"
+                        Padding="18,10"
+                        Background="{DynamicResource Brush100}"
+                        BorderBrush="{DynamicResource Brush300}"
+                        BorderThickness="0,1,0,0"
+                        CornerRadius="0,0,16,16">
+                    <StackPanel x:Name="CMBButtons"
+                                Orientation="Horizontal"
+                                FlowDirection="RightToLeft"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center" />
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

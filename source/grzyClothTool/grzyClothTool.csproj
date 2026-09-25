@@ -1,0 +1,84 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+	  <UseWPF>true</UseWPF>
+	  <UseWindowsForms>true</UseWindowsForms>
+	  <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	  <AssemblyName>KazanClothTool</AssemblyName>
+	  <RootNamespace>grzyClothTool</RootNamespace>
+	  <Product>KazanClothTool</Product>
+	  <Authors>MeX</Authors>
+	  <Copyright>© 2026 MeX. ПО переделал MeX под чутким руководством Evelentdev</Copyright>
+	  <Description>KazanClothTool</Description>
+	  <ApplicationIcon>Resources\KazanClothToolIcon.ico</ApplicationIcon>
+	  <FileVersion>1.2.3</FileVersion>
+	  
+	  <SelfContained>true</SelfContained>
+	  <PublishSingleFile>false</PublishSingleFile>
+	  <PublishReadyToRun>true</PublishReadyToRun>
+	  
+	  <PublishTrimmed>false</PublishTrimmed>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <AllowedReferenceRelatedFileExtensions>*.pdb</AllowedReferenceRelatedFileExtensions>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+  </PropertyGroup>
+  <ItemGroup>
+    <Resource Include="Resources\KazanClothTool.png" />
+    <Resource Include="Resources\KazanClothToolIcon.ico" />
+    <Resource Include="Resources\reservedDrawable.ydd" />
+    <Resource Include="Resources\reservedTexture.ytd" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Dirkster.AvalonDock" Version="4.72.1" />
+    <PackageReference Include="Dirkster.AvalonDock.Themes.VS2013" Version="4.72.1" />
+    <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="14.17.1" />
+    <PackageReference Include="Material.Icons.WPF" Version="2.4.1" />
+    <PackageReference Include="FontAwesome.Sharp" Version="6.6.0" />
+    <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\grzyClothTool.Shared\grzyClothTool.Shared.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="CodeWalker">
+      <HintPath>..\..\KazanClothTool\CodeWalker.dll</HintPath>
+    </Reference>
+    <Reference Include="CodeWalker.Core">
+      <HintPath>..\..\KazanClothTool\CodeWalker.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Controls\Custom\CustomButton.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\Settings\SettingsLabelCheckBox.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>PublicSettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+</Project>

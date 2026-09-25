@@ -1,6 +1,3 @@
-# The local source tree is intentionally not published in this repository.
-/source/
-
 # Runtime diagnostics from local smoke tests
 /KazanClothTool/error-*.log
 /KazanClothTool/KazanClothTool_errors.log

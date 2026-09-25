@@ -1,0 +1,147 @@
+name: Restore and patch preview export
+
+on:
+  push:
+    paths:
+      - ".github/workflows/restore-and-patch-preview-export.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  restore-and-patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Restore CustomPedsForm and inject preview export
+        run: |
+          set -euo pipefail
+          WORKDIR="$(mktemp -d)"
+          git clone --depth 1 https://github.com/grzybeek/grzyClothTool.git "$WORKDIR/upstream"
+          cp "$WORKDIR/upstream/CodeWalker/CodeWalker/CustomPedsForm.cs" "CodeWalker/CodeWalker/CustomPedsForm.cs"
+
+          python3 <<'PY'
+          from pathlib import Path
+          p = Path('CodeWalker/CodeWalker/CustomPedsForm.cs')
+          s = p.read_text(encoding='utf-8-sig')
+
+          old_ctor = """            InitializeComponent();\n\n            ComponentComboBoxes = new List<List<ComponentComboItem>>"""
+          new_ctor = """            InitializeComponent();\n            AddExportPreviewButton();\n\n            ComponentComboBoxes = new List<List<ComponentComboItem>>"""
+          if old_ctor not in s:
+              raise SystemExit('Constructor insertion point not found')
+          s = s.replace(old_ctor, new_ctor, 1)
+
+          marker = """        public override void Refresh()\n        {\n            base.Refresh();\n            UpdateModelsUI();\n        }"""
+          patch = r'''
+        private void AddExportPreviewButton()
+        {
+            var exportButton = new Button
+            {
+                Text = "Export PNG",
+                Width = 100,
+                Height = 24,
+                Anchor = AnchorStyles.Top | AnchorStyles.Right,
+                Location = new System.Drawing.Point(125, 8)
+            };
+
+            exportButton.Click += ExportPreviewButton_Click;
+            ToolsCameraTabPage.Controls.Add(exportButton);
+            exportButton.BringToFront();
+        }
+
+        private void ExportPreviewButton_Click(object sender, EventArgs e)
+        {
+            using var dialog = new SaveFileDialog
+            {
+                Filter = "PNG Image (*.png)|*.png",
+                FileName = $"preview_{DateTime.Now:yyyyMMdd_HHmmss}.png",
+                Title = "Export current 3D preview"
+            };
+
+            if (dialog.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            try
+            {
+                ExportCurrentPreviewPng(dialog.FileName);
+                UpdateStatus($"Preview exported: {Path.GetFileName(dialog.FileName)}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to export preview PNG:\n{ex.Message}", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogError($"Preview export failed: {ex}");
+            }
+        }
+
+        public void ExportCurrentPreviewPng(string outputPath)
+        {
+            if (Renderer?.DXMan?.device == null || Renderer.DXMan.context == null || Renderer.DXMan.backbuffer == null)
+            {
+                throw new InvalidOperationException("3D renderer is not ready yet.");
+            }
+
+            var outputDirectory = Path.GetDirectoryName(outputPath);
+            if (!string.IsNullOrEmpty(outputDirectory))
+            {
+                Directory.CreateDirectory(outputDirectory);
+            }
+
+            lock (Renderer.RenderSyncRoot)
+            {
+                var context = Renderer.DXMan.context;
+                var device = Renderer.DXMan.device;
+                var backbuffer = Renderer.DXMan.backbuffer;
+                var description = backbuffer.Description;
+
+                if (description.SampleDescription.Count > 1)
+                {
+                    using var resolvedTexture = new Texture2D(device, new Texture2DDescription
+                    {
+                        Width = description.Width,
+                        Height = description.Height,
+                        MipLevels = 1,
+                        ArraySize = 1,
+                        Format = description.Format,
+                        SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0),
+                        Usage = ResourceUsage.Default,
+                        BindFlags = BindFlags.None,
+                        CpuAccessFlags = CpuAccessFlags.None,
+                        OptionFlags = ResourceOptionFlags.None
+                    });
+
+                    context.ResolveSubresource(backbuffer, 0, resolvedTexture, 0, description.Format);
+                    Resource.ToFile(context, resolvedTexture, ImageFileFormat.Png, outputPath);
+                }
+                else
+                {
+                    Resource.ToFile(context, backbuffer, ImageFileFormat.Png, outputPath);
+                }
+            }
+        }
+
+'''
+          if marker not in s:
+              raise SystemExit('Method insertion point not found')
+          s = s.replace(marker, patch + marker, 1)
+          p.write_text('\ufeff' + s, encoding='utf-8')
+          PY
+
+      - name: Commit clean preview export patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CodeWalker/CodeWalker/CustomPedsForm.cs
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Add current preview PNG export"
+            git push
+          fi
