@@ -441,31 +441,35 @@ namespace grzyClothTool.Controls
             }
             catch (Exception ex)
             {
-                LogHelper.Log($"Не удалось обработать файл {propertyName}: {ex.Message}. Используется исходный путь.", LogType.Warning);
-                
-                if (propertyName == "FirstPersonPath")
-                {
-                    SelectedDraw.FirstPersonPath = sourceFilePath;
-                }
-                else if (propertyName == "ClothPhysicsPath")
-                {
-                    SelectedDraw.ClothPhysicsPath = sourceFilePath;
-                }
-                
-                SaveHelper.SetUnsavedChanges(true);
+                LogHelper.Log($"Не удалось обработать файл {propertyName}: {ex.Message}.", LogType.Error);
+                Controls.CustomMessageBox.Show(
+                    LocalizationHelper.Format("Не удалось скопировать файл в проект: {0}", ErrorMessageHelper.Friendly(ex)),
+                    LocalizationHelper.Translate("Ошибка файла"),
+                    CustomMessageBoxButtons.OKOnly,
+                    CustomMessageBoxIcon.Error);
             }
         }
 
         private void GroupEditor_Changed(object sender, EventArgs e)
         {
-            if (sender is GroupEditor groupEditor && MainWindow.AddonManager.SelectedAddon.IsMultipleDrawablesSelected)
+            if (sender is not GroupEditor groupEditor)
             {
-                var selectedDrawables = MainWindow.AddonManager.SelectedAddon.SelectedDrawables.ToList();
-                var newGroup = groupEditor.Group;
-                
+                return;
+            }
+
+            var selectedAddon = MainWindow.AddonManager?.SelectedAddon;
+            if (selectedAddon == null)
+            {
+                return;
+            }
+
+            var newGroup = groupEditor.Group;
+            if (selectedAddon.IsMultipleDrawablesSelected)
+            {
+                var selectedDrawables = selectedAddon.SelectedDrawables.ToList();
                 var drawableList = FindDrawableList();
                 drawableList?.BeginBatchUpdate();
-                
+
                 try
                 {
                     foreach (var drawable in selectedDrawables)
@@ -477,9 +481,11 @@ namespace grzyClothTool.Controls
                 {
                     drawableList?.EndBatchUpdate();
                 }
-                
-                SaveHelper.SetUnsavedChanges(true);
             }
+
+            // For a single drawable the TwoWay binding has already updated the
+            // model; the editor event is the explicit user-commit boundary.
+            SaveHelper.SetUnsavedChanges(true);
         }
 
         private DrawableList FindDrawableList()
@@ -521,15 +527,26 @@ namespace grzyClothTool.Controls
 
     private void TagsEditor_Changed(object sender, EventArgs e)
     {
-        if (sender is TagsEditor tagsEditor && MainWindow.AddonManager.SelectedAddon.IsMultipleDrawablesSelected)
+        if (sender is not TagsEditor tagsEditor)
         {
-            var selectedDrawables = MainWindow.AddonManager.SelectedAddon.SelectedDrawables.ToList();
+            return;
+        }
+
+        var selectedAddon = MainWindow.AddonManager?.SelectedAddon;
+        if (selectedAddon == null)
+        {
+            return;
+        }
+
+        if (selectedAddon.IsMultipleDrawablesSelected)
+        {
+            var selectedDrawables = selectedAddon.SelectedDrawables.ToList();
             var editorTags = tagsEditor.Tags?.ToList() ?? [];
-            
+
             var allCurrentTags = selectedDrawables.SelectMany(d => d.Tags).Distinct().ToHashSet();
             var addedTags = editorTags.Where(t => !allCurrentTags.Contains(t)).ToList();
             var removedTags = allCurrentTags.Where(t => !editorTags.Contains(t)).ToList();
-            
+
             foreach (var drawable in selectedDrawables)
             {
                 foreach (var tag in addedTags)
@@ -539,15 +556,17 @@ namespace grzyClothTool.Controls
                         drawable.Tags.Add(tag);
                     }
                 }
-                
+
                 foreach (var tag in removedTags)
                 {
                     drawable.Tags.Remove(tag);
                 }
             }
-            
-            SaveHelper.SetUnsavedChanges(true);
         }
+
+        // For a single drawable the bound ObservableCollection is already
+        // updated; this event marks the user commit as an unsaved change.
+        SaveHelper.SetUnsavedChanges(true);
     }
 
         private static ListBox FindTextureListBox(DependencyObject parent)
@@ -1300,6 +1319,7 @@ namespace grzyClothTool.Controls
                 if (result == CustomMessageBoxResult.OK)
                 {
                     embeddedTexture.RenameTexture(textBoxValue);
+                    SaveHelper.SetUnsavedChanges(true);
                 }
                 return;
             }
@@ -1314,6 +1334,7 @@ namespace grzyClothTool.Controls
             if (res == CustomMessageBoxResult.OK)
             {
                 texture.RenameTexture(txtValue);
+                SaveHelper.SetUnsavedChanges(true);
             }
         }
 

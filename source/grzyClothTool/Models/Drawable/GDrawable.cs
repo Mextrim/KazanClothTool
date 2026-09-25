@@ -428,6 +428,7 @@ public class GDrawable : INotifyPropertyChanged
             OnPropertyChanged();
             OnPropertyChanged(nameof(Flags));
             OnPropertyChanged(nameof(FlagsText));
+            SynchronizeAvailableFlags();
         }
     }
 
@@ -449,6 +450,22 @@ public class GDrawable : INotifyPropertyChanged
 
     [JsonIgnore]
     public List<SelectableItem> AvailableFlags => _availableFlags;
+
+    private void SynchronizeAvailableFlags()
+    {
+        if (_availableFlags == null)
+        {
+            _availableFlags = EnumHelper.GetFlags(Flags);
+            OnPropertyChanged(nameof(AvailableFlags));
+            return;
+        }
+
+        int selectedFlags = Flags;
+        foreach (var item in _availableFlags)
+        {
+            item.IsSelected = (selectedFlags & item.Value) == item.Value && item.Value != 0;
+        }
+    }
 
     public string RenderFlag { get; set; } = ""; // "" is the default value
 
@@ -593,11 +610,13 @@ public class GDrawable : INotifyPropertyChanged
 
     public async Task LoadDetails()
     {
+        string projectRoot = FileHelper.CurrentProjectRoot ?? string.Empty;
+        string fullPath = FullFilePath;
         try
         {
-            if (File.Exists(FullFilePath))
+            if (File.Exists(fullPath))
             {
-                var result = await LoadDrawableDetailsWithConcurrencyControl();
+                var result = await LoadDrawableDetailsWithConcurrencyControl(fullPath);
                 if (result != null)
                 {
                     var previousDetails = Details;
@@ -611,7 +630,7 @@ public class GDrawable : INotifyPropertyChanged
                             if (previousTexture?.PersistedTexturePath != null &&
                                 result.EmbeddedTextures.TryGetValue(pair.Key, out _))
                             {
-                                if (previousTexture.TryRestorePersistedTexture(FileHelper.CurrentProjectRoot ?? string.Empty))
+                                if (previousTexture.TryRestorePersistedTexture(projectRoot))
                                 {
                                     result.EmbeddedTextures[pair.Key] = previousTexture;
                                 }
@@ -619,7 +638,7 @@ public class GDrawable : INotifyPropertyChanged
                         }
                     }
 
-                    RestorePersistedEmbeddedTextures(FileHelper.CurrentProjectRoot ?? string.Empty, result);
+                    RestorePersistedEmbeddedTextures(projectRoot, result);
                     OnPropertyChanged(nameof(Details));
                 }
             }
@@ -631,6 +650,17 @@ public class GDrawable : INotifyPropertyChanged
         finally
         {
             IsLoading = false;
+            try
+            {
+                if (MainWindow.AddonManager?.Addons?.Any(addon => addon.Drawables.Contains(this)) == true)
+                {
+                    DuplicateDetector.RegisterDrawable(this);
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorLogHelper.LogError($"Не удалось обновить дубликаты для {Name}: {ex.Message}", ex);
+            }
         }
     }
 
@@ -655,9 +685,9 @@ public class GDrawable : INotifyPropertyChanged
 
     public void LoadTexturesThumbnail()
     {
-        foreach (var texture in Textures)
+        foreach (var texture in Textures ?? [])
         {
-            texture.LoadThumbnailAsync();
+            texture?.LoadThumbnailAsync();
         }
     }
 
@@ -670,8 +700,10 @@ public class GDrawable : INotifyPropertyChanged
 
         Name = finalName;
         //texture number needs to be updated too
-        foreach (var txt in Textures)
+        foreach (var txt in Textures ?? [])
         {
+            if (txt == null)
+                continue;
             txt.Number = Number;
             txt.TypeNumeric = TypeNumeric;
         }
@@ -763,6 +795,7 @@ public class GDrawable : INotifyPropertyChanged
 
         OnPropertyChanged(nameof(Flags));
         OnPropertyChanged(nameof(FlagsText));
+        SynchronizeAvailableFlags();
     }
 
     private void OnSelectedFlagItemPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -771,6 +804,7 @@ public class GDrawable : INotifyPropertyChanged
         {
             OnPropertyChanged(nameof(Flags));
             OnPropertyChanged(nameof(FlagsText));
+            SynchronizeAvailableFlags();
         }
     }
 
@@ -809,12 +843,12 @@ public class GDrawable : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
-    private async Task<GDrawableDetails?> LoadDrawableDetailsWithConcurrencyControl()
+    private async Task<GDrawableDetails?> LoadDrawableDetailsWithConcurrencyControl(string filePath)
     {
         await _semaphore.WaitAsync();
         try
         {
-            return await GetDrawableDetailsAsync();
+            return await GetDrawableDetailsAsync(filePath);
         }
         finally
         {
@@ -846,15 +880,15 @@ public class GDrawable : INotifyPropertyChanged
         return magic != MagicRsc7;
     }
 
-    private async Task<GDrawableDetails?> GetDrawableDetailsAsync()
+    private async Task<GDrawableDetails?> GetDrawableDetailsAsync(string filePath)
     {
-        if (IsDrawableEncrypted(FullFilePath))
+        if (IsDrawableEncrypted(filePath))
         {
             IsEncrypted = true;
             return null;
         }
 
-        var bytes = await File.ReadAllBytesAsync(FullFilePath);
+        var bytes = await File.ReadAllBytesAsync(filePath);
 
         var yddFile = new YddFile();
         try

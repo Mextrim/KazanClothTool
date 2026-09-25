@@ -183,31 +183,49 @@ public class GTexture : INotifyPropertyChanged
                 var fullPath = FileHelper.ResolveFilePath(filePath);
                 Task<GTextureDetails?> _textureDetailsTask = LoadTextureDetailsWithConcurrencyControl(fullPath).ContinueWith(t =>
                 {
-                    if (t.IsFaulted)
+                    void ApplyResult()
                     {
-                        LogHelper.Log($"Не удалось загрузить сведения о текстуре «{DisplayName}»: {t.Exception?.InnerException?.Message ?? t.Exception?.Message}", Views.LogType.Warning);
-                        IsPreviewDisabled = true;
+                        if (t.IsFaulted)
+                        {
+                            LogHelper.Log($"Не удалось загрузить сведения о текстуре «{DisplayName}»: {t.Exception?.InnerException?.Message ?? t.Exception?.Message}", Views.LogType.Warning);
+                            IsPreviewDisabled = true;
+                            IsLoading = false;
+                            return;
+                        }
+
+                        if (t.Status == TaskStatus.RanToCompletion)
+                        {
+                            if (t.Result == null)
+                            {
+                                IsPreviewDisabled = true;
+                            }
+                            else
+                            {
+                                TxtDetails = t.Result;
+                                OnPropertyChanged(nameof(TxtDetails));
+                                TxtDetails.Validate();
+                            }
+                        }
+
                         IsLoading = false;
-                        return null;
                     }
 
-                    IsLoading = false; // Loading finished
-                if (t.Status == TaskStatus.RanToCompletion)
-                {
-                    if (t.Result == null)
+                    var dispatcher = Application.Current?.Dispatcher;
+                    if (dispatcher == null || dispatcher.HasShutdownStarted || dispatcher.HasShutdownFinished)
                     {
-                        IsPreviewDisabled = true;
-                        return null;
+                        ApplyResult();
+                    }
+                    else if (dispatcher.CheckAccess())
+                    {
+                        ApplyResult();
+                    }
+                    else
+                    {
+                        dispatcher.BeginInvoke(new Action(ApplyResult));
                     }
 
-                    TxtDetails = t.Result;
-                    OnPropertyChanged(nameof(TxtDetails));
-
-                    TxtDetails.Validate();
-                }
-
-                return t.Result;
-            });
+                    return t.Status == TaskStatus.RanToCompletion ? t.Result : null;
+                });
             }
             catch (Exception ex)
             {
@@ -223,9 +241,11 @@ public class GTexture : INotifyPropertyChanged
         if (ImageThumbnail != null)
             return;
 
+        string fullPath;
         try
         {
-            if (FilePath == null || !File.Exists(FullFilePath))
+            fullPath = FullFilePath;
+            if (FilePath == null || !File.Exists(fullPath))
                 return;
         }
         catch (Exception ex)
@@ -239,7 +259,7 @@ public class GTexture : INotifyPropertyChanged
         {
             try
             {
-                using MagickImage img = ImgHelper.GetImage(FullFilePath);
+                using MagickImage img = ImgHelper.GetImage(fullPath);
                 if (img == null)
                     return;
 
@@ -257,7 +277,13 @@ public class GTexture : INotifyPropertyChanged
                 Marshal.Copy(pixels, 0, bitmapData.Scan0, pixels.Length);
                 bitmap.UnlockBits(bitmapData);
 
-                Application.Current.Dispatcher.Invoke(() =>
+                var dispatcher = Application.Current?.Dispatcher;
+                if (dispatcher == null || dispatcher.HasShutdownStarted || dispatcher.HasShutdownFinished)
+                {
+                    return;
+                }
+
+                void SetThumbnail()
                 {
                     var source = BitmapSource.Create(
                         bitmap.Width,
@@ -270,7 +296,16 @@ public class GTexture : INotifyPropertyChanged
                     );
                     source.Freeze();
                     ImageThumbnail = source;
-                });
+                }
+
+                if (dispatcher.CheckAccess())
+                {
+                    SetThumbnail();
+                }
+                else
+                {
+                    dispatcher.Invoke(SetThumbnail);
+                }
             }
             catch (Exception ex)
             {
@@ -295,11 +330,12 @@ public class GTexture : INotifyPropertyChanged
 
     public async Task LoadDetails()
     {
-        if (File.Exists(FullFilePath))
+        string fullPath = FullFilePath;
+        if (File.Exists(fullPath))
         {
             try
             {
-                var result = await LoadTextureDetailsWithConcurrencyControl(FullFilePath);
+                var result = await LoadTextureDetailsWithConcurrencyControl(fullPath);
                 if (result != null)
                 {
                     TxtDetails = result;

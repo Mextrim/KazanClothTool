@@ -188,13 +188,18 @@ public partial class GroupEditor : UserControl
             return;
 
         groupName = groupName.Trim();
-        
+        if (!SimplePathBuilder.TryNormalizeGroupPath(groupName, out string normalizedGroup))
+        {
+            SuggestionsPopup.IsOpen = false;
+            return;
+        }
+
         _isUpdatingTextBox = true;
-        Group = groupName;
-        GroupInputBox.Text = groupName;
+        Group = normalizedGroup;
+        GroupInputBox.Text = normalizedGroup;
         _isUpdatingTextBox = false;
         
-        GroupManager.Instance.AddGroup(groupName);
+        GroupManager.Instance.AddGroup(normalizedGroup);
 
         SuggestionsPopup.IsOpen = false;
         
@@ -213,12 +218,18 @@ public partial class GroupEditor : UserControl
         }
 
         groupName = groupName.Trim();
-        
+        if (!SimplePathBuilder.TryNormalizeGroupPath(groupName, out string normalizedGroup))
+        {
+            SuggestionsPopup.IsOpen = false;
+            return;
+        }
+
         _isUpdatingTextBox = true;
-        Group = groupName;
+        Group = normalizedGroup;
+        GroupInputBox.Text = normalizedGroup;
         _isUpdatingTextBox = false;
         
-        GroupManager.Instance.AddGroup(groupName);
+        GroupManager.Instance.AddGroup(normalizedGroup);
         GroupChanged?.Invoke(this, EventArgs.Empty);
     }
 }

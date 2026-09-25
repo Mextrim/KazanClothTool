@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using grzyClothTool.Constants;
@@ -90,6 +91,11 @@ public static class FileHelper
         if (string.IsNullOrWhiteSpace(projectsFolder) || string.IsNullOrWhiteSpace(projectName))
         {
             throw new InvalidOperationException("Папка проектов или название проекта не настроены.");
+        }
+
+        if (Path.IsPathRooted(projectName) || projectName.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries).Any(segment => segment is "." or ".."))
+        {
+            throw new InvalidOperationException("Название проекта содержит недопустимый путь.");
         }
 
         string normalizedRoot = Path.GetFullPath(projectsFolder)
@@ -407,6 +413,9 @@ public static class FileHelper
 
     public static void OpenFileLocation(string path)
     {
+        if (string.IsNullOrWhiteSpace(path))
+            return;
+
         try
         {
             Process.Start("explorer.exe", $"/select, \"{path}\"");
@@ -523,10 +532,12 @@ public static class FileHelper
 
     public static async Task SaveTexturesAsync(List<GTexture> textures, string folderPath, string format)
     {
+        if (textures == null)
+            throw new ArgumentNullException(nameof(textures));
+
         Directory.CreateDirectory(folderPath);
 
-        // Determine file extension
-        string fileExtension = format.ToUpper() switch
+        string fileExtension = format.ToUpperInvariant() switch
         {
             "DDS" => ".dds",
             "PNG" => ".png",
@@ -535,96 +546,91 @@ public static class FileHelper
         };
 
         ProgressHelper.Start("Начато экспортирование текстур");
-
         int successfulExports = 0;
 
-        // Process each texture asynchronously and save it to the specified folder
-        var tasks = textures.Select(async texture =>
+        try
         {
-            string filePath = Path.Combine(folderPath, $"{texture.GetBuildName()}{fileExtension}");
-
-            // check if file exists
-            if (File.Exists(filePath))
+            var tasks = textures.Select(async texture =>
             {
-                LogHelper.Log($"Не удалось сохранить текстуру: {texture.DisplayName}. Ошибка: файл уже существует.", LogType.Error);
-                return;
-            }
-             
-            if (fileExtension == ".ytd") 
-            {
-                // For YTD, simply copy the file
                 try
                 {
-                    await CopyAsync(texture.FullFilePath, filePath);
-                    successfulExports++;
-                } 
-                catch (Exception ex)
-                {
-                    // Log the error and continue processing other textures
-                    LogHelper.Log($"Не удалось сохранить текстуру: {texture.DisplayName}. Ошибка: {ex.Message}.", LogType.Error);
-                } 
-            }
-            else
-            {
-                using var image = ImgHelper.GetImage(texture.FullFilePath);
-                image.Format = format.ToUpper() switch
-                {
-                    "DDS" => MagickFormat.Dds,
-                    "PNG" => MagickFormat.Png,
-                    _ => throw new ArgumentException($"Неподдерживаемый формат для MagickImage: {format}", nameof(format))
-                };
+                    string filePath = Path.Combine(folderPath, $"{texture.GetBuildName()}{fileExtension}");
 
-                try
-                {
-                    await File.WriteAllBytesAsync(filePath, image.ToByteArray());
-                    successfulExports++;
+                    if (File.Exists(filePath))
+                    {
+                        LogHelper.Log($"Не удалось сохранить текстуру: {texture.DisplayName}. Ошибка: файл уже существует.", LogType.Error);
+                        return;
+                    }
+
+                    if (fileExtension == ".ytd")
+                    {
+                        await CopyAsync(texture.FullFilePath, filePath);
+                    }
+                    else
+                    {
+                        using var image = ImgHelper.GetImage(texture.FullFilePath);
+                        image.Format = format.ToUpperInvariant() switch
+                        {
+                            "DDS" => MagickFormat.Dds,
+                            "PNG" => MagickFormat.Png,
+                            _ => throw new ArgumentException($"Неподдерживаемый формат для MagickImage: {format}", nameof(format))
+                        };
+                        await File.WriteAllBytesAsync(filePath, image.ToByteArray());
+                    }
+
+                    Interlocked.Increment(ref successfulExports);
                 }
                 catch (Exception ex)
                 {
-                    // Log the error and continue processing other textures
-                    LogHelper.Log($"Не удалось сохранить текстуру: {texture.DisplayName}. Ошибка: {ex.Message}.", LogType.Error);
+                    LogHelper.Log($"Не удалось сохранить текстуру: {texture?.DisplayName}. Ошибка: {ex.Message}.", LogType.Error);
                 }
-            }
-        });
+            });
 
-        await Task.WhenAll(tasks);
-
-        ProgressHelper.Stop($"Экспортировано текстур: {successfulExports}. Время: {{0}}", true);
+            await Task.WhenAll(tasks);
+        }
+        finally
+        {
+            ProgressHelper.Stop($"Экспортировано текстур: {successfulExports}. Время: {{0}}", true);
+        }
     }
 
     public static async Task SaveDrawablesAsync(List<GDrawable> drawables, string folderPath)
     {
+        if (drawables == null)
+            throw new ArgumentNullException(nameof(drawables));
+
         Directory.CreateDirectory(folderPath);
         ProgressHelper.Start("Начато экспортирование одежды");
-
         int successfulExports = 0;
 
-        // Process each drawable asynchronously and save it to the specified folder
-        var tasks = drawables.Select(async drawable =>
+        try
         {
-            string filePath = Path.Combine(folderPath, $"{drawable.Name}{Path.GetExtension(drawable.FullFilePath)}");
-
-            // check if file exists
-            if (File.Exists(filePath))
+            var tasks = drawables.Select(async drawable =>
             {
-                LogHelper.Log($"Не удалось сохранить элемент одежды: {drawable.Name}. Ошибка: файл уже существует.", LogType.Error);
-                return;
-            }
+                try
+                {
+                    string filePath = Path.Combine(folderPath, $"{drawable.Name}{Path.GetExtension(drawable.FullFilePath)}");
 
-            try
-            {
-                await CopyAsync(drawable.FullFilePath, filePath);
-                successfulExports++;
-            }
-            catch (Exception ex)
-            {
-                // Log the error and continue processing other drawables
-                LogHelper.Log($"Не удалось сохранить элемент одежды: {drawable.Name}. Ошибка: {ex.Message}.", LogType.Error);
-            }
-        });
+                    if (File.Exists(filePath))
+                    {
+                        LogHelper.Log($"Не удалось сохранить элемент одежды: {drawable.Name}. Ошибка: файл уже существует.", LogType.Error);
+                        return;
+                    }
 
-        await Task.WhenAll(tasks);
+                    await CopyAsync(drawable.FullFilePath, filePath);
+                    Interlocked.Increment(ref successfulExports);
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Log($"Не удалось сохранить элемент одежды: {drawable?.Name}. Ошибка: {ex.Message}.", LogType.Error);
+                }
+            });
 
-        ProgressHelper.Stop($"Экспортировано элементов одежды: {successfulExports}. Время: {{0}}", true);
+            await Task.WhenAll(tasks);
+        }
+        finally
+        {
+            ProgressHelper.Stop($"Экспортировано элементов одежды: {successfulExports}. Время: {{0}}", true);
+        }
     }
 }

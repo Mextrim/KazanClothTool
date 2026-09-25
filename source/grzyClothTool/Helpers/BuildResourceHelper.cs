@@ -1,10 +1,11 @@
-﻿using CodeWalker.GameFiles;
+using CodeWalker.GameFiles;
 using CodeWalker.Utils;
 using grzyClothTool.Constants;
 using grzyClothTool.Models;
 using grzyClothTool.Models.Drawable;
 using grzyClothTool.Views;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,15 +26,18 @@ public class BuildResourceHelper
     private string _buildPath;
     private readonly string _baseBuildPath;
     private readonly bool _splitAddons;
+    private readonly bool _markOutputDirectory;
     private readonly IProgress<int> _progress;
 
     private readonly string _buildTempFolderPath;
     private readonly bool shouldUseNumber = false;
 
-    private readonly List<string> firstPersonFiles = [];
+    private const string BuildOutputMarkerFileName = ".kct-build-output";
+    private const string BuildOutputMarkerValue = "KazanClothTool.BuildOutput.v1";
+    private readonly ConcurrentBag<string> firstPersonFiles = [];
     private BuildResourceType _buildResourceType;
 
-    public BuildResourceHelper(string name, string path, IProgress<int> progress, BuildResourceType resourceType, bool splitAddons)
+    public BuildResourceHelper(string name, string path, IProgress<int> progress, BuildResourceType resourceType, bool splitAddons, bool markOutputDirectory = true)
     {
         _projectName = name;
         _buildPath = path;
@@ -41,6 +45,7 @@ public class BuildResourceHelper
         _progress = progress;
         _buildResourceType = resourceType;
         _splitAddons = splitAddons;
+        _markOutputDirectory = markOutputDirectory;
 
         shouldUseNumber = MainWindow.AddonManager.Addons.Count > 1;
 
@@ -495,6 +500,8 @@ public class BuildResourceHelper
 
     public async Task BuildSingleplayerResource()
     {
+        CleanupBuildOutputDirectory();
+
         string dlcRpfPath = Path.Combine(_buildPath, "dlc.rpf");
         if (File.Exists(dlcRpfPath))
         {
@@ -562,6 +569,7 @@ public class BuildResourceHelper
     private List<RbfFile> BuildContentXml(RpfDirectoryEntry dir)
     {
         StringBuilder sb = new();
+        string xmlProjectName = System.Security.SecurityElement.Escape(_projectName) ?? _projectName;
 
         sb.AppendLine($"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         sb.AppendLine($"<CDataFileMgr__ContentsOfDataFileXml>");
@@ -577,7 +585,7 @@ public class BuildResourceHelper
             if (addon.HasSex(SexType.male))
             {
                 sb.AppendLine($"    <Item>");
-                sb.AppendLine($"      <filename>dlc_{_projectName}:/common/data/mp_m_freemode_01_{_projectName}.meta</filename>");
+                sb.AppendLine($"      <filename>dlc_{xmlProjectName}:/common/data/mp_m_freemode_01_{xmlProjectName}.meta</filename>");
                 sb.AppendLine($"      <fileType>SHOP_PED_APPAREL_META_FILE</fileType>");
                 sb.AppendLine($"      <overlay value=\"false\" />");
                 sb.AppendLine($"      <disabled value=\"true\" />");
@@ -585,7 +593,7 @@ public class BuildResourceHelper
                 sb.AppendLine($"    </Item>");
 
                 sb.AppendLine($"    <Item>");
-                sb.AppendLine($"      <filename>dlc_{_projectName}:/%PLATFORM%/models/cdimages/{_projectName}_male.rpf</filename>");
+                sb.AppendLine($"      <filename>dlc_{xmlProjectName}:/%PLATFORM%/models/cdimages/{xmlProjectName}_male.rpf</filename>");
                 sb.AppendLine($"      <fileType>RPF_FILE</fileType>");
                 sb.AppendLine($"      <overlay value=\"false\" />");
                 sb.AppendLine($"      <disabled value=\"true\" />");
@@ -598,7 +606,7 @@ public class BuildResourceHelper
                 if (addon.HasProps())
                 {
                     sb.AppendLine($"    <Item>");
-                    sb.AppendLine($"      <filename>dlc_{_projectName}:/%PLATFORM%/models/cdimages/{_projectName}_male_p.rpf</filename>");
+                    sb.AppendLine($"      <filename>dlc_{xmlProjectName}:/%PLATFORM%/models/cdimages/{xmlProjectName}_male_p.rpf</filename>");
                     sb.AppendLine($"      <fileType>RPF_FILE</fileType>");
                     sb.AppendLine($"      <overlay value=\"false\" />");
                     sb.AppendLine($"      <disabled value=\"true\" />");
@@ -620,7 +628,7 @@ public class BuildResourceHelper
             if (addon.HasSex(SexType.female))
             {
                 sb.AppendLine($"    <Item>");
-                sb.AppendLine($"      <filename>dlc_{_projectName}:/common/data/mp_f_freemode_01_{_projectName}.meta</filename>");
+                sb.AppendLine($"      <filename>dlc_{xmlProjectName}:/common/data/mp_f_freemode_01_{xmlProjectName}.meta</filename>");
                 sb.AppendLine($"      <fileType>SHOP_PED_APPAREL_META_FILE</fileType>");
                 sb.AppendLine($"      <overlay value=\"false\" />");
                 sb.AppendLine($"      <disabled value=\"true\" />");
@@ -628,7 +636,7 @@ public class BuildResourceHelper
                 sb.AppendLine($"    </Item>");
 
                 sb.AppendLine($"    <Item>");
-                sb.AppendLine($"      <filename>dlc_{_projectName}:/%PLATFORM%/models/cdimages/{_projectName}_female.rpf</filename>");
+                sb.AppendLine($"      <filename>dlc_{xmlProjectName}:/%PLATFORM%/models/cdimages/{xmlProjectName}_female.rpf</filename>");
                 sb.AppendLine($"      <fileType>RPF_FILE</fileType>");
                 sb.AppendLine($"      <overlay value=\"false\" />");
                 sb.AppendLine($"      <disabled value=\"true\" />");
@@ -641,7 +649,7 @@ public class BuildResourceHelper
                 if (addon.HasProps())
                 {
                     sb.AppendLine($"    <Item>");
-                    sb.AppendLine($"      <filename>dlc_{_projectName}:/%PLATFORM%/models/cdimages/{_projectName}_female_p.rpf</filename>");
+                    sb.AppendLine($"      <filename>dlc_{xmlProjectName}:/%PLATFORM%/models/cdimages/{xmlProjectName}_female_p.rpf</filename>");
                     sb.AppendLine($"      <fileType>RPF_FILE</fileType>");
                     sb.AppendLine($"      <overlay value=\"false\" />");
                     sb.AppendLine($"      <disabled value=\"true\" />");
@@ -664,7 +672,7 @@ public class BuildResourceHelper
         if (generatedCreatureMetadatas.Count > 0)
         {
             sb.AppendLine($"    <Item>");
-            sb.AppendLine($"      <filename>dlc_{_projectName}:/%PLATFORM%/anim/creaturemetadata.rpf</filename>");
+            sb.AppendLine($"      <filename>dlc_{xmlProjectName}:/%PLATFORM%/anim/creaturemetadata.rpf</filename>");
             sb.AppendLine($"      <fileType>RPF_FILE</fileType>");
             sb.AppendLine($"      <overlay value=\"false\" />");
             sb.AppendLine($"      <disabled value=\"true\" />");
@@ -1264,12 +1272,19 @@ public class BuildResourceHelper
     {
         try
         {
+            if (dr == null)
+                throw new InvalidOperationException("Элемент одежды не найден.");
+
             string inputPath = dr.FullFilePath;
             string uniqueFileName = $"{dr.Id}_{Path.GetFileName(inputPath)}";
             string outputPath = Path.Combine(_buildTempFolderPath, uniqueFileName);
 
             // If drawable is encrypted or has no embedded textures, just copy the original file without processing
-            if (dr?.IsEncrypted == true || dr.Details?.EmbeddedTextures == null || dr.Details.EmbeddedTextures.Count == 0 || dr.Details.EmbeddedTextures.All(x => x.Value.Details.Width == 0))
+            if (dr == null || string.IsNullOrWhiteSpace(inputPath))
+                throw new InvalidOperationException("Элемент одежды не содержит доступного пути к файлу.");
+
+            if (dr.IsEncrypted || dr.Details?.EmbeddedTextures == null || dr.Details.EmbeddedTextures.Count == 0 ||
+                dr.Details.EmbeddedTextures.All(x => x.Value?.Details == null || x.Value.Details.Width == 0))
             {
                 return inputPath;
             }
@@ -1277,8 +1292,9 @@ public class BuildResourceHelper
             var texturesToProcess = dr.Details.EmbeddedTextures.Where(kvp =>
             {
                 var embeddedDto = kvp.Value;
-                return embeddedDto.IsOptimizedDuringBuild || embeddedDto.HasReplacement || embeddedDto.OriginalName != embeddedDto.Details.Name;
-            });
+                return embeddedDto?.Details != null &&
+                       (embeddedDto.IsOptimizedDuringBuild || embeddedDto.HasReplacement || embeddedDto.OriginalName != embeddedDto.Details.Name);
+            }).ToList();
 
             if (!texturesToProcess.Any())
             {
@@ -1310,6 +1326,8 @@ public class BuildResourceHelper
             foreach (var kvp in texturesToProcess)
             {
                 var embeddedDto = kvp.Value;
+                if (embeddedDto?.Details == null)
+                    continue;
 
                 var originalTexturePair = drawable.ShaderGroup.TextureDictionary.Dict
                     .FirstOrDefault(x => x.Value?.Name == embeddedDto.OriginalName);
@@ -1317,6 +1335,12 @@ public class BuildResourceHelper
                 // If original texture doesn't exist but we have a replacement, add it as new texture
                 if (originalTexturePair.Value == null && embeddedDto.HasReplacement)
                 {
+                    if (embeddedDto.ReplacementTextureData == null)
+                    {
+                        LogHelper.Log($"Пропущена встроенная текстура без данных: {embeddedDto.Details.Name}", LogType.Warning);
+                        continue;
+                    }
+
                     Texture newTexture;
                     if (embeddedDto.IsOptimizedDuringBuild)
                     {
@@ -1379,6 +1403,12 @@ public class BuildResourceHelper
                 if (originalTexturePair.Value == null)
                 {
                     LogHelper.Log($"Исходная текстура «{embeddedDto.OriginalName}» не найдена в TextureDictionary для элемента одежды {dr.Name}. Пропуск.", LogType.Warning);
+                    continue;
+                }
+
+                if (embeddedDto.HasReplacement && embeddedDto.ReplacementTextureData == null)
+                {
+                    LogHelper.Log($"Пропущена встроенная текстура без данных: {embeddedDto.Details.Name}", LogType.Warning);
                     continue;
                 }
 
@@ -1471,7 +1501,7 @@ public class BuildResourceHelper
         }
         catch (Exception ex)
         {
-            LogHelper.Log($"При обработке файла {dr.Name} произошла ошибка:\n{ex}", Views.LogType.Error);
+            LogHelper.Log($"При обработке файла {dr?.Name ?? "<null>"} произошла ошибка:\n{ex}", Views.LogType.Error);
             throw;
         }
     }
@@ -1506,42 +1536,50 @@ public class BuildResourceHelper
 
     private void CleanupBuildOutputDirectory()
     {
-        try
+        string outputPath = Path.GetFullPath(_baseBuildPath);
+        string? root = Path.GetPathRoot(outputPath);
+        if (string.IsNullOrWhiteSpace(root) || string.Equals(outputPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar),
+                root.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar), StringComparison.OrdinalIgnoreCase))
         {
-            // only delete if the path explicitly ends with "build_output"
-            if (!_baseBuildPath.EndsWith("build_output", StringComparison.OrdinalIgnoreCase))
-            {
-                LogHelper.Log($"Очистка пропущена: путь сборки не заканчивается на 'build_output'. Путь: {_baseBuildPath}", LogType.Warning);
-                return;
-            }
-
-            // ensure the path is not a root directory
-            if (Path.GetPathRoot(_baseBuildPath) == _baseBuildPath)
-            {
-                LogHelper.Log($"Очистка пропущена: нельзя удалить корневой каталог. Путь: {_baseBuildPath}", LogType.Warning);
-                return;
-            }
-
-            if (Directory.Exists(_baseBuildPath))
-            {
-                try
-                {
-                    Directory.Delete(_baseBuildPath, true);
-                    LogHelper.Log($"Удалён существующий каталог вывода сборки: {_baseBuildPath}", LogType.Info);
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.Log($"Не удалось удалить каталог вывода сборки: {ex.Message}", LogType.Warning);
-                }
-            }
-
-            Directory.CreateDirectory(_baseBuildPath);
+            throw new InvalidOperationException("Нельзя использовать корневой каталог как папку вывода сборки.");
         }
-        catch (Exception ex)
+
+        string markerPath = Path.Combine(outputPath, BuildOutputMarkerFileName);
+        if (Directory.Exists(outputPath))
         {
-            LogHelper.Log($"Ошибка очистки вывода сборки: {ex.Message}", LogType.Warning);
+            if (File.Exists(markerPath))
+            {
+                string marker = File.ReadAllText(markerPath).Trim();
+                if (!string.Equals(marker, BuildOutputMarkerValue, StringComparison.Ordinal))
+                {
+                    throw new InvalidOperationException("Папка вывода помечена неизвестным форматом и не будет очищена.");
+                }
+
+                Directory.Delete(outputPath, true);
+                LogHelper.Log($"Удалён управляемый каталог вывода сборки: {outputPath}", LogType.Info);
+            }
+            else if (Directory.EnumerateFileSystemEntries(outputPath).Any())
+            {
+                throw new InvalidOperationException(
+                    "Папка вывода не пуста и не принадлежит KazanClothTool. Выберите отдельную пустую папку для сборки.");
+            }
+        }
+        else if (File.Exists(outputPath))
+        {
+            throw new InvalidOperationException("Путь вывода сборки является файлом.");
+        }
+
+        Directory.CreateDirectory(outputPath);
+        if (_markOutputDirectory)
+        {
+            File.WriteAllText(markerPath, BuildOutputMarkerValue);
         }
     }
+    public void CleanupTemporaryFiles()
+    {
+        CleanupBuildTempDirectory();
+    }
+
     private void CleanupBuildTempDirectory()
     {
         try

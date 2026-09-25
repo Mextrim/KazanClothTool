@@ -66,7 +66,12 @@ public static class ProgressHelper
 
     private static string StopTimer()
     {
+        if (timer == null)
+            return "00:00:00.000";
+
         timer.Stop();
-        return timer.Elapsed.ToString(@"hh\:mm\:ss\.fff");
+        string result = timer.Elapsed.ToString(@"hh\:mm\:ss\.fff");
+        timer = null;
+        return result;
     }
 }

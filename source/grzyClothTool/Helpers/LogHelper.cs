@@ -12,8 +12,37 @@ public class LogMessageEventArgs : EventArgs
 
 public static class LogHelper
 {
+    static LogHelper()
+    {
+        LocalizationHelper.LanguageChanged += (_, _) => RelocalizeOpenMessages();
+    }
+
     private static LogWindow _logWindow;
     public static event EventHandler<LogMessageEventArgs> LogMessageCreated;
+
+    private static void RelocalizeOpenMessages()
+    {
+        LogWindow? window = _logWindow;
+        if (window == null || window.Dispatcher.HasShutdownStarted || window.Dispatcher.HasShutdownFinished)
+            return;
+
+        void Relocalize()
+        {
+            foreach (LogMessage logMessage in window.LogMessages)
+            {
+                logMessage.Message = LocalizationHelper.Translate(logMessage.OriginalMessage);
+            }
+        }
+
+        if (window.Dispatcher.CheckAccess())
+        {
+            Relocalize();
+        }
+        else
+        {
+            window.Dispatcher.BeginInvoke(new Action(Relocalize));
+        }
+    }
 
     public static void Init()
     {
@@ -22,24 +51,38 @@ public static class LogHelper
 
     public static void Log(string message, LogType logtype = LogType.Info)
     {
-        if (_logWindow == null)
+        LogWindow? window = _logWindow;
+        if (window == null)
             return;
 
-        _logWindow.Dispatcher.Invoke(() =>
+        var dispatcher = window.Dispatcher;
+        if (dispatcher.HasShutdownStarted || dispatcher.HasShutdownFinished)
+            return;
+
+        void AppendLog()
         {
             var timestamp = DateTime.Now.ToString("HH:mm:ss");
             var type = GetLogTypeIcon(logtype);
             string localizedMessage = LocalizationHelper.Translate(message);
 
-            _logWindow.LogMessages.Add(new LogMessage
+            window.LogMessages.Add(new LogMessage
             {
                 TypeIcon = type,
                 OriginalMessage = message,
                 Message = localizedMessage,
                 Timestamp = timestamp
             });
-            LogMessageCreated?.Invoke(_logWindow, new LogMessageEventArgs { TypeIcon = type, Message = localizedMessage });
-        });
+            LogMessageCreated?.Invoke(window, new LogMessageEventArgs { TypeIcon = type, Message = localizedMessage });
+        }
+
+        if (dispatcher.CheckAccess())
+        {
+            AppendLog();
+        }
+        else
+        {
+            dispatcher.BeginInvoke(new Action(AppendLog));
+        }
     }
 
     public static string GetLogTypeIcon(LogType type)
@@ -73,8 +116,15 @@ public static class LogHelper
 
     public static void Close()
     {
-        _logWindow.Closing -= _logWindow.LogWindow_Closing;
-        _logWindow.Close();
+        LogWindow? window = _logWindow;
         _logWindow = null;
+        if (window == null)
+            return;
+
+        window.Closing -= window.LogWindow_Closing;
+        if (!window.Dispatcher.HasShutdownStarted && !window.Dispatcher.HasShutdownFinished)
+        {
+            window.Close();
+        }
     }
 }

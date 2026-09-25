@@ -23,7 +23,10 @@ public class GroupManager : INotifyPropertyChanged
             return;
 
         groupPath = groupPath.Trim();
-        
+        if (!SimplePathBuilder.TryNormalizeGroupPath(groupPath, out string normalizedGroup))
+            return;
+
+        groupPath = normalizedGroup;
         var groups = MainWindow.AddonManager?.Groups;
         if (groups != null && !groups.Contains(groupPath))
         {

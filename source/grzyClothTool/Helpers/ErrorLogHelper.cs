@@ -32,10 +32,13 @@ public static class ErrorLogHelper
                 }
 
                 logEntry += "\n" + new string('-', 80) + "\n";
-
                 File.AppendAllText(logFilePath, logEntry);
-                LogHelper.Log(message, Views.LogType.Warning);
             }
+
+            // Do not hold the file lock while dispatching to the UI. A
+            // background error logger must never wait on a UI thread that is
+            // itself trying to log an error.
+            LogHelper.Log(message, Views.LogType.Warning);
         }
         catch
         {

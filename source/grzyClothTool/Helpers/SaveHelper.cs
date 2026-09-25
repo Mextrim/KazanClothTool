@@ -1,4 +1,5 @@
 ﻿using grzyClothTool.Models;
+using grzyClothTool.Models.Drawable;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -33,7 +34,15 @@ public class SaveFile
             if (string.IsNullOrEmpty(mainProjectsFolder) || string.IsNullOrEmpty(projectName))
                 return false;
                 
-            var projectPath = Path.Combine(mainProjectsFolder, projectName.Trim());
+            string projectPath;
+            try
+            {
+                projectPath = GetProjectFolderSafe(mainProjectsFolder, projectName);
+            }
+            catch
+            {
+                return false;
+            }
             
             if (File.Exists(Path.Combine(projectPath, AutoSaveFileName)))
                 return true;
@@ -48,16 +57,18 @@ public class SaveFile
         }
 
     public static string SavesPath { get; private set; }
-    private static Timer _timer;
-    public static event Action SaveCreated;
+    private static Timer? _timer;
+    public static event Action? SaveCreated;
 
-    public static event Action<double> AutoSaveProgress;
-    public static event Action<int> RemainingSecondsChanged;
+    public static event Action<double>? AutoSaveProgress;
+    public static event Action<int>? RemainingSecondsChanged;
     private static int _autoSaveInterval = 60000; // 60 seconds
     private static int _elapsedTime = 0;
 
     private static readonly SemaphoreSlim _semaphore = new(1, 1);
     private static int _changeVersion;
+    private static int _shutdownRequested;
+    private static int _autoSaveTickRunning;
 
     private static bool _hasUnsavedChanges;
     private static int _pauseCount;
@@ -110,91 +121,139 @@ public class SaveFile
 
     public static void Init()
     {
+        Interlocked.Exchange(ref _shutdownRequested, 0);
         if (_timer != null)
         {
             return;
         }
 
-        _timer = new Timer(1000);
+        _timer = new Timer(1000)
+        {
+            AutoReset = true
+        };
         _timer.Elapsed += OnAutoSaveTick;
-        _timer.AutoReset = true;
         _timer.Start();
     }
 
     public static void Shutdown()
     {
-        _timer?.Stop();
-        _timer?.Dispose();
-        _timer = null;
+        Interlocked.Exchange(ref _shutdownRequested, 1);
+
+        Timer? timer = Interlocked.Exchange(ref _timer, null);
+        timer?.Stop();
+        timer?.Dispose();
+        _elapsedTime = 0;
     }
 
-    private static async void OnAutoSaveTick(object sender, System.Timers.ElapsedEventArgs e)
+    private static void OnAutoSaveTick(object? sender, System.Timers.ElapsedEventArgs e)
     {
-        if (SavingPaused || !HasUnsavedChanges)
-        {
-            _elapsedTime = 0;
-            AutoSaveProgress?.Invoke(0);
-            RemainingSecondsChanged?.Invoke(0);
-            return;
-        }
-
-        _elapsedTime += (int)_timer.Interval;
-        double percentage = ((double)_elapsedTime / _autoSaveInterval) * 75.0;
-        int remainingSeconds = Math.Max(0, (_autoSaveInterval - _elapsedTime) / 1000);
-        
-        if (_elapsedTime >= _autoSaveInterval)
-        {
-            _elapsedTime = 0;
-            await SaveAsync();
-            RemainingSecondsChanged?.Invoke(0);
-            return;
-        }
-        AutoSaveProgress?.Invoke(percentage);
-        RemainingSecondsChanged?.Invoke(remainingSeconds);
+        _ = HandleAutoSaveTickAsync();
     }
 
-    public static async Task SaveAsync()
+    private static async Task HandleAutoSaveTickAsync()
+    {
+        if (Interlocked.Exchange(ref _autoSaveTickRunning, 1) != 0)
+        {
+            return;
+        }
+
+        try
+        {
+            Timer? timer = _timer;
+            if (timer == null || Volatile.Read(ref _shutdownRequested) != 0)
+            {
+                return;
+            }
+
+            if (SavingPaused || !HasUnsavedChanges)
+            {
+                _elapsedTime = 0;
+                AutoSaveProgress?.Invoke(0);
+                RemainingSecondsChanged?.Invoke(0);
+                return;
+            }
+
+            _elapsedTime += (int)timer.Interval;
+            double percentage = ((double)_elapsedTime / _autoSaveInterval) * 75.0;
+            int remainingSeconds = Math.Max(0, (_autoSaveInterval - _elapsedTime) / 1000);
+
+            if (_elapsedTime >= _autoSaveInterval)
+            {
+                _elapsedTime = 0;
+                await SaveAsync();
+                if (Volatile.Read(ref _shutdownRequested) == 0)
+                {
+                    RemainingSecondsChanged?.Invoke(0);
+                }
+                return;
+            }
+
+            AutoSaveProgress?.Invoke(percentage);
+            RemainingSecondsChanged?.Invoke(remainingSeconds);
+        }
+        catch (Exception ex)
+        {
+            LogHelper.Log($"Ошибка автосохранения: {ex.Message}", Views.LogType.Error);
+        }
+        finally
+        {
+            Interlocked.Exchange(ref _autoSaveTickRunning, 0);
+        }
+    }
+
+    /// <summary>
+    /// Saves the current project. Explicit user/project-operation saves use
+    /// <paramref name="force"/> so progress scopes cannot silently turn Ctrl+S
+    /// or a required save into a no-op.
+    /// </summary>
+    public static async Task<bool> SaveAsync(bool force = false)
     {
         var mainWindow = MainWindow.Instance;
-        if (!HasUnsavedChanges || SavingPaused || mainWindow == null || MainWindow.AddonManager == null)
+        AddonManager? manager = MainWindow.AddonManager;
+        if (!HasUnsavedChanges || mainWindow == null || manager == null ||
+            Volatile.Read(ref _shutdownRequested) != 0 ||
+            (!force && SavingPaused))
         {
-            return;
+            return false;
         }
 
         await _semaphore.WaitAsync();
         try
         {
-            if (!HasUnsavedChanges || SavingPaused)
+            if (!HasUnsavedChanges || Volatile.Read(ref _shutdownRequested) != 0 || (!force && SavingPaused))
             {
-                return;
+                return false;
             }
 
             var timer = Stopwatch.StartNew();
-            LogHelper.Log("Начато сохранение проекта...");
+            LogHelper.Log("Начало сохранения проекта...");
 
             string projectsFolder = PersistentSettingsHelper.Instance.MainProjectsFolder;
-            string projectName = MainWindow.AddonManager.ProjectName;
+            string projectName = manager.ProjectName;
             string projectFolder = FileHelper.CurrentProjectRoot ??
                 GetProjectFolderSafe(projectsFolder, projectName);
             Directory.CreateDirectory(projectFolder);
 
             SaveSnapshot snapshot = await mainWindow.Dispatcher.InvokeAsync(() =>
             {
+                if (!ReferenceEquals(MainWindow.AddonManager, manager))
+                {
+                    throw new InvalidOperationException("Проект изменился во время сохранения. Повторите сохранение.");
+                }
+
                 lock (AddonManager.AddonsLock)
                 {
-                    MainWindow.AddonManager.Groups.Clear();
-                    foreach (var group in GroupManager.Instance.Groups)
-                    {
-                        MainWindow.AddonManager.Groups.Add(group);
-                    }
-
-                    PersistEmbeddedTextures(projectFolder);
-                    string json = JsonSerializer.Serialize(MainWindow.AddonManager, SerializerOptions);
+                    // GroupManager.Instance.Groups is a view of this same
+                    // collection. Clearing it before enumerating the view used
+                    // to erase every group from the save. Serialize the current
+                    // collection directly instead.
+                    PersistEmbeddedTextures(manager, projectFolder);
+                    string json = JsonSerializer.Serialize(manager, SerializerOptions);
                     return new SaveSnapshot(
                         json,
                         PersistentSettingsHelper.Instance.MainProjectsFolder,
-                        MainWindow.AddonManager.ProjectName,
-                        MainWindow.AddonManager.IsExternalProject,
+                        manager.ProjectName,
+                        manager.IsExternalProject,
                         Volatile.Read(ref _changeVersion));
                 }
             });
@@ -207,20 +266,27 @@ public class SaveFile
                 temporaryPath = savePath + ".tmp-" + Guid.NewGuid().ToString("N");
 
                 await File.WriteAllTextAsync(temporaryPath, snapshot.Json);
+                if (!ReferenceEquals(MainWindow.AddonManager, manager))
+                {
+                    throw new InvalidOperationException("Проект изменился во время сохранения. Повторите сохранение.");
+                }
                 File.Move(temporaryPath, savePath, overwrite: true);
                 temporaryPath = null;
 
                 SaveCreated?.Invoke();
-                if (Volatile.Read(ref _changeVersion) == snapshot.ChangeVersion)
+                if (ReferenceEquals(MainWindow.AddonManager, manager) &&
+                    Volatile.Read(ref _changeVersion) == snapshot.ChangeVersion)
                 {
                     SetUnsavedChanges(false);
                 }
 
                 LogHelper.Log($"Проект сохранён за {timer.ElapsedMilliseconds} мс");
+                return true;
             }
             catch (Exception ex)
             {
                 LogHelper.Log($"Не удалось сохранить проект: {ex.Message}", Views.LogType.Error);
+                return false;
             }
             finally
             {
@@ -233,6 +299,7 @@ public class SaveFile
         catch (Exception ex)
         {
             LogHelper.Log($"Критическая ошибка сохранения: {ex.Message}", Views.LogType.Error);
+            return false;
         }
         finally
         {
@@ -247,9 +314,9 @@ public class SaveFile
         bool IsExternalProject,
         int ChangeVersion);
 
-    private static void PersistEmbeddedTextures(string projectFolder)
+    private static void PersistEmbeddedTextures(AddonManager manager, string projectFolder)
     {
-        foreach (var addon in MainWindow.AddonManager.Addons)
+        foreach (var addon in manager.Addons)
         {
             foreach (var drawable in addon.Drawables)
             {
@@ -260,7 +327,10 @@ public class SaveFile
 
                 foreach (var embeddedTexture in drawable.Details.EmbeddedTextures.Values)
                 {
-                    embeddedTexture?.TryPersistTexture(projectFolder);
+                    if (embeddedTexture != null && !embeddedTexture.TryPersistTexture(projectFolder))
+                    {
+                        throw new IOException($"Не удалось сохранить встроенную текстуру «{embeddedTexture.OriginalName}».");
+                    }
                 }
             }
         }
@@ -271,6 +341,11 @@ public class SaveFile
         if (string.IsNullOrWhiteSpace(projectsFolder) || string.IsNullOrWhiteSpace(projectName))
         {
             throw new InvalidOperationException("Папка проектов или название проекта не настроены.");
+        }
+
+        if (Path.IsPathRooted(projectName) || projectName.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries).Any(segment => segment is "." or ".."))
+        {
+            throw new InvalidOperationException("Путь проекта содержит недопустимые сегменты.");
         }
 
         string normalizedRoot = Path.GetFullPath(projectsFolder)
@@ -301,22 +376,32 @@ public class SaveFile
         }
 
         var mainWindow = MainWindow.Instance;
-        if (mainWindow == null)
+        if (mainWindow == null || mainWindow.Dispatcher.HasShutdownStarted || mainWindow.Dispatcher.HasShutdownFinished)
         {
             return;
         }
 
-        mainWindow.Dispatcher.Invoke(() =>
+        void UpdateTitle()
         {
             const string unsavedMarker = " • не сохранено";
             string baseTitle = mainWindow.Title.Replace(unsavedMarker, string.Empty, StringComparison.Ordinal);
             mainWindow.Title = status ? baseTitle + unsavedMarker : baseTitle;
-        });
+        }
+
+        if (mainWindow.Dispatcher.CheckAccess())
+        {
+            UpdateTitle();
+        }
+        else
+        {
+            mainWindow.Dispatcher.Invoke(UpdateTitle);
+        }
     }
 
     public static bool CheckUnsavedChangesMessage()
     {
-        if (!HasUnsavedChanges || MainWindow.Instance == null)
+        if (!HasUnsavedChanges || MainWindow.Instance == null ||
+            MainWindow.Instance.Dispatcher.HasShutdownStarted || MainWindow.Instance.Dispatcher.HasShutdownFinished)
         {
             return true;
         }
@@ -339,98 +424,134 @@ public class SaveFile
 
     public static async Task LoadSaveFileAsync(string filePath)
     {
+        if (string.IsNullOrWhiteSpace(filePath))
+            throw new ArgumentException("Путь файла проекта не указан.", nameof(filePath));
+        if (!MainWindow.TryBeginProjectOperation())
+            throw new InvalidOperationException("Другая операция с проектом уже выполняется.");
+
         PauseSaving();
         await _semaphore.WaitAsync();
+        string? previousRoot = FileHelper.CurrentProjectRoot;
+        MainWindow? mainWindow = MainWindow.Instance;
+        AddonManager? previousManager = mainWindow == null ? null : MainWindow.AddonManager;
+        bool committed = false;
+
         try
         {
-            FileHelper.SetLoadContext(filePath);
+            string fullPath = Path.GetFullPath(filePath);
+            FileHelper.SetLoadContext(fullPath);
             MainWindow.Instance?.PreviewHost?.ClearProjectSelection();
 
-            var json = await File.ReadAllTextAsync(filePath);
-            var addonManager = JsonSerializer.Deserialize<AddonManager>(json, SerializerOptions) ?? throw new InvalidOperationException("Не удалось прочитать файл сохранения.");
-            string projectRoot = Path.GetDirectoryName(Path.GetFullPath(filePath)) ?? string.Empty;
+            string json = await File.ReadAllTextAsync(fullPath);
+            AddonManager loadedManager = JsonSerializer.Deserialize<AddonManager>(json, SerializerOptions)
+                ?? throw new InvalidOperationException("Не удалось прочитать файл сохранения.");
+
+            loadedManager.Addons ??= [];
+            loadedManager.Groups ??= [];
+            loadedManager.Tags ??= [];
+
+            string projectRoot = Path.GetDirectoryName(fullPath)
+                ?? throw new InvalidOperationException("Не удалось определить папку проекта.");
             FileHelper.SetCurrentProjectRoot(projectRoot);
 
-            var fileName = Path.GetFileName(filePath);
-            var isExternalFromFileName = fileName.Equals(AutoSaveExternalFileName, StringComparison.OrdinalIgnoreCase);
-            
-            var isExternalProject = addonManager.IsExternalProject || isExternalFromFileName;
+            string fileName = Path.GetFileName(fullPath);
+            bool isExternalFromFileName = fileName.Equals(AutoSaveExternalFileName, StringComparison.OrdinalIgnoreCase);
+            loadedManager.IsExternalProject = loadedManager.IsExternalProject || isExternalFromFileName;
 
-            foreach (var addon in addonManager.Addons)
+            foreach (var addon in loadedManager.Addons)
             {
+                if (addon == null)
+                    continue;
+
+                addon.Drawables ??= [];
+                addon.SelectedDrawables ??= [];
                 foreach (var drawable in addon.Drawables)
                 {
-                    if (!string.IsNullOrEmpty(drawable.FilePath) && drawable.FilePath.Contains("reservedDrawable.ydd"))
+                    if (drawable == null)
+                        continue;
+
+                    drawable.Textures ??= [];
+                    drawable.Tags ??= [];
+                    drawable.SelectedFlags ??= [];
+                    drawable.Details ??= new GDrawableDetails();
+                    if (!string.IsNullOrEmpty(drawable.FilePath) && drawable.FilePath.Contains("reservedDrawable.ydd", StringComparison.OrdinalIgnoreCase))
                     {
                         drawable.IsReserved = true;
                     }
 
                     drawable.RestorePersistedEmbeddedTextures(projectRoot);
                 }
+
+                addon.SelectedDrawable ??= addon.Drawables.FirstOrDefault();
+                addon.SelectedTexture ??= addon.SelectedDrawable?.Textures?.FirstOrDefault();
             }
 
-            MainWindow.AddonManager.SelectedAddon = null;
-            MainWindow.AddonManager.Addons.Clear();
-            foreach (var addon in addonManager.Addons)
-            {
-                MainWindow.AddonManager.Addons.Add(addon);
-            }
-            MainWindow.AddonManager.RebuildMoveMenuItems();
-
-            MainWindow.AddonManager.ProjectName = addonManager.ProjectName;
-            MainWindow.AddonManager.IsExternalProject = isExternalProject;
-
-            MainWindow.AddonManager.Groups.Clear();
-            if (addonManager.Groups != null)
-            {
-                foreach (var group in addonManager.Groups)
-                {
-                    MainWindow.AddonManager.Groups.Add(group);
-                }
-            }
-
-            MainWindow.AddonManager.Tags.Clear();
-            if (addonManager.Tags != null)
-            {
-                foreach (var tag in addonManager.Tags)
-                {
-                    MainWindow.AddonManager.Tags.Add(tag);
-                }
-            }
-
-            int drawableCount = addonManager.Addons.Sum(a => a.Drawables.Count);
-            int addonCount = addonManager.Addons.Count;
-
-            PersistentSettingsHelper.Instance.AddRecentProject(
-                filePath,
-                addonManager.ProjectName ?? Path.GetFileNameWithoutExtension(filePath),
-                drawableCount,
-                addonCount,
-                isExternal: isExternalProject
-            );
+            loadedManager.ProjectName = string.IsNullOrWhiteSpace(loadedManager.ProjectName)
+                ? Path.GetFileName(projectRoot)
+                : loadedManager.ProjectName;
+            loadedManager.SelectedAddon = loadedManager.Addons.FirstOrDefault();
+            loadedManager.IsPreviewEnabled = false;
 
             LogHelper.Log("Сканирование проекта на дубликаты одежды...");
             DuplicateDetector.Clear();
-            
-            foreach (var addon in MainWindow.AddonManager.Addons)
+            foreach (var addon in loadedManager.Addons)
             {
                 foreach (var drawable in addon.Drawables)
                 {
-                    DuplicateDetector.RegisterDrawable(drawable);
+                    if (drawable != null)
+                    {
+                        DuplicateDetector.RegisterDrawable(drawable);
+                    }
                 }
             }
-            
-            MainWindow.AddonManager.SelectedAddon = MainWindow.AddonManager.Addons.FirstOrDefault();
-            MainWindow.AddonManager.IsPreviewEnabled = false;
+
+            int drawableCount = loadedManager.Addons.Sum(a => a.Drawables.Count);
+            int addonCount = loadedManager.Addons.Count;
+            PersistentSettingsHelper.Instance.AddRecentProject(
+                fullPath,
+                loadedManager.ProjectName,
+                drawableCount,
+                addonCount,
+                isExternal: loadedManager.IsExternalProject);
+
+            FileHelper.ClearLoadContext();
+            if (MainWindow.Instance == null || previousManager == null)
+                throw new InvalidOperationException("Главное окно недоступно.");
+
+            MainWindow.Instance.CommitProjectLoad(previousManager, loadedManager, projectRoot);
+            committed = true;
             SetUnsavedChanges(false);
 
             LogHelper.Log($"Сканирование завершено. Найдено групп дубликатов одежды: {DuplicateDetector.GetDuplicateGroupCount()}.");
-            LogHelper.Log($"Проект загружен: {filePath}");
+            LogHelper.Log($"Проект загружен: {fullPath}");
+        }
+        catch
+        {
+            if (!committed)
+            {
+                FileHelper.SetCurrentProjectRoot(previousRoot);
+                DuplicateDetector.Clear();
+                if (previousManager != null)
+                {
+                    foreach (var addon in previousManager.Addons)
+                    {
+                        foreach (var drawable in addon.Drawables)
+                        {
+                            if (drawable != null)
+                            {
+                                DuplicateDetector.RegisterDrawable(drawable);
+                            }
+                        }
+                    }
+                }
+            }
+            throw;
         }
         finally
         {
             _semaphore.Release();
             ResumeSaving();
+            MainWindow.EndProjectOperation();
         }
     }
 }

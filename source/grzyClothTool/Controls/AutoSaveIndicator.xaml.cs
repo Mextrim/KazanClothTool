@@ -15,7 +15,8 @@ namespace grzyClothTool.Controls
         {
             InitializeComponent();
             DataContext = this;
-            LocalizationHelper.LanguageChanged += (_, _) => UpdateTooltip(RemainingSeconds);
+            LocalizationHelper.LanguageChanged += OnLanguageChanged;
+            Unloaded += (_, _) => LocalizationHelper.LanguageChanged -= OnLanguageChanged;
         }
 
         public static readonly DependencyProperty RemainingSecondsProperty =
@@ -32,6 +33,14 @@ namespace grzyClothTool.Controls
             if (d is AutoSaveIndicator indicator)
             {
                 indicator.UpdateTooltip((int)e.NewValue);
+            }
+        }
+
+        private void OnLanguageChanged(object? sender, EventArgs e)
+        {
+            if (!Dispatcher.HasShutdownStarted && !Dispatcher.HasShutdownFinished)
+            {
+                UpdateTooltip(RemainingSeconds);
             }
         }
 

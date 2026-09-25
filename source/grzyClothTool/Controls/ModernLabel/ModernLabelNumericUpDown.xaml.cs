@@ -90,6 +90,14 @@ namespace grzyClothTool.Controls
 
         private void Number_PreviewKeyDown(object sender, KeyEventArgs e)
         {
+            // TextBox edits (digits, decimal separators, paste and deletes)
+            // do not pass through the increment/decrement buttons. Mark the
+            // dependency-property update as user-initiated as well.
+            if (e.Key != Key.Up && e.Key != Key.Down)
+            {
+                IsUserInitiated = true;
+            }
+
             if (e.Key == Key.Up)
             {
                 IncrementValue(sender, new RoutedEventArgs());

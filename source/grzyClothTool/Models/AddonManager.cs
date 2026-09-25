@@ -349,6 +349,7 @@ namespace grzyClothTool.Models
         {
             var pendingDrawables = new List<GDrawable>();
             var pendingDrawableSourceNumbers = new Dictionary<GDrawable, int>();
+            Exception? pendingBatchException = null;
 
             foreach (var workItem in _drawableQueue.GetConsumingEnumerable())
             {
@@ -363,6 +364,15 @@ namespace grzyClothTool.Models
                 {
                 if (workItem is CompletionMarker marker)
                 {
+                    if (pendingBatchException != null)
+                    {
+                        marker.Tcs.TrySetException(pendingBatchException);
+                        pendingBatchException = null;
+                        pendingDrawables.Clear();
+                        pendingDrawableSourceNumbers.Clear();
+                        continue;
+                    }
+
                     if (pendingDrawables.Count > 0)
                     {
                         await ProcessBatchDuplicatesAndAdd(pendingDrawables, marker.TargetAddon);
@@ -437,6 +447,11 @@ namespace grzyClothTool.Models
                                 }
                                 catch (Exception ex)
                                 {
+                                    if (!IsExternalProject)
+                                    {
+                                        throw new IOException($"Не удалось скопировать файл от первого лица в ресурсы проекта: {ex.Message}", ex);
+                                    }
+
                                     LogHelper.Log($"Не удалось скопировать файл от первого лица в ресурсы проекта: {ex.Message}. Используется исходный путь.", Views.LogType.Warning);
                                     await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => foundDrawable.FirstPersonPath = filePath);
                                 }
@@ -485,6 +500,11 @@ namespace grzyClothTool.Models
                             }
                             catch (Exception ex)
                             {
+                                if (!IsExternalProject)
+                                {
+                                    throw new IOException($"Не удалось скопировать файл физики одежды в ресурсы проекта: {ex.Message}", ex);
+                                }
+
                                 LogHelper.Log($"Не удалось скопировать файл физики одежды в ресурсы проекта: {ex.Message}. Используется исходный путь.", Views.LogType.Warning);
                                 await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => foundDrawable.ClothPhysicsPath = filePath);
                             }
@@ -508,15 +528,15 @@ namespace grzyClothTool.Models
                 if (!string.IsNullOrEmpty(basePath) && filePath.StartsWith(basePath))
                 {
                     var extractedGroup = ExtractGroupFromPath(filePath, basePath, sex, isProp);
-                    if (!string.IsNullOrWhiteSpace(extractedGroup))
+                    if (SimplePathBuilder.TryNormalizeGroupPath(extractedGroup, out string normalizedGroup))
                     {
-                        drawable.Group = extractedGroup;
+                        drawable.Group = normalizedGroup;
                         await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
                         {
-                            if (!Groups.Contains(extractedGroup))
+                            if (!Groups.Contains(normalizedGroup))
                             {
-                                Groups.Add(extractedGroup);
-                                GroupManager.Instance.AddGroup(extractedGroup);
+                                Groups.Add(normalizedGroup);
+                                GroupManager.Instance.AddGroup(normalizedGroup);
                             }
                         });
                     }
@@ -584,6 +604,7 @@ namespace grzyClothTool.Models
                 }
                 catch (Exception ex)
                 {
+                    pendingBatchException ??= ex;
                     LogHelper.Log($"Ошибка обработки одежды: {ex.Message}", Views.LogType.Error);
                     ErrorLogHelper.LogError("Ошибка обработки элемента очереди одежды", ex);
 
@@ -862,14 +883,30 @@ namespace grzyClothTool.Models
             var currentAddon = Addons.FirstOrDefault(a => a.Drawables.Contains(drawable));
             if (currentAddon != null && !ReferenceEquals(currentAddon, targetAddon))
             {
+                bool wasSelected = currentAddon.SelectedDrawables?.Contains(drawable) == true;
                 currentAddon.Drawables.Remove(drawable);
+                currentAddon.SelectedDrawables?.Remove(drawable);
 
-                drawable.Number = currentAddon.GetNextDrawableNumber(drawable.TypeNumeric, drawable.IsProp, drawable.Sex);
+                drawable.Number = targetAddon.GetNextDrawableNumber(drawable.TypeNumeric, drawable.IsProp, drawable.Sex);
                 drawable.SetDrawableName();
 
                 targetAddon.Drawables.Add(drawable);
+                if (wasSelected)
+                {
+                    targetAddon.SelectedDrawables ??= [];
+                    targetAddon.SelectedDrawables.Add(drawable);
+                    targetAddon.SelectedDrawable = drawable;
+                    targetAddon.SelectedTexture = drawable.Textures?.FirstOrDefault();
+                    SelectedAddon = targetAddon;
+                }
+
                 RenumberAddon(currentAddon);
                 RenumberAddon(targetAddon);
+                if (currentAddon.Drawables.Count == 0)
+                {
+                    currentAddon.SelectedDrawable = null;
+                    currentAddon.SelectedTexture = null;
+                }
                 SaveHelper.SetUnsavedChanges(true);
             }
         }

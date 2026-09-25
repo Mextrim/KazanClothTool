@@ -170,8 +170,16 @@ public class GTextureEmbedded : INotifyPropertyChanged
         CodeWalker.GameFiles.Texture? texture = DisplayTextureData;
         if (texture?.Data?.FullData == null || texture.Data.FullData.Length == 0)
         {
-            DeletePersistedFile(projectRoot);
-            return false;
+            // A normal encrypted/placeholder embedded texture has no data to
+            // copy and is not a failed save. A pending replacement, however,
+            // must never be reported as successfully persisted.
+            if (HasReplacement)
+            {
+                LogHelper.Log($"Не удалось сохранить встроенную текстуру «{OriginalName}»: данные отсутствуют.", Views.LogType.Warning);
+                return false;
+            }
+
+            return true;
         }
 
         string? oldPath = PersistedTexturePath;
@@ -322,6 +330,45 @@ public class GTextureEmbedded : INotifyPropertyChanged
         OnPropertyChanged(nameof(Details));
     }
 
+    public GTextureEmbedded CloneForDuplicate()
+    {
+        var clone = new GTextureEmbedded
+        {
+            OriginalName = OriginalName,
+            TextureData = TextureData,
+            Details = CloneDetails(Details),
+            OptimizeDetails = CloneDetails(OptimizeDetails),
+            IsOptimizedDuringBuild = IsOptimizedDuringBuild,
+            // A duplicate must get its own persisted path; sharing the source
+            // path would let one save delete the other object's DDS file.
+            PersistedTexturePath = null,
+            ImageThumbnail = ImageThumbnail
+        };
+        clone._persistedTextureData = _persistedTextureData;
+        clone._replacementTextureData = _replacementTextureData;
+        clone.OnPropertyChanged(nameof(DisplayTextureData));
+        clone.OnPropertyChanged(nameof(HasReplacement));
+        return clone;
+    }
+
+    private static GTextureDetails CloneDetails(GTextureDetails? details)
+    {
+        if (details == null)
+            return new GTextureDetails();
+
+        return new GTextureDetails
+        {
+            Width = details.Width,
+            Height = details.Height,
+            MipMapCount = details.MipMapCount,
+            Compression = details.Compression,
+            Name = details.Name,
+            Type = details.Type,
+            IsOptimizeNeeded = details.IsOptimizeNeeded,
+            IsOptimizeNeededTooltip = details.IsOptimizeNeededTooltip
+        };
+    }
+
     public void SetReplacementTexture(CodeWalker.GameFiles.Texture newTexture)
     {
         _persistedTextureData = null;
@@ -351,7 +398,8 @@ public class GTextureEmbedded : INotifyPropertyChanged
 
     public async void LoadThumbnailAsync()
     {
-        if (ImageThumbnail != null || DisplayTextureData?.Data?.FullData == null)
+        CodeWalker.GameFiles.Texture? texture = DisplayTextureData;
+        if (ImageThumbnail != null || texture?.Data?.FullData == null)
             return;
 
         IsLoading = true;
@@ -361,10 +409,10 @@ public class GTextureEmbedded : INotifyPropertyChanged
         {
             try
             {
-                if (DisplayTextureData.Data.FullData.Length == 0)
+                if (texture.Data.FullData.Length == 0)
                     return;
 
-                var dds = DDSIO.GetDDSFile(DisplayTextureData);
+                var dds = DDSIO.GetDDSFile(texture);
                 using var img = new MagickImage(dds);
                 
                 img.Resize(90, 90);
@@ -381,7 +429,13 @@ public class GTextureEmbedded : INotifyPropertyChanged
                 Marshal.Copy(pixels, 0, bitmapData.Scan0, pixels.Length);
                 bitmap.UnlockBits(bitmapData);
 
-                Application.Current.Dispatcher.Invoke(() =>
+                var dispatcher = Application.Current?.Dispatcher;
+                if (dispatcher == null || dispatcher.HasShutdownStarted || dispatcher.HasShutdownFinished)
+                {
+                    return;
+                }
+
+                void SetThumbnail()
                 {
                     var source = BitmapSource.Create(
                         bitmap.Width,
@@ -394,7 +448,16 @@ public class GTextureEmbedded : INotifyPropertyChanged
                     );
                     source.Freeze();
                     ImageThumbnail = source;
-                });
+                }
+
+                if (dispatcher.CheckAccess())
+                {
+                    SetThumbnail();
+                }
+                else
+                {
+                    dispatcher.Invoke(SetThumbnail);
+                }
             }
             catch (Exception ex)
             {
@@ -403,7 +466,19 @@ public class GTextureEmbedded : INotifyPropertyChanged
             }
             finally
             {
-                IsLoading = false;
+                var dispatcher = Application.Current?.Dispatcher;
+                if (dispatcher == null || dispatcher.HasShutdownStarted || dispatcher.HasShutdownFinished)
+                {
+                    IsLoading = false;
+                }
+                else if (dispatcher.CheckAccess())
+                {
+                    IsLoading = false;
+                }
+                else
+                {
+                    dispatcher.BeginInvoke(new Action(() => IsLoading = false));
+                }
             }
         });
     }

@@ -34,8 +34,6 @@ namespace grzyClothTool.Views
 
         public LogMessage()
         {
-            LocalizationHelper.LanguageChanged += (_, _) =>
-                Message = LocalizationHelper.Translate(OriginalMessage);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

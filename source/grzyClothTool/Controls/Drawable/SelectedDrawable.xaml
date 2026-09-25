@@ -1499,7 +1499,7 @@
                                            FontWeight="SemiBold"
                                            Foreground="{DynamicResource Brush700}"
                                            Margin="0,0,0,6" />
-                                <c:GroupEditor Group="{Binding SelectedAddon.SelectedDrawable.Group, Mode=TwoWay}"
+                                <c:GroupEditor Group="{Binding SelectedAddon.SelectedDrawable.Group, Mode=TwoWay}" GroupChanged="GroupEditor_Changed"
                                               Margin="0,0,0,12" />
 
                                 <TextBlock Text="Теги"
@@ -1507,7 +1507,7 @@
                                            FontWeight="SemiBold"
                                            Foreground="{DynamicResource Brush700}"
                                            Margin="0,0,0,6" />
-                                <c:TagsEditor Tags="{Binding SelectedAddon.SelectedDrawable.Tags, Mode=TwoWay}" />
+                                <c:TagsEditor Tags="{Binding SelectedAddon.SelectedDrawable.Tags, Mode=TwoWay}" TagsChanged="TagsEditor_Changed" />
                             </StackPanel>
                         </ScrollViewer>
                     </Border>

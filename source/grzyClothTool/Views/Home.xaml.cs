@@ -163,7 +163,10 @@ public partial class Home : UserControl, INotifyPropertyChanged
                 isExternal: isExternal);
 
             SaveHelper.SetUnsavedChanges(true);
-            await SaveHelper.SaveAsync();
+            if (!await SaveHelper.SaveAsync(force: true))
+            {
+                throw new IOException("Не удалось сохранить новый проект.");
+            }
             LoadRecentProjects();
 
             LogHelper.Log($"Создан новый проект: {projectName}");

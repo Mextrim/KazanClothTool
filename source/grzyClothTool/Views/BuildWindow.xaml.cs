@@ -172,11 +172,31 @@ namespace grzyClothTool.Views
                 return;
             }
 
-            var allDrawablesCount = MainWindow.AddonManager.Addons.Sum(a => a.Drawables.Count);
-            if (allDrawablesCount == 0)
+            var allDrawables = MainWindow.AddonManager.Addons
+                .Where(addon => addon != null)
+                .SelectMany(addon => addon.Drawables)
+                .Where(drawable => drawable != null)
+                .ToList();
+            if (allDrawables.Count == 0)
             {
                 IsWarningVisible = true;
                 WarningMessage = LocalizationHelper.Translate("Элементы одежды не найдены. Добавьте одежду, чтобы собрать ресурс.");
+                CanBuild = false;
+                return;
+            }
+
+            if (allDrawables.Any(drawable => drawable.IsLoading))
+            {
+                IsWarningVisible = true;
+                WarningMessage = LocalizationHelper.Translate("Данные одежды ещё загружаются. Дождитесь окончания загрузки и повторите сборку.");
+                CanBuild = false;
+                return;
+            }
+
+            if (allDrawables.Any(drawable => drawable.Details?.EmbeddedTextures?.Values.Any(texture => texture == null) == true))
+            {
+                IsWarningVisible = true;
+                WarningMessage = LocalizationHelper.Translate("Обнаружены повреждённые встроенные текстуры. Исправьте проект перед сборкой.");
                 CanBuild = false;
             }
         }
@@ -228,6 +248,16 @@ namespace grzyClothTool.Views
                 return;
             }
 
+            CheckAddons();
+            if (!CanBuild)
+            {
+                if (!string.IsNullOrWhiteSpace(WarningMessage))
+                {
+                    CustomMessageBox.Show(WarningMessage, LocalizationHelper.Translate("Сборка недоступна"), CustomMessageBoxButtons.OKOnly, CustomMessageBoxIcon.Warning);
+                }
+                return;
+            }
+
             var buildButton = sender as CustomButton;
             if (buildButton != null)
             {
@@ -239,16 +269,20 @@ namespace grzyClothTool.Views
             ProgressValue = 0;
             pbBuild.Maximum = totalSteps;
             IsBuilding = true;
+            BuildResourceHelper? buildHelper = null;
 
             try
             {
-                await SaveHelper.SaveAsync();
+                if (!await SaveHelper.SaveAsync(force: true))
+                {
+                    throw new IOException("Не удалось сохранить проект перед сборкой.");
+                }
                 var timer = new Stopwatch();
 
                 timer.Start();
 
                 var progress = new Progress<int>(value => ProgressValue += value);
-                var buildHelper = new BuildResourceHelper(ProjectName, BuildPath, progress, _resourceType, SplitAddons);
+                buildHelper = new BuildResourceHelper(ProjectName, BuildPath, progress, _resourceType, SplitAddons);
 
                 await Task.Run(() => BuildResource(buildHelper)); // moved out of ui thread, so users don't think tool stopped responding
 
@@ -268,6 +302,7 @@ namespace grzyClothTool.Views
             }
             finally
             {
+                buildHelper?.CleanupTemporaryFiles();
                 ProgressValue = totalSteps; // make sure that progress bar is full
 
                 if (buildButton != null)

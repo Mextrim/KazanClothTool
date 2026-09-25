@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -39,6 +40,17 @@ namespace grzyClothTool
         private static AddonManager _addonManager;
         public static AddonManager AddonManager => _addonManager;
         private bool _topBarActionsBusy;
+        private static int _projectOperationActive;
+
+        internal static bool TryBeginProjectOperation()
+        {
+            return Interlocked.CompareExchange(ref _projectOperationActive, 1, 0) == 0;
+        }
+
+        internal static void EndProjectOperation()
+        {
+            Interlocked.Exchange(ref _projectOperationActive, 0);
+        }
 
         private readonly static Dictionary<string, string> TempFoldersNames = new()
         {
@@ -52,12 +64,7 @@ namespace grzyClothTool
             InitializeComponent();
             FitWindowToWorkArea();
             LocalizationHelper.SetLanguage(PersistentSettingsHelper.Instance.Language, save: false);
-            LocalizationHelper.LanguageChanged += (_, _) =>
-                Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    OnPropertyChanged(nameof(AppVersion));
-                    LocalizationHelper.ApplyTo(this);
-                }));
+            LocalizationHelper.LanguageChanged += OnLanguageChanged;
             SettingsHelper.Preview3DAvailable = false;
             this.Visibility = Visibility.Hidden;
 
@@ -93,14 +100,22 @@ namespace grzyClothTool
 
             Dispatcher.BeginInvoke((Action)(async () =>
             {
-                App.splashScreen.AddMessage(LocalizationHelper.Translate("Подготовка редактора одежды..."));
-
-                while (App.splashScreen.MessageQueueCount > 0)
+                var splash = App.splashScreen;
+                if (splash != null)
                 {
-                    await Task.Delay(2000);
-                }
+                    splash.AddMessage(LocalizationHelper.Translate("Подготовка редактора одежды..."));
 
-                await App.splashScreen.LoadComplete();
+                    while (splash.MessageQueueCount > 0)
+                    {
+                        await Task.Delay(2000);
+                        if (Dispatcher.HasShutdownStarted || Dispatcher.HasShutdownFinished)
+                        {
+                            return;
+                        }
+                    }
+
+                    await splash.LoadComplete();
+                }
 
                 try
                 {
@@ -247,8 +262,23 @@ namespace grzyClothTool
             CheckFirstRun();
         }
 
+        private void OnLanguageChanged(object? sender, EventArgs e)
+        {
+            if (Dispatcher.HasShutdownStarted || Dispatcher.HasShutdownFinished)
+                return;
+
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                OnPropertyChanged(nameof(AppVersion));
+                LocalizationHelper.ApplyTo(this);
+            }));
+        }
+
         private void OnAutoSaveProgress(double percentage)
         {
+            if (Dispatcher.HasShutdownStarted || Dispatcher.HasShutdownFinished)
+                return;
+
             Dispatcher.Invoke(() =>
             {
                 if (percentage > 0 && SaveHelper.HasUnsavedChanges)
@@ -265,6 +295,9 @@ namespace grzyClothTool
 
         private void OnRemainingSecondsChanged(int seconds)
         {
+            if (Dispatcher.HasShutdownStarted || Dispatcher.HasShutdownFinished)
+                return;
+
             Dispatcher.Invoke(() =>
             {
                 AutoSaveIndicator.RemainingSeconds = seconds;
@@ -284,7 +317,11 @@ namespace grzyClothTool
 
                 LocalizationHelper.ApplyTo(setupWindow);
                 bool? result = setupWindow.ShowDialog();
-                
+                if (Dispatcher.HasShutdownStarted || Dispatcher.HasShutdownFinished)
+                {
+                    return;
+                }
+
                 this.Show();
                 Activate();
 
@@ -313,6 +350,9 @@ namespace grzyClothTool
 
         private void ProgressHelper_ProgressStatusChanged(object sender, ProgressMessageEventArgs e)
         {
+            if (Dispatcher.HasShutdownStarted || Dispatcher.HasShutdownFinished)
+                return;
+
             var visibility = e.Status switch
             {
                 ProgressStatus.Start => Visibility.Visible,
@@ -424,6 +464,86 @@ namespace grzyClothTool
             }
         }
 
+        /// <summary>
+        /// Temporarily routes model loading to a fresh manager. The previous
+        /// manager remains intact until the candidate is committed.
+        /// </summary>
+        private void BeginProjectLoad(AddonManager candidate, string? projectRoot)
+        {
+            ArgumentNullException.ThrowIfNull(candidate);
+
+            if (_addonManager != null)
+            {
+                _addonManager.PropertyChanged -= OnAddonManagerPropertyChanged;
+            }
+
+            _addonManager = candidate;
+            _addonManager.PropertyChanged += OnAddonManagerPropertyChanged;
+            FileHelper.SetCurrentProjectRoot(projectRoot);
+            OnPropertyChanged(nameof(HasProject));
+        }
+
+        private void RestoreProject(AddonManager manager, string? projectRoot)
+        {
+            ArgumentNullException.ThrowIfNull(manager);
+
+            if (_addonManager != null)
+            {
+                _addonManager.PropertyChanged -= OnAddonManagerPropertyChanged;
+            }
+
+            _addonManager = manager;
+            _addonManager.PropertyChanged += OnAddonManagerPropertyChanged;
+            FileHelper.SetCurrentProjectRoot(projectRoot);
+            OnPropertyChanged(nameof(HasProject));
+        }
+
+        internal void CommitProjectLoad(AddonManager previousManager, AddonManager candidate, string projectRoot)
+        {
+            ArgumentNullException.ThrowIfNull(previousManager);
+            ArgumentNullException.ThrowIfNull(candidate);
+
+            candidate.PropertyChanged -= OnAddonManagerPropertyChanged;
+            if (_addonManager != null)
+            {
+                _addonManager.PropertyChanged -= OnAddonManagerPropertyChanged;
+            }
+
+            // Keep the existing manager object so already-created WPF pages and
+            // their bindings remain subscribed to the same DataContext.
+            previousManager.Addons.Clear();
+            foreach (var addon in candidate.Addons)
+            {
+                previousManager.Addons.Add(addon);
+            }
+
+            previousManager.ProjectName = candidate.ProjectName;
+            previousManager.IsExternalProject = candidate.IsExternalProject;
+            previousManager.Groups.Clear();
+            foreach (var group in candidate.Groups)
+            {
+                previousManager.Groups.Add(group);
+            }
+
+            previousManager.Tags.Clear();
+            foreach (var tag in candidate.Tags)
+            {
+                previousManager.Tags.Add(tag);
+            }
+
+            previousManager.IsPreviewEnabled = candidate.IsPreviewEnabled;
+            int selectedIndex = candidate.SelectedAddon == null ? -1 : candidate.Addons.IndexOf(candidate.SelectedAddon);
+            previousManager.SelectedAddon = selectedIndex >= 0 && selectedIndex < previousManager.Addons.Count
+                ? previousManager.Addons[selectedIndex]
+                : previousManager.Addons.FirstOrDefault();
+            previousManager.RebuildMoveMenuItems();
+
+            _addonManager = previousManager;
+            _addonManager.PropertyChanged += OnAddonManagerPropertyChanged;
+            FileHelper.SetCurrentProjectRoot(projectRoot);
+            OnPropertyChanged(nameof(HasProject));
+        }
+
         private async void Save_Click(object sender, RoutedEventArgs e)
         {
             SetTopBarActionsEnabled(false);
@@ -447,7 +567,15 @@ namespace grzyClothTool
 
             try
             {
-                await SaveHelper.SaveAsync();
+                bool saved = await SaveHelper.SaveAsync(force: true);
+                if (!saved && SaveHelper.HasUnsavedChanges)
+                {
+                    Controls.CustomMessageBox.Show(
+                        LocalizationHelper.Translate("Не удалось сохранить проект. Проверьте папку проекта и повторите попытку."),
+                        LocalizationHelper.Translate("Ошибка сохранения"),
+                        Controls.CustomMessageBox.CustomMessageBoxButtons.OKOnly,
+                        Controls.CustomMessageBox.CustomMessageBoxIcon.Error);
+                }
             }
             catch (Exception ex)
             {
@@ -479,6 +607,7 @@ namespace grzyClothTool
             AddonManager.IsPreviewEnabled = false;
 
             DuplicateDetector.Clear();
+            FileHelper.SetCurrentProjectRoot(null);
 
             SaveHelper.SetUnsavedChanges(false);
 
@@ -648,22 +777,37 @@ namespace grzyClothTool
                 return false;
             }
 
+            if (Interlocked.CompareExchange(ref _projectOperationActive, 1, 0) != 0)
+            {
+                return false;
+            }
+
             ProgressHelper.Start("Загрузка одежды...");
             bool success = false;
+            AddonManager? previousManager = AddonManager;
+            string? previousRoot = FileHelper.CurrentProjectRoot;
+            bool previousDirty = SaveHelper.HasUnsavedChanges;
+            bool swapped = false;
             try
             {
+                string projectRoot = FileHelper.GetProjectRoot(PersistentSettingsHelper.Instance.MainProjectsFolder, dialog.ProjectName);
+                var candidateManager = new AddonManager
+                {
+                    ProjectName = dialog.ProjectName,
+                    IsExternalProject = !dialog.IsSelfContained
+                };
+
+                // Set the root before loading so self-contained assets are
+                // copied into the new project, never into the old one.
+                BeginProjectLoad(candidateManager, projectRoot);
+                swapped = true;
                 PreviewHost?.ClearProjectSelection();
-                 AddonManager.SelectedAddon = null;
-                AddonManager.Addons = [];
-                AddonManager.MoveMenuItems.Clear();
-                AddonManager.SelectedAddon = null;
-                AddonManager.IsExternalProject = !dialog.IsSelfContained;
                 DuplicateDetector.Clear();
 
                 int loadedAddonCount = 0;
                 foreach (var metaFile in validMetaFiles)
                 {
-                    if (await AddonManager.LoadAddon(metaFile, shouldSetProjectName))
+                    if (await candidateManager.LoadAddon(metaFile, shouldSetProjectName))
                     {
                         loadedAddonCount++;
                     }
@@ -671,29 +815,46 @@ namespace grzyClothTool
 
                 if (loadedAddonCount == 0)
                 {
-                    Controls.CustomMessageBox.Show("Не удалось загрузить ни один набор одежды.", "Ошибка", Controls.CustomMessageBox.CustomMessageBoxButtons.OKOnly, Controls.CustomMessageBox.CustomMessageBoxIcon.Error);
-                    return false;
+                    throw new InvalidDataException("Не удалось загрузить ни один набор одежды.");
                 }
 
-                AddonManager.ProjectName = dialog.ProjectName;
-                AddonManager.SelectedAddon = AddonManager.Addons.FirstOrDefault();
-                string projectRoot = FileHelper.GetProjectRoot(PersistentSettingsHelper.Instance.MainProjectsFolder, dialog.ProjectName);
-                FileHelper.SetCurrentProjectRoot(projectRoot);
+                candidateManager.ProjectName = dialog.ProjectName;
+                candidateManager.SelectedAddon = candidateManager.Addons.FirstOrDefault();
 
                 SaveHelper.SetUnsavedChanges(true);
-                await SaveHelper.SaveAsync();
+                if (!await SaveHelper.SaveAsync(force: true))
+                {
+                    throw new IOException("Не удалось сохранить загруженный проект.");
+                }
+
                 PersistentSettingsHelper.Instance.AddRecentProject(
                     Path.Combine(projectRoot, SaveHelper.GetSaveFileName(dialog.IsSelfContained)),
                     dialog.ProjectName,
-                    AddonManager.Addons.Sum(addon => addon.Drawables.Count),
-                    AddonManager.Addons.Count,
+                    candidateManager.Addons.Sum(addon => addon.Drawables.Count),
+                    candidateManager.Addons.Count,
                     dialog.IsSelfContained == false);
 
+                CommitProjectLoad(previousManager!, candidateManager, projectRoot);
+                swapped = false;
                 success = true;
                 return true;
             }
             catch (Exception ex)
             {
+                if (swapped && previousManager != null)
+                {
+                    RestoreProject(previousManager, previousRoot);
+                    DuplicateDetector.Clear();
+                    foreach (var addon in previousManager.Addons)
+                    {
+                        foreach (var drawable in addon.Drawables)
+                        {
+                            DuplicateDetector.RegisterDrawable(drawable);
+                        }
+                    }
+                    SaveHelper.SetUnsavedChanges(previousDirty);
+                }
+
                 ErrorLogHelper.LogError("Ошибка загрузки набора одежды", ex);
                 Controls.CustomMessageBox.Show(
                     LocalizationHelper.Format("Не удалось загрузить набор одежды: {0}", ErrorMessageHelper.Friendly(ex)),
@@ -705,6 +866,7 @@ namespace grzyClothTool
             finally
             {
                 ProgressHelper.Stop(success ? "Одежда загружена" : "Загрузка не завершена", success);
+                Interlocked.Exchange(ref _projectOperationActive, 0);
             }
         }
 
@@ -745,6 +907,11 @@ namespace grzyClothTool
                 return;
             }
 
+            if (Interlocked.CompareExchange(ref _projectOperationActive, 1, 0) != 0)
+            {
+                return;
+            }
+
             ProgressHelper.Start("Добавление одежды...");
             bool success = false;
             try
@@ -777,6 +944,7 @@ namespace grzyClothTool
             finally
             {
                 ProgressHelper.Stop(success ? "Одежда добавлена" : "Не удалось добавить одежду", success);
+                Interlocked.Exchange(ref _projectOperationActive, 0);
             }
         }
 
@@ -827,8 +995,14 @@ namespace grzyClothTool
 
             string selectedPath = openFileDialog.FileName;
             string projectName = Path.GetFileNameWithoutExtension(selectedPath);
-            if (projectName is "." or ".." || projectName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+            string? projectNameError = ProjectNameValidator.Validate(projectName);
+            if (projectNameError != null)
             {
+                Controls.CustomMessageBox.Show(
+                    LocalizationHelper.Translate(projectNameError),
+                    LocalizationHelper.Translate("Некорректное название проекта"),
+                    Controls.CustomMessageBox.CustomMessageBoxButtons.OKOnly,
+                    Controls.CustomMessageBox.CustomMessageBoxIcon.Warning);
                 return false;
             }
 
@@ -848,13 +1022,40 @@ namespace grzyClothTool
                 return false;
             }
 
+            bool replaceExisting = false;
+            if (Directory.Exists(projectRoot) && Directory.EnumerateFileSystemEntries(projectRoot).Any())
+            {
+                var answer = Controls.CustomMessageBox.Show(
+                    LocalizationHelper.Format("Проект «{0}» уже существует. Создать резервную копию и заменить его?", projectName),
+                    LocalizationHelper.Translate("Подтверждение импорта"),
+                    Controls.CustomMessageBox.CustomMessageBoxButtons.YesNo,
+                    Controls.CustomMessageBox.CustomMessageBoxIcon.Warning);
+                if (answer != Controls.CustomMessageBox.CustomMessageBoxResult.Yes)
+                {
+                    return false;
+                }
+                replaceExisting = true;
+            }
+
             string tempPath = Path.Combine(Path.GetTempPath(), TempFoldersNames["import"]);
             string buildPath = Path.Combine(tempPath, projectName + "_" + Guid.NewGuid().ToString("N"));
             string zipPath = buildPath + ".zip";
             Directory.CreateDirectory(tempPath);
 
+            if (Interlocked.CompareExchange(ref _projectOperationActive, 1, 0) != 0)
+            {
+                return false;
+            }
+
             ProgressHelper.Start("Импорт проекта...");
             bool success = false;
+            string? backupPath = null;
+            bool existingProjectMoved = false;
+            bool targetCreatedByImport = false;
+            AddonManager? previousManager = AddonManager;
+            string? previousRoot = FileHelper.CurrentProjectRoot;
+            bool previousDirty = SaveHelper.HasUnsavedChanges;
+            bool swapped = false;
             try
             {
                 await ObfuscationHelper.XORFile(selectedPath, zipPath);
@@ -870,22 +1071,38 @@ namespace grzyClothTool
                     throw new InvalidDataException("В архиве проекта не найдены .meta файлы одежды.");
                 }
 
+                if (Directory.Exists(projectRoot))
+                {
+                    if (replaceExisting)
+                    {
+                        string parent = Path.GetDirectoryName(projectRoot)
+                            ?? throw new InvalidOperationException("Не удалось определить родительскую папку проекта.");
+                        backupPath = Path.Combine(parent,
+                            $"{projectName}.backup-{DateTime.Now:yyyyMMdd-HHmmss}-{Guid.NewGuid():N}");
+                        Directory.Move(projectRoot, backupPath);
+                        existingProjectMoved = true;
+                    }
+                }
+                else
+                {
+                    targetCreatedByImport = true;
+                }
+
+                Directory.CreateDirectory(projectRoot);
+                var candidateManager = new AddonManager
+                {
+                    ProjectName = projectName,
+                    IsExternalProject = false
+                };
+                BeginProjectLoad(candidateManager, projectRoot);
+                swapped = true;
                 PreviewHost?.ClearProjectSelection();
-                 AddonManager.SelectedAddon = null;
-                AddonManager.Addons = [];
-                AddonManager.MoveMenuItems.Clear();
-                AddonManager.SelectedAddon = null;
-                AddonManager.Groups.Clear();
-                AddonManager.Tags.Clear();
-                AddonManager.ProjectName = projectName;
-                AddonManager.IsExternalProject = false;
                 DuplicateDetector.Clear();
-                FileHelper.SetCurrentProjectRoot(projectRoot);
 
                 int loaded = 0;
                 foreach (string metaFile in metaFiles)
                 {
-                    if (await AddonManager.LoadAddon(metaFile))
+                    if (await candidateManager.LoadAddon(metaFile, shouldSetProjectName))
                     {
                         loaded++;
                     }
@@ -896,20 +1113,45 @@ namespace grzyClothTool
                     throw new InvalidDataException("Не удалось загрузить одежду из архива.");
                 }
 
-                AddonManager.SelectedAddon = AddonManager.Addons.FirstOrDefault();
+                candidateManager.ProjectName = projectName;
+                candidateManager.SelectedAddon = candidateManager.Addons.FirstOrDefault();
                 SaveHelper.SetUnsavedChanges(true);
-                await SaveHelper.SaveAsync();
+                if (!await SaveHelper.SaveAsync(force: true))
+                {
+                    throw new IOException("Не удалось сохранить импортированный проект.");
+                }
+
                 PersistentSettingsHelper.Instance.AddRecentProject(
                     Path.Combine(projectRoot, SaveHelper.AutoSaveFileName),
                     projectName,
-                    AddonManager.Addons.Sum(addon => addon.Drawables.Count),
-                    AddonManager.Addons.Count);
+                    candidateManager.Addons.Sum(addon => addon.Drawables.Count),
+                    candidateManager.Addons.Count);
 
+                CommitProjectLoad(previousManager!, candidateManager, projectRoot);
+                swapped = false;
+                if (existingProjectMoved && backupPath != null)
+                {
+                    LogHelper.Log($"Существующий проект сохранён в резервной копии: {backupPath}", LogType.Info);
+                }
                 success = true;
                 return true;
             }
             catch (Exception ex)
             {
+                if (swapped && previousManager != null)
+                {
+                    RestoreProject(previousManager, previousRoot);
+                    DuplicateDetector.Clear();
+                    foreach (var addon in previousManager.Addons)
+                    {
+                        foreach (var drawable in addon.Drawables)
+                        {
+                            DuplicateDetector.RegisterDrawable(drawable);
+                        }
+                    }
+                    SaveHelper.SetUnsavedChanges(previousDirty);
+                }
+
                 ErrorLogHelper.LogError("Ошибка импорта", ex);
                 Controls.CustomMessageBox.Show(
                     LocalizationHelper.Format("Не удалось импортировать проект: {0}", ErrorMessageHelper.Friendly(ex)),
@@ -921,6 +1163,7 @@ namespace grzyClothTool
             finally
             {
                 ProgressHelper.Stop(success ? "Проект импортирован" : "Импорт не завершён", success);
+                Interlocked.Exchange(ref _projectOperationActive, 0);
                 try
                 {
                     if (File.Exists(zipPath)) File.Delete(zipPath);
@@ -929,6 +1172,34 @@ namespace grzyClothTool
                 catch (Exception ex)
                 {
                     LogHelper.Log($"Не удалось удалить временные файлы импорта: {ex.Message}", LogType.Warning);
+                }
+
+                if (!success && existingProjectMoved && backupPath != null && Directory.Exists(backupPath))
+                {
+                    try
+                    {
+                        if (Directory.Exists(projectRoot))
+                        {
+                            Directory.Delete(projectRoot, true);
+                        }
+                        Directory.Move(backupPath, projectRoot);
+                        LogHelper.Log($"Резервная копия восстановлена после неудачного импорта: {projectRoot}", LogType.Info);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogHelper.Log($"Не удалось восстановить проект после неудачного импорта: {ex.Message}. Резервная копия сохранена в {backupPath}", LogType.Error);
+                    }
+                }
+                else if (!success && targetCreatedByImport && Directory.Exists(projectRoot))
+                {
+                    try
+                    {
+                        Directory.Delete(projectRoot, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogHelper.Log($"Не удалось удалить незавершённый импорт: {ex.Message}", LogType.Warning);
+                    }
                 }
             }
         }
@@ -969,8 +1240,11 @@ namespace grzyClothTool
             ProgressHelper.Start("Экспорт проекта...");
             try
             {
-                await SaveHelper.SaveAsync();
-                var builder = new BuildResourceHelper(projectName, buildPath, new Progress<int>(), BuildResourceType.FiveM, false);
+                if (!await SaveHelper.SaveAsync(force: true))
+                {
+                    throw new IOException("Не удалось сохранить проект перед экспортом.");
+                }
+                var builder = new BuildResourceHelper(projectName, buildPath, new Progress<int>(), BuildResourceType.FiveM, false, markOutputDirectory: false);
                 await builder.BuildFiveMResource();
                 await Task.Run(() => ZipFile.CreateFromDirectory(buildPath, zipPath, CompressionLevel.Fastest, false));
                 await ObfuscationHelper.XORFile(zipPath, temporaryOutput);
@@ -1019,12 +1293,19 @@ namespace grzyClothTool
         // if main window is closed, close CW window too
         private void Window_Closed(object sender, System.EventArgs e)
         {
+            SaveHelper.Shutdown();
+            SaveHelper.AutoSaveProgress -= OnAutoSaveProgress;
+            SaveHelper.RemainingSecondsChanged -= OnRemainingSecondsChanged;
+            ProgressHelper.ProgressStatusChanged -= ProgressHelper_ProgressStatusChanged;
+            LogHelper.LogMessageCreated -= LogHelper_LogMessageCreated;
+            LocalizationHelper.LanguageChanged -= OnLanguageChanged;
+
             if (_addonManager != null)
             {
                 _addonManager.PropertyChanged -= OnAddonManagerPropertyChanged;
             }
             PreviewHost?.ClosePreview();
-            SaveHelper.Shutdown();
+            App.splashScreen = null;
             LogHelper.Close();
         }
 

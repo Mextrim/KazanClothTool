@@ -49,6 +49,8 @@ namespace grzyClothTool.Views
             }
         }
 
+        private AddonManager _subscribedManager;
+
         public ProjectWindow()
         {
             InitializeComponent();
@@ -77,15 +79,17 @@ namespace grzyClothTool.Views
         {
             PreviewWindowHost.Preview3DAvailabilityChanged -= OnPreview3DAvailabilityChanged;
             PreviewWindowHost.Preview3DAvailabilityChanged += OnPreview3DAvailabilityChanged;
-            MainWindow.AddonManager.PropertyChanged -= OnAddonManagerPropertyChanged;
-            MainWindow.AddonManager.PropertyChanged += OnAddonManagerPropertyChanged;
+            _subscribedManager?.PropertyChanged -= OnAddonManagerPropertyChanged;
+            _subscribedManager = MainWindow.AddonManager;
+            _subscribedManager.PropertyChanged += OnAddonManagerPropertyChanged;
             UpdatePreviewButtonState();
         }
 
         private void ProjectWindow_Unloaded(object sender, RoutedEventArgs e)
         {
             PreviewWindowHost.Preview3DAvailabilityChanged -= OnPreview3DAvailabilityChanged;
-            MainWindow.AddonManager.PropertyChanged -= OnAddonManagerPropertyChanged;
+            _subscribedManager?.PropertyChanged -= OnAddonManagerPropertyChanged;
+            _subscribedManager = null;
         }
 
         private void OnAddonManagerPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -98,6 +102,9 @@ namespace grzyClothTool.Views
 
         private void OnPreview3DAvailabilityChanged(object sender, EventArgs e)
         {
+            if (Dispatcher.HasShutdownStarted || Dispatcher.HasShutdownFinished)
+                return;
+
             Dispatcher.Invoke(() => UpdatePreviewButtonState());
         }
 

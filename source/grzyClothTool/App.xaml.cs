@@ -122,10 +122,13 @@ public partial class App : Application
             _resetSplashCreated?.Set();
             Dispatcher.Run();
         }
-        catch
+        catch (Exception ex)
         {
+            // Splash is optional. A failure must not terminate the process or
+            // leave the main window waiting forever for a message queue.
+            splashScreen = null;
+            WriteErrorLog(ex);
             _resetSplashCreated?.Set();
-            throw;
         }
     }
 

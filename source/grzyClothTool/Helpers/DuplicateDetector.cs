@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
 
 namespace grzyClothTool.Helpers;
 
 public static class DuplicateDetector
 {
     private static readonly Dictionary<string, List<GDrawable>> _drawableDuplicateGroups = new();
+    private static readonly object _sync = new();
 
     public static string ComputeDrawableHash(GDrawable drawable)
     {
@@ -25,12 +25,10 @@ public static class DuplicateDetector
             var fileInfo = new FileInfo(drawable.FullFilePath);
             var fileSize = fileInfo.Length;
 
-            int attempts = 0;
-            while (drawable.IsLoading && attempts < 50)
-            {
-                Task.Delay(100).Wait();
-                attempts++;
-            }
+            // Do not block the UI while a drawable is still being parsed. A
+            // later duplicate rescan will register it once loading completes.
+            if (drawable.IsLoading)
+                return null;
 
             var hashComponents = new List<string>
             {
@@ -76,12 +74,15 @@ public static class DuplicateDetector
         if (string.IsNullOrEmpty(hash))
             return null;
 
-        if (_drawableDuplicateGroups.TryGetValue(hash, out var existingGroup))
+        lock (_sync)
         {
-            return existingGroup;
-        }
+            if (_drawableDuplicateGroups.TryGetValue(hash, out var existingGroup))
+            {
+                return existingGroup;
+            }
 
-        return null;
+            return null;
+        }
     }
 
     public static Dictionary<GDrawable, List<GDrawable>> CheckDrawableDuplicatesBatch(IEnumerable<GDrawable> drawables)
@@ -115,16 +116,19 @@ public static class DuplicateDetector
         if (string.IsNullOrEmpty(hash))
             return;
 
-        if (!_drawableDuplicateGroups.TryGetValue(hash, out List<GDrawable> value))
+        lock (_sync)
         {
-            value = [];
-            _drawableDuplicateGroups[hash] = value;
-        }
+            if (!_drawableDuplicateGroups.TryGetValue(hash, out List<GDrawable> value))
+            {
+                value = [];
+                _drawableDuplicateGroups[hash] = value;
+            }
 
-        if (!value.Contains(drawable))
-        {
-            value.Add(drawable);
-            UpdateDrawableDuplicateInfo(hash);
+            if (!value.Contains(drawable))
+            {
+                value.Add(drawable);
+                UpdateDrawableDuplicateInfo(hash);
+            }
         }
     }
 
@@ -137,17 +141,20 @@ public static class DuplicateDetector
         if (string.IsNullOrEmpty(hash))
             return;
 
-        if (_drawableDuplicateGroups.TryGetValue(hash, out var group))
+        lock (_sync)
         {
-            group.Remove(drawable);
-            
-            if (group.Count == 0)
+            if (_drawableDuplicateGroups.TryGetValue(hash, out var group))
             {
-                _drawableDuplicateGroups.Remove(hash);
-            }
-            else
-            {
-                UpdateDrawableDuplicateInfo(hash);
+                group.Remove(drawable);
+
+                if (group.Count == 0)
+                {
+                    _drawableDuplicateGroups.Remove(hash);
+                }
+                else
+                {
+                    UpdateDrawableDuplicateInfo(hash);
+                }
             }
         }
 
@@ -178,17 +185,26 @@ public static class DuplicateDetector
         if (string.IsNullOrEmpty(hash))
             return null;
 
-        return _drawableDuplicateGroups.TryGetValue(hash, out var group) ? group : null;
+        lock (_sync)
+        {
+            return _drawableDuplicateGroups.TryGetValue(hash, out var group) ? group : null;
+        }
     }
 
     public static void Clear()
     {
-        _drawableDuplicateGroups.Clear();
+        lock (_sync)
+        {
+            _drawableDuplicateGroups.Clear();
+        }
     }
 
     public static int GetDuplicateGroupCount()
     {
-        return _drawableDuplicateGroups.Count(kvp => kvp.Value.Count > 1);
+        lock (_sync)
+        {
+            return _drawableDuplicateGroups.Count(kvp => kvp.Value.Count > 1);
+        }
     }
 
 

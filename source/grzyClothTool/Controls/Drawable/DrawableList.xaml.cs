@@ -66,7 +66,7 @@ namespace grzyClothTool.Controls
             set { SetValue(ItemsSourceProperty, value); }
         }
 
-        public object DrawableListSelectedValue => MyListBox.SelectedValue;
+        public object DrawableListSelectedValue => MyListBox.SelectedItem;
 
         private ICollectionView _drawablesView;
         public ICollectionView DrawablesView
@@ -399,8 +399,15 @@ namespace grzyClothTool.Controls
             MenuItem menuItem = sender as MenuItem;
             if (menuItem?.Header is string addonName)
             {
-                var selectedDrawables = MainWindow.AddonManager.SelectedAddon.SelectedDrawables.ToList();
-                var addon = MainWindow.AddonManager.Addons.FirstOrDefault(a => a.Name == addonName);
+                var manager = MainWindow.AddonManager;
+                var selectedAddon = manager?.SelectedAddon;
+                var selectedDrawables = selectedAddon?.SelectedDrawables?.ToList() ?? [];
+                if (selectedDrawables.Count == 0)
+                {
+                    return;
+                }
+
+                var addon = manager.Addons.FirstOrDefault(a => a.Name == addonName);
 
                 if (addon == null)
                 {
@@ -430,7 +437,7 @@ namespace grzyClothTool.Controls
 
         private void ShowDuplicateInspector_Click(object sender, RoutedEventArgs e)
         {
-            if (DrawableListSelectedValue is GDrawable drawable && drawable.DuplicateInfo.IsDuplicate)
+            if (DrawableListSelectedValue is GDrawable drawable && drawable.DuplicateInfo?.IsDuplicate == true)
             {
                 var inspector = new DuplicateInspectorWindow(drawable);
                 inspector.ShowDialog();
@@ -462,6 +469,41 @@ namespace grzyClothTool.Controls
             MainWindow.AddonManager.DeleteDrawables(selectedDrawables);
         }
 
+        private static GTextureDetails CloneTextureDetails(GTextureDetails details)
+        {
+            return new GTextureDetails
+            {
+                Width = details.Width,
+                Height = details.Height,
+                MipMapCount = details.MipMapCount,
+                Compression = details.Compression,
+                Name = details.Name,
+                Type = details.Type,
+                IsOptimizeNeeded = details.IsOptimizeNeeded,
+                IsOptimizeNeededTooltip = details.IsOptimizeNeededTooltip
+            };
+        }
+
+        private static GDrawableDetails CloneDrawableDetails(GDrawableDetails details)
+        {
+            if (details == null)
+                return new GDrawableDetails();
+
+            var clone = new GDrawableDetails
+            {
+                TexturesCount = details.TexturesCount,
+                IsWarning = details.IsWarning,
+                Tooltip = details.Tooltip,
+                HasTextureWarnings = details.HasTextureWarnings,
+                HasEmbeddedTextureWarnings = details.HasEmbeddedTextureWarnings,
+                AllModels = details.AllModels.ToDictionary(pair => pair.Key, pair => pair.Value),
+                EmbeddedTextures = details.EmbeddedTextures.ToDictionary(
+                    pair => pair.Key,
+                    pair => pair.Value?.CloneForDuplicate())
+            };
+            return clone;
+        }
+
         private void DuplicateToOppositeGender_Click(object sender, RoutedEventArgs e)
         {
             if (DrawableListSelectedValue is not GDrawable drawable)
@@ -484,7 +526,10 @@ namespace grzyClothTool.Controls
                         texture.IsProp
                     )
                     {
-                        IsOptimizedDuringBuild = texture.IsOptimizedDuringBuild
+                        IsOptimizedDuringBuild = texture.IsOptimizedDuringBuild,
+                        TxtDetails = texture.TxtDetails == null ? null : CloneTextureDetails(texture.TxtDetails),
+                        DisplayName = texture.DisplayName,
+                        IsPreviewDisabled = texture.IsPreviewDisabled
                     };
 
                     if (texture.IsOptimizedDuringBuild && texture.OptimizeDetails != null)
@@ -516,11 +561,16 @@ namespace grzyClothTool.Controls
                 )
                 {
                     Audio = drawable.Audio,
+                    Group = drawable.Group,
+                    DisplayName = drawable.DisplayName,
+                    Tags = drawable.Tags == null ? [] : new ObservableCollection<string>(drawable.Tags),
+                    Details = CloneDrawableDetails(drawable.Details),
                     EnableHighHeels = drawable.EnableHighHeels,
                     HighHeelsValue = drawable.HighHeelsValue,
                     EnableHairScale = drawable.EnableHairScale,
                     HairScaleValue = drawable.HairScaleValue,
                     EnableKeepPreview = drawable.EnableKeepPreview,
+                    HidesHair = drawable.HidesHair,
                     RenderFlag = drawable.RenderFlag,
                     FirstPersonPath = drawable.FirstPersonPath,
                     ClothPhysicsPath = drawable.ClothPhysicsPath
@@ -553,6 +603,10 @@ namespace grzyClothTool.Controls
         private async void ReplaceDrawable_Click(object sender, RoutedEventArgs e)
         {
             var drawable = DrawableListSelectedValue as GDrawable;
+            if (drawable == null)
+            {
+                return;
+            }
 
             OpenFileDialog files = new()
             {
@@ -588,7 +642,12 @@ namespace grzyClothTool.Controls
 
         private async void ExportDrawable_Click(object sender, RoutedEventArgs e)
         {
-            var selectedDrawables = MainWindow.AddonManager.SelectedAddon.SelectedDrawables.ToList();
+            var selectedAddon = MainWindow.AddonManager?.SelectedAddon;
+            var selectedDrawables = selectedAddon?.SelectedDrawables?.ToList() ?? [];
+            if (selectedDrawables.Count == 0)
+            {
+                return;
+            }
 
             MenuItem menuItem = sender as MenuItem;
             var tag = menuItem?.Tag?.ToString();
@@ -617,7 +676,7 @@ namespace grzyClothTool.Controls
                 {
                     foreach (var drawable in selectedDrawables)
                     {
-                        await Task.Run(() => FileHelper.SaveTexturesAsync(new List<GTexture>(drawable.Textures), folderPath, tag).ConfigureAwait(false));
+                        await FileHelper.SaveTexturesAsync(new List<GTexture>(drawable.Textures), folderPath, tag);
                     }
 
                     if (tag == "DDS" || tag == "PNG")
@@ -626,7 +685,7 @@ namespace grzyClothTool.Controls
                     }
                 }
 
-                await FileHelper.SaveDrawablesAsync(selectedDrawables, folderPath).ConfigureAwait(false);
+                await FileHelper.SaveDrawablesAsync(selectedDrawables, folderPath);
             }
             catch (Exception ex)
             {
@@ -860,6 +919,15 @@ namespace grzyClothTool.Controls
 
                 if (e.Data.GetData(typeof(GDrawable)) is GDrawable droppedData && ItemsSource != null)
                 {
+                    // The drag can outlive a tab/ItemsSource change. Never
+                    // mutate or reorder an object that no longer belongs to
+                    // this collection (RemoveAt(-1) used to be reachable).
+                    if (!ItemsSource.Contains(droppedData) || (target != null && !ItemsSource.Contains(target)))
+                    {
+                        CleanupGhostLine();
+                        return;
+                    }
+
                     if (droppedOnGroupHeader && targetGroupName != null)
                     {
                         if (droppedData.Group != targetGroupName)

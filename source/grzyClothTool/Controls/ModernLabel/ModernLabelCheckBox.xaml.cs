@@ -27,6 +27,13 @@ namespace grzyClothTool.Controls
         {
             InitializeComponent();
             MyCheckBox.PreviewMouseDown += (s, e) => IsUserInitiated = true;
+            MyCheckBox.PreviewKeyDown += (s, e) =>
+            {
+                if (e.Key == System.Windows.Input.Key.Space)
+                {
+                    IsUserInitiated = true;
+                }
+            };
         }
     }
 }
