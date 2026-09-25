@@ -13,14 +13,6 @@
 
 [Скачать KazanClothTool v1.2.4](https://github.com/Mextrim/KazanClothTool/releases/download/v1.2.4/KazanClothTool-v1.2.4-win-x64.zip)
 
-## Исходный код
-
-В репозитории доступны исходники WPF-приложения, CodeWalker и C++/Qt MVP:
-
-- `source/grzyClothTool` — основное WPF-приложение;
-- `source/CodeWalker` — интегрированный 3D/ресурсный компонент;
-- `source/KazanClothToolCpp` — параллельный C++/Qt MVP.
-
 ## Запуск
 
 Готовая сборка находится в папке `KazanClothTool`:
@@ -31,7 +23,7 @@ KazanClothTool\KazanClothTool.exe
 
 ## Настройки
 
-Выбор темы, языка (русский, украинский или английский) и путь к папке проектов сохраняются в `%LOCALAPPDATA%\KazanClothTool\settings.json`.
+<code> Выбор темы, языка (русский, украинский или английский) и путь к папке проектов сохраняются в `%LOCALAPPDATA%\KazanClothTool\settings.json`. </code>
 
 Доступны темы: «Графит», «Светлая», «Bootstrap», «Material Design», «Океан», «Закат», «Лес», «Неон», «Аврора», «Рубин», «Кобальт», «Песок», «Роза» и «Моно».
 
