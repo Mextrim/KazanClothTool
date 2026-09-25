@@ -1,0 +1,154 @@
+:root {
+  --kct-primary: #0d6efd;
+  --kct-secondary: #6c757d;
+  --kct-ink: #0f172a;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: var(--kct-ink);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.navbar {
+  backdrop-filter: blur(12px);
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0d6efd 0%, #6610f2 52%, #0f172a 100%);
+}
+
+.hero::before,
+.hero::after {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+}
+
+.hero::before {
+  top: -12rem;
+  right: -8rem;
+  width: 32rem;
+  height: 32rem;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.hero::after {
+  bottom: -16rem;
+  left: 28%;
+  width: 30rem;
+  height: 30rem;
+  background: rgba(13, 202, 240, 0.14);
+}
+
+.hero .container {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-panel {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 1.5rem 3rem rgba(15, 23, 42, 0.2);
+  backdrop-filter: blur(14px);
+}
+
+.section-padding {
+  padding: 5rem 0;
+}
+
+.eyebrow {
+  margin-bottom: 0.5rem;
+  color: var(--kct-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.feature-card {
+  border: 0;
+  border-top: 0.25rem solid var(--kct-primary);
+  border-radius: 0.9rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-0.35rem);
+  box-shadow: 0 1rem 2rem rgba(15, 23, 42, 0.12) !important;
+}
+
+.feature-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  background: rgba(13, 110, 253, 0.1);
+  font-size: 1.5rem;
+}
+
+.feature-list li {
+  margin-bottom: 0.55rem;
+  color: var(--kct-secondary);
+}
+
+.feature-list i {
+  margin-right: 0.5rem;
+  color: #198754;
+}
+
+.carousel {
+  background: #111827;
+}
+
+.carousel .carousel-item img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: contain;
+  background: #111827;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  width: 5rem;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  background-size: 1.1rem;
+}
+
+.table {
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+code {
+  color: #d63384;
+}
+
+pre code {
+  color: inherit;
+}
+
+@media (max-width: 767.98px) {
+  .section-padding {
+    padding: 3.5rem 0;
+  }
+
+  .hero .display-3 {
+    font-size: 2.6rem;
+  }
+}
