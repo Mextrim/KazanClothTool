@@ -18,14 +18,14 @@ namespace grzyClothTool.Controls
         {
             if (_customPedsForm == null || _customPedsForm.IsDisposed || !_customPedsForm.formopen)
             {
-                MessageBox.Show("3D-предпросмотр ещё не готов.", "Экспорт всех PNG", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                CustomMessageBox.Show("3D-предпросмотр ещё не готов.", "Экспорт всех PNG", CustomMessageBox.CustomMessageBoxButtons.OKOnly, CustomMessageBox.CustomMessageBoxIcon.Warning);
                 return;
             }
 
             var addon = MainWindow.AddonManager?.SelectedAddon;
             if (addon?.Drawables == null)
             {
-                MessageBox.Show("Аддон не загружен.", "Экспорт всех PNG", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                CustomMessageBox.Show("Аддон не загружен.", "Экспорт всех PNG", CustomMessageBox.CustomMessageBoxButtons.OKOnly, CustomMessageBox.CustomMessageBoxIcon.Warning);
                 return;
             }
 
@@ -39,7 +39,7 @@ namespace grzyClothTool.Controls
 
             if (items.Count == 0)
             {
-                MessageBox.Show("Текстуры одежды для экспорта не найдены.", "Экспорт всех PNG", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                CustomMessageBox.Show("Текстуры одежды для экспорта не найдены.", "Экспорт всех PNG", CustomMessageBox.CustomMessageBoxButtons.OKOnly, CustomMessageBox.CustomMessageBoxIcon.Warning);
                 return;
             }
 
@@ -55,8 +55,8 @@ namespace grzyClothTool.Controls
             }
 
             if ((settings.Mode == ExportMode.Hard || settings.Mode == ExportMode.Extreme) &&
-                MessageBox.Show("Режимы «Высокий» и «Экстремальный» нагружают GPU и могут привести к сбою приложения или тайм-ауту драйвера AMD/NVIDIA.\n\nПродолжить в режиме " + GetModeDisplayName(settings.Mode) + "?",
-                    "Риск сбоя GPU", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+                CustomMessageBox.Show("Режимы «Высокий» и «Экстремальный» нагружают GPU и могут привести к сбою приложения или тайм-ауту драйвера AMD/NVIDIA.\n\nПродолжить в режиме " + GetModeDisplayName(settings.Mode) + "?",
+                    "Риск сбоя GPU", CustomMessageBox.CustomMessageBoxButtons.YesNo, CustomMessageBox.CustomMessageBoxIcon.Warning) != CustomMessageBox.CustomMessageBoxResult.Yes)
             {
                 return;
             }
@@ -154,7 +154,7 @@ namespace grzyClothTool.Controls
                     {
                         failed++;
                         LogHelper.Log("Ошибка DirectX при экспорте всех PNG (" + relativePath + "): " + ex.Message, Views.LogType.Error);
-                        MessageBox.Show("При экспорте произошла ошибка DirectX или драйвера GPU. Экспорт остановлен для защиты приложения.\n\nПоследний элемент: " + relativePath + "\n\nИспользуйте режим «Низкий». Если ошибка повторится, перезапустите приложение перед новым экспортом: устройство GPU может быть нестабильным.", "Экспорт всех PNG", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        CustomMessageBox.Show("При экспорте произошла ошибка DirectX или драйвера GPU. Экспорт остановлен для защиты приложения.\n\nПоследний элемент: " + relativePath + "\n\nИспользуйте режим «Низкий». Если ошибка повторится, перезапустите приложение перед новым экспортом: устройство GPU может быть нестабильным.", "Экспорт всех PNG", CustomMessageBox.CustomMessageBoxButtons.OKOnly, CustomMessageBox.CustomMessageBoxIcon.Warning);
                         break;
                     }
                     catch (Exception ex)
@@ -192,7 +192,7 @@ namespace grzyClothTool.Controls
                 }
             }
 
-            MessageBox.Show("Экспортировано: " + exported + "\nПропущено или с ошибкой: " + failed, "Экспорт всех PNG", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            CustomMessageBox.Show("Экспортировано: " + exported + "\nПропущено или с ошибкой: " + failed, "Экспорт всех PNG", CustomMessageBox.CustomMessageBoxButtons.OKOnly, CustomMessageBox.CustomMessageBoxIcon.Information);
         }
 
         private static string GetModeDisplayName(ExportMode mode) => mode switch

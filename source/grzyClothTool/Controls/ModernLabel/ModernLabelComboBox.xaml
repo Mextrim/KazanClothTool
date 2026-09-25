@@ -48,6 +48,7 @@
                   SelectedItem="{Binding SelectedItem, ElementName=MyModernLabelComboBox}"
                   HorizontalContentAlignment="Center"
                   IsEditable="False"
+                   AutomationProperties.Name="{Binding Label, ElementName=MyModernLabelComboBox}"
                   StaysOpenOnEdit="{Binding IsMultiSelect, ElementName=MyModernLabelComboBox}">
             <ComboBox.Style>
                 <Style TargetType="ComboBox">
@@ -92,7 +93,7 @@
                             <Popup Name="PART_Popup"
                                    IsOpen="{Binding IsChecked, ElementName=toggleButton}"
                                    Placement="Bottom"
-                                   StaysOpen="true"
+                                   StaysOpen="{Binding IsMultiSelect, ElementName=MyModernLabelComboBox}"
                                    AllowsTransparency="True"
                                    MaxHeight="200"
                                    HorizontalOffset="-1"
@@ -153,7 +154,7 @@
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsDropDownOpen" Value="False" />
-                                <Condition Property="Text" Value="" />
+                                <Condition Property="SelectedItem" Value="{x:Null}" />
                             </MultiTrigger.Conditions>
                             <MultiTrigger.Setters>
                                 <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource Brush400}" />
@@ -213,6 +214,9 @@
                                 <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource Brush800}" />
                             </Trigger.Setters>
                         </Trigger>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </ComboBox.Template>
@@ -271,6 +275,7 @@
                 BorderThickness="0"
                 Cursor="Hand"
                 ToolTip="Очистить группу"
+                 AutomationProperties.Name="Очистить группу"
                 Visibility="Collapsed"
                 Click="ClearButton_Click">
             <Button.Style>

@@ -24,7 +24,7 @@
         </Style>
     </UserControl.Resources>
 
-    <ContentControl>
+    <ContentControl x:Name="NumericSurface">
         <ContentControl.Style>
             <Style TargetType="ContentControl">
                 <Setter Property="Template">
@@ -58,13 +58,15 @@
                                        Padding="2" 
                                        />
                                     <Border Name="line" Grid.Column="1" Background="{DynamicResource Brush400}" Width="1" VerticalAlignment="Stretch" Margin="0"/>
-                                    <TextBox Name="number" Focusable="False" Cursor="Arrow" Foreground="{DynamicResource Brush950}" Background="{DynamicResource Brush50}" Grid.Column="2" HorizontalAlignment="left" BorderThickness="0" Width="24" Text="{Binding Value, ElementName=MyModernLabelNumericUpDown, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                    <TextBox Name="number" Focusable="True" Cursor="IBeam" Foreground="{DynamicResource Brush950}" Background="{DynamicResource Brush50}" Grid.Column="2" HorizontalAlignment="left" BorderThickness="0" Width="32" Text="{Binding Value, ElementName=MyModernLabelNumericUpDown, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         AutomationProperties.Name="{Binding Label, ElementName=MyModernLabelNumericUpDown}"
+                                         PreviewKeyDown="Number_PreviewKeyDown"
                                         VerticalContentAlignment="Center" Margin="0,5" />
                                     <StackPanel Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Right" Margin="0">
-                                        <Button Style="{StaticResource UpButton}" Background="{DynamicResource Brush100}" BorderThickness="0" Margin="0" Padding="0" Width="16" Height="19.5" Click="IncrementValue">
+                                        <Button x:Name="UpButtonElement" Style="{StaticResource UpButton}" Background="{DynamicResource Brush100}" BorderThickness="0" Margin="0" Padding="0" Width="24" Height="20" AutomationProperties.Name="Увеличить" Click="IncrementValue">
                                             <Path Name="arrowup" Data="M 0 4 L 8 4 L 4 0 Z" Fill="{DynamicResource Brush950}" />
                                         </Button>
-                                        <Button Style="{StaticResource DownButton}" Background="{DynamicResource Brush100}" BorderThickness="0" Margin="0" Padding="0" Width="16" Height="19.5" Click="DecrementValue">
+                                        <Button x:Name="DownButtonElement" Style="{StaticResource DownButton}" Background="{DynamicResource Brush100}" BorderThickness="0" Margin="0" Padding="0" Width="24" Height="20" AutomationProperties.Name="Уменьшить" Click="DecrementValue">
                                             <Path Name="arrowdown" Data="M 0 0 L 8 0 L 4 4 Z" Fill="{DynamicResource Brush950}" />
                                         </Button>
                                     </StackPanel>
@@ -82,7 +84,10 @@
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource Brush800}" />
                                 </Trigger>
-                            </ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                     <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+                                 </Trigger>
+                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>

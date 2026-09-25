@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using grzyClothTool.Helpers;
+using System;
+using System.Windows;
 using System.Windows.Input;
 
 namespace grzyClothTool.Controls
@@ -24,13 +26,13 @@ namespace grzyClothTool.Controls
             .Register("IsFolderSelection",
                 typeof(bool),
                 typeof(ModernLabelTextBox),
-                new FrameworkPropertyMetadata(false));
+                new FrameworkPropertyMetadata(false, OnSelectionModeChanged));
 
         public static readonly DependencyProperty IsFileSelectionProperty = DependencyProperty
             .Register("IsFileSelection",
                 typeof(bool),
                 typeof(ModernLabelTextBox),
-                new FrameworkPropertyMetadata(false));
+                new FrameworkPropertyMetadata(false, OnSelectionModeChanged));
 
         public static readonly DependencyProperty FileExtensionProperty = DependencyProperty
             .Register("FileExtension",
@@ -86,6 +88,14 @@ namespace grzyClothTool.Controls
             } 
         }
 
+        private static void OnSelectionModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is ModernLabelTextBox control && control.MyText != null)
+            {
+                control.MyText.IsReadOnly = control.IsFolderOrFileSelection;
+            }
+        }
+
         static ModernLabelTextBox()
         {
             FontSizeProperty.OverrideMetadata(
@@ -102,28 +112,48 @@ namespace grzyClothTool.Controls
 
         private void MyText_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            IsUserInitiated = true;
-            if (IsFolderSelection)
+            if (!IsFolderOrFileSelection)
             {
-                var dialog = new System.Windows.Forms.FolderBrowserDialog();
-                dialog.ShowDialog();
-
-                OriginalSelectedPath = dialog.SelectedPath;
-                Text = dialog.SelectedPath;
-            } 
-            else if (IsFileSelection)
-            {
-                var dialog = new Microsoft.Win32.OpenFileDialog
-                {
-                    DefaultExt = FileExtension,
-                    Filter = $"{FileExtension} files (*{FileExtension})|*{FileExtension}"
-                };
-                dialog.ShowDialog();
-
-                OriginalSelectedPath = dialog.FileName;
-                Text = dialog.FileName;
+                return;
             }
-            IsUserInitiated = false;
+
+            IsUserInitiated = true;
+            try
+            {
+                if (IsFolderSelection)
+                {
+                    using var dialog = new System.Windows.Forms.FolderBrowserDialog
+                    {
+                        Description = LocalizationHelper.Translate("Выберите папку")
+                    };
+
+                    if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK &&
+                        !string.IsNullOrWhiteSpace(dialog.SelectedPath))
+                    {
+                        OriginalSelectedPath = dialog.SelectedPath;
+                        Text = dialog.SelectedPath;
+                    }
+                }
+                else if (IsFileSelection)
+                {
+                    var dialog = new Microsoft.Win32.OpenFileDialog
+                    {
+                        DefaultExt = FileExtension,
+                        Filter = $"{FileExtension} files (*{FileExtension})|*{FileExtension}",
+                        Title = LocalizationHelper.Translate("Выберите файл")
+                    };
+
+                    if (dialog.ShowDialog() == true && !string.IsNullOrWhiteSpace(dialog.FileName))
+                    {
+                        OriginalSelectedPath = dialog.FileName;
+                        Text = dialog.FileName;
+                    }
+                }
+            }
+            finally
+            {
+                IsUserInitiated = false;
+            }
         }
     }
 }

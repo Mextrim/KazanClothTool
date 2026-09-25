@@ -44,7 +44,7 @@
             <MenuItem Header="Удалить" Click="DeleteDrawable_Click" />
             <MenuItem Header="Заменить" Click="ReplaceDrawable_Click" />
             <MenuItem Header="Дублировать для противоположного пола" Click="DuplicateToOppositeGender_Click" />
-            <MenuItem Header="Переместить в другой аддон" ItemsSource="{Binding AddonManager.MoveMenuItems, RelativeSource={RelativeSource AncestorType=Window}}">
+            <MenuItem Header="Переместить в другой аддон" ItemsSource="{Binding PlacementTarget.DataContext.MoveMenuItems, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                 <MenuItem.ItemContainerStyle>
                     <Style TargetType="MenuItem">
                         <Setter Property="Header" Value="{Binding Header}" />
@@ -61,7 +61,7 @@
         </ContextMenu>
         <ContextMenu x:Key="MultipleSelectionContextMenu">
             <MenuItem Header="Удалить" Click="DeleteDrawable_Click" />
-            <MenuItem Header="Переместить" ItemsSource="{Binding AddonManager.MoveMenuItems, RelativeSource={RelativeSource AncestorType=Window}}">
+            <MenuItem Header="Переместить" ItemsSource="{Binding PlacementTarget.DataContext.MoveMenuItems, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                 <MenuItem.ItemContainerStyle>
                     <Style TargetType="MenuItem">
                         <Setter Property="Header" Value="{Binding Header}" />

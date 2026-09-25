@@ -1,3 +1,4 @@
+using grzyClothTool.Controls;
 using grzyClothTool.Helpers;
 using System;
 using System.ComponentModel;
@@ -31,13 +32,13 @@ namespace grzyClothTool.Views
         {
             if (!SetupCompleted)
             {
-                var result = System.Windows.MessageBox.Show(
+                var result = CustomMessageBox.Show(
                     LocalizationHelper.Translate("Чтобы продолжить работу с приложением, необходимо выбрать главную папку.\n\nЗакрыть приложение?"),
                     LocalizationHelper.Translate("Требуется настройка"),
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Warning);
+                    CustomMessageBox.CustomMessageBoxButtons.YesNo,
+                    CustomMessageBox.CustomMessageBoxIcon.Warning);
 
-                if (result == MessageBoxResult.No)
+                if (result == CustomMessageBox.CustomMessageBoxResult.No)
                 {
                     e.Cancel = true;
                 }
@@ -111,7 +112,8 @@ namespace grzyClothTool.Views
             }
             catch (Exception ex)
             {
-                ValidationMessage.Text = LocalizationHelper.Format("Ошибка: {0}", ex.Message);
+                ErrorLogHelper.LogError("Не удалось настроить папку проектов", ex);
+                ValidationMessage.Text = LocalizationHelper.Format("Ошибка: {0}", ErrorMessageHelper.Friendly(ex));
                 ValidationMessage.Visibility = Visibility.Visible;
             }
         }

@@ -14,8 +14,8 @@
         Title="KazanClothTool"
         Height="900"
         Width="1440"
-        MinWidth="1180"
-        MinHeight="720"
+        MinWidth="1000"
+        MinHeight="640"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         ResizeMode="CanResize"
@@ -64,15 +64,15 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource Brush150}" />
+                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="{DynamicResource Brush400}" />
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.92" />
                                 <Setter Property="Foreground" Value="{DynamicResource Brush950}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource Brush200}" />
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.82" />
                             </Trigger>
                             <Trigger Property="IsKeyboardFocused" Value="True">
                                 <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
-                                <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource Brush75}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter Property="Opacity" Value="0.4" />
@@ -207,7 +207,8 @@
         </Style>
     </Window.Resources>
 
-    <Border BorderBrush="{DynamicResource Brush300}"
+    <Border x:Name="WindowFrame"
+            BorderBrush="{DynamicResource Brush300}"
             BorderThickness="1"
             Background="{DynamicResource Brush50}"
             CornerRadius="12">
@@ -433,14 +434,14 @@
                             </ad:LayoutDocument>
                         </ad:LayoutDocumentPane>
 
-                        <ad:LayoutAnchorablePane DockWidth="500">
+                        <ad:LayoutAnchorablePane DockWidth="420">
                             <ad:LayoutAnchorable x:Name="PreviewAnchorable"
                                                  ContentId="PreviewAnchorable"
                                                  Title="3D ПРЕДПРОСМОТР"
                                                  CanClose="True"
                                                  CanHide="True"
                                                  CanFloat="True"
-                                                 AutoHideWidth="500"
+                                                 AutoHideWidth="420"
                                                  FloatingWidth="820"
                                                  FloatingHeight="620"
                                                  IsVisible="False">
@@ -465,7 +466,11 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="12,0,8,0" VerticalAlignment="Center">
+                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="12,0,8,0" VerticalAlignment="Center"
+                                 MouseDown="StatusBarItem_MouseDoubleClick"
+                                 ToolTip="Открыть журнал"
+                                 AutomationProperties.Name="Открыть журнал"
+                                 Cursor="Hand">
                         <controls:AutoSaveIndicator x:Name="AutoSaveIndicator" Visibility="Collapsed" Margin="0,0,8,0" />
                         <icons:MaterialIcon x:Name="logBarIcon"
                                             Kind="InformationOutline"
@@ -479,7 +484,8 @@
                                    FontSize="11"
                                    VerticalAlignment="Center"
                                    Margin="7,0,0,0"
-                                   TextTrimming="CharacterEllipsis" />
+                                   TextTrimming="CharacterEllipsis"
+                                   AutomationProperties.LiveSetting="Polite" />
                     </StackPanel>
 
                     <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="0,0,12,0" VerticalAlignment="Center">

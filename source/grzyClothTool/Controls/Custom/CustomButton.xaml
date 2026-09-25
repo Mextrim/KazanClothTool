@@ -22,6 +22,7 @@
                     Foreground="{DynamicResource Brush950}"
                     ToolTip="{Binding Tooltip, ElementName=MyCustomButton}"
                     ToolTipService.InitialShowDelay="250"
+                     AutomationProperties.Name="{Binding Label, ElementName=MyCustomButton}"
                     Click="Button_Click">
                 <Button.Style>
                     <Style TargetType="Button">
@@ -108,7 +109,9 @@
                       Background="Transparent"
                       BorderThickness="0"
                       Cursor="Hand"
-                      IsChecked="{Binding IsDropDownOpen, Mode=TwoWay}">
+                      IsChecked="{Binding IsDropDownOpen, ElementName=MyCustomButton, Mode=TwoWay}"
+                       AutomationProperties.Name="Открыть список"
+                       AutomationProperties.HelpText="Выберите вариант из списка">
             <ToggleButton.Template>
                 <ControlTemplate TargetType="ToggleButton">
                     <Border x:Name="DropdownSurface"
@@ -146,12 +149,14 @@
             </ToggleButton.Style>
         </ToggleButton>
 
-        <Popup Width="250"
+        <Popup x:Name="DropdownPopup"
+               Width="250"
                PlacementTarget="{Binding ElementName=ButtonSurface}"
                Placement="Top"
                VerticalOffset="-4"
                StaysOpen="False"
-               IsOpen="{Binding IsChecked, ElementName=DropdownToggle}"
+               IsOpen="{Binding IsDropDownOpen, ElementName=MyCustomButton}"
+               Closed="DropdownPopup_Closed"
                AllowsTransparency="True">
             <Border Width="250"
                     MinWidth="250"

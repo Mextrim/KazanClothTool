@@ -77,12 +77,23 @@ namespace grzyClothTool.Views
         {
             PreviewWindowHost.Preview3DAvailabilityChanged -= OnPreview3DAvailabilityChanged;
             PreviewWindowHost.Preview3DAvailabilityChanged += OnPreview3DAvailabilityChanged;
+            MainWindow.AddonManager.PropertyChanged -= OnAddonManagerPropertyChanged;
+            MainWindow.AddonManager.PropertyChanged += OnAddonManagerPropertyChanged;
             UpdatePreviewButtonState();
         }
 
         private void ProjectWindow_Unloaded(object sender, RoutedEventArgs e)
         {
             PreviewWindowHost.Preview3DAvailabilityChanged -= OnPreview3DAvailabilityChanged;
+            MainWindow.AddonManager.PropertyChanged -= OnAddonManagerPropertyChanged;
+        }
+
+        private void OnAddonManagerPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName is nameof(AddonManager.HasProject) or nameof(AddonManager.ProjectName))
+            {
+                Dispatcher.BeginInvoke(new Action(UpdatePreviewButtonState));
+            }
         }
 
         private void OnPreview3DAvailabilityChanged(object sender, EventArgs e)
@@ -94,7 +105,7 @@ namespace grzyClothTool.Views
         {
             if (PreviewButton != null)
             {
-                PreviewButton.IsEnabled = SettingsHelper.Preview3DAvailable;
+                PreviewButton.IsEnabled = MainWindow.AddonManager.HasProject && SettingsHelper.Preview3DAvailable;
             }
         }
 
@@ -357,6 +368,15 @@ namespace grzyClothTool.Views
                 if (Addon.SelectedDrawable != null && !Addon.SelectedDrawable.IsEncrypted)
                 {
                     CWHelper.SendDrawableUpdateToPreview(e);
+                    mainWindow.PreviewHost?.MarkModelRendered();
+                }
+                else if (Addon.SelectedDrawable?.IsEncrypted == true)
+                {
+                    mainWindow.PreviewHost?.ShowPreviewMessage("Зашифрованная одежда не может быть показана в 3D-просмотре");
+                }
+                else
+                {
+                    mainWindow.PreviewHost?.ShowWaitingForSelection();
                 }
 
                 MainWindow.AddonManager.IsPreviewEnabled = true;
@@ -402,6 +422,7 @@ namespace grzyClothTool.Views
             if (mainWindow?.PreviewAnchorable?.IsVisible != true) return;
             
             CWHelper.SendDrawableUpdateToPreview(e);
+            mainWindow.PreviewHost?.MarkModelRendered();
         }
 
         private void SelectedDrawable_Updated(object sender, DrawableUpdatedArgs e)
@@ -419,6 +440,7 @@ namespace grzyClothTool.Views
             if (mainWindow?.PreviewAnchorable?.IsVisible != true) return;
 
             CWHelper.SendDrawableUpdateToPreview(e);
+            mainWindow.PreviewHost?.MarkModelRendered();
         }
 
         private void SelectedDrawable_TextureChanged(object sender, EventArgs e)
@@ -438,6 +460,7 @@ namespace grzyClothTool.Views
             if (mainWindow?.PreviewAnchorable?.IsVisible != true) return;
 
             CWHelper.SendDrawableUpdateToPreview(e);
+            mainWindow.PreviewHost?.MarkModelRendered();
         }
 
         #region Drag and Drop for Drawables

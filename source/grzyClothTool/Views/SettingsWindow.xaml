@@ -108,7 +108,7 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Click="BackButton_Click" ToolTip="Вернуться в редактор"
+            <Button x:Name="BackButton" Grid.Column="0" Click="BackButton_Click" ToolTip="Вернуться в редактор"
                     Background="Transparent" BorderThickness="0" Padding="4" MinWidth="112" Height="42">
                 <StackPanel Orientation="Horizontal">
                     <icons:MaterialIcon Kind="ArrowLeft" Width="20" Height="20" Foreground="{DynamicResource AccentBrush}" />
@@ -189,17 +189,20 @@
 
                             <StackPanel Grid.Column="0">
                                 <TextBlock Text="Высокий LOD" Style="{StaticResource SettingsFieldLabel}" />
-                                <TextBox Text="{Binding Path=PolygonLimitHigh, Source={x:Static helpers:SettingsHelper.Instance}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBox Text="{Binding Path=PolygonLimitHigh, Source={x:Static helpers:SettingsHelper.Instance}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         AutomationProperties.Name="Высокий LOD" />
                                 <TextBlock Text="Лимит полигонов для верхнего уровня детализации." Style="{StaticResource SettingsDescription}" />
                             </StackPanel>
                             <StackPanel Grid.Column="2">
                                 <TextBlock Text="Средний LOD" Style="{StaticResource SettingsFieldLabel}" />
-                                <TextBox Text="{Binding Path=PolygonLimitMed, Source={x:Static helpers:SettingsHelper.Instance}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBox Text="{Binding Path=PolygonLimitMed, Source={x:Static helpers:SettingsHelper.Instance}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         AutomationProperties.Name="Средний LOD" />
                                 <TextBlock Text="Лимит полигонов для среднего уровня детализации." Style="{StaticResource SettingsDescription}" />
                             </StackPanel>
                             <StackPanel Grid.Column="4">
                                 <TextBlock Text="Низкий LOD" Style="{StaticResource SettingsFieldLabel}" />
-                                <TextBox Text="{Binding Path=PolygonLimitLow, Source={x:Static helpers:SettingsHelper.Instance}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBox Text="{Binding Path=PolygonLimitLow, Source={x:Static helpers:SettingsHelper.Instance}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         AutomationProperties.Name="Низкий LOD" />
                                 <TextBlock Text="Лимит полигонов для нижнего уровня детализации." Style="{StaticResource SettingsDescription}" />
                             </StackPanel>
                         </Grid>
@@ -217,15 +220,21 @@
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0">
                                 <TextBlock Text="Diffuse" Style="{StaticResource SettingsFieldLabel}" />
-                                <ComboBox ItemsSource="{Binding TextureResolutionOptions}" SelectedItem="{Binding Path=TextureResolutionLimitDiffuse, Source={x:Static helpers:SettingsHelper.Instance}, Mode=TwoWay}" />
+                                <ComboBox ItemsSource="{Binding TextureResolutionOptions}"
+                                          SelectedItem="{Binding Path=TextureResolutionLimitDiffuse, Source={x:Static helpers:SettingsHelper.Instance}, Mode=TwoWay}"
+                                          AutomationProperties.Name="Разрешение diffuse-текстуры" />
                             </StackPanel>
                             <StackPanel Grid.Column="2">
                                 <TextBlock Text="Normal" Style="{StaticResource SettingsFieldLabel}" />
-                                <ComboBox ItemsSource="{Binding TextureResolutionOptions}" SelectedItem="{Binding Path=TextureResolutionLimitNormal, Source={x:Static helpers:SettingsHelper.Instance}, Mode=TwoWay}" />
+                                <ComboBox ItemsSource="{Binding TextureResolutionOptions}"
+                                          SelectedItem="{Binding Path=TextureResolutionLimitNormal, Source={x:Static helpers:SettingsHelper.Instance}, Mode=TwoWay}"
+                                          AutomationProperties.Name="Разрешение normal-текстуры" />
                             </StackPanel>
                             <StackPanel Grid.Column="4">
                                 <TextBlock Text="Specular" Style="{StaticResource SettingsFieldLabel}" />
-                                <ComboBox ItemsSource="{Binding TextureResolutionOptions}" SelectedItem="{Binding Path=TextureResolutionLimitSpecular, Source={x:Static helpers:SettingsHelper.Instance}, Mode=TwoWay}" />
+                                <ComboBox ItemsSource="{Binding TextureResolutionOptions}"
+                                          SelectedItem="{Binding Path=TextureResolutionLimitSpecular, Source={x:Static helpers:SettingsHelper.Instance}, Mode=TwoWay}"
+                                          AutomationProperties.Name="Разрешение specular-текстуры" />
                             </StackPanel>
                         </Grid>
                     </StackPanel>

@@ -30,6 +30,7 @@ namespace grzyClothTool
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public string AppVersion => LocalizationHelper.Translate("Версия") + ": " + UpdateHelper.GetCurrentVersion();
+        public bool HasProject => _addonManager?.HasProject == true;
         private static MainWindow _instance;
         public static MainWindow Instance => _instance;
         private static NavigationHelper _navigationHelper;
@@ -37,6 +38,7 @@ namespace grzyClothTool
 
         private static AddonManager _addonManager;
         public static AddonManager AddonManager => _addonManager;
+        private bool _topBarActionsBusy;
 
         private readonly static Dictionary<string, string> TempFoldersNames = new()
         {
@@ -48,6 +50,7 @@ namespace grzyClothTool
         public MainWindow()
         {
             InitializeComponent();
+            FitWindowToWorkArea();
             LocalizationHelper.SetLanguage(PersistentSettingsHelper.Instance.Language, save: false);
             LocalizationHelper.LanguageChanged += (_, _) =>
                 Dispatcher.BeginInvoke(new Action(() =>
@@ -60,6 +63,8 @@ namespace grzyClothTool
 
             _instance = this;
             _addonManager = new AddonManager();
+            _addonManager.PropertyChanged += OnAddonManagerPropertyChanged;
+            SetTopBarActionsEnabled(true);
             SaveHelper.AutoSaveProgress += OnAutoSaveProgress;
             SaveHelper.RemainingSecondsChanged += OnRemainingSecondsChanged;
 
@@ -111,6 +116,21 @@ namespace grzyClothTool
             this.Loaded += MainWindow_Loaded;
             this.KeyDown += MainWindow_KeyDown;
             this.StateChanged += MainWindow_StateChanged;
+        }
+
+        private void FitWindowToWorkArea()
+        {
+            Rect workArea = SystemParameters.WorkArea;
+            double availableWidth = Math.Max(800, workArea.Width - 32);
+            double availableHeight = Math.Max(560, workArea.Height - 32);
+
+            Width = Math.Min(1440, availableWidth);
+            Height = Math.Min(900, availableHeight);
+            MinWidth = Math.Min(1000, availableWidth);
+            MinHeight = Math.Min(640, availableHeight);
+            WindowStartupLocation = WindowStartupLocation.Manual;
+            Left = workArea.Left + Math.Max(0, (workArea.Width - Width) / 2);
+            Top = workArea.Top + Math.Max(0, (workArea.Height - Height) / 2);
         }
 
         private void OnPropertyChanged(string propertyName)
@@ -199,6 +219,13 @@ namespace grzyClothTool
             MaximizeRestoreIcon.Kind = isMaximized
                 ? MaterialIconKind.WindowRestore
                 : MaterialIconKind.WindowMaximize;
+
+            WindowFrame.CornerRadius = isMaximized ? new CornerRadius(0) : new CornerRadius(12);
+
+            string actionKey = isMaximized ? "Свернуть в окно" : "Развернуть";
+            string actionText = LocalizationHelper.Translate(actionKey);
+            MaximizeWindowButton.ToolTip = actionText;
+            System.Windows.Automation.AutomationProperties.SetName(MaximizeWindowButton, actionText);
         }
 
         private async void MainWindow_KeyDown(object sender, KeyEventArgs e)
@@ -304,7 +331,10 @@ namespace grzyClothTool
             this.Dispatcher.Invoke(() =>
             {
                 logBar.Text = e.Message;
-                logBarIcon.Kind = Enum.Parse<MaterialIconKind>(e.TypeIcon);
+                if (Enum.TryParse(e.TypeIcon, out MaterialIconKind iconKind))
+                {
+                    logBarIcon.Kind = iconKind;
+                }
                 logBarIcon.Visibility = Visibility.Visible;
             });
         }
@@ -362,6 +392,9 @@ namespace grzyClothTool
 
         private void SetTopBarActionsEnabled(bool enabled)
         {
+            _topBarActionsBusy = !enabled;
+            bool hasProject = HasProject;
+
             if (OpenProjectButton != null)
             {
                 OpenProjectButton.IsEnabled = enabled;
@@ -374,12 +407,20 @@ namespace grzyClothTool
 
             if (SaveProjectButton != null)
             {
-                SaveProjectButton.IsEnabled = enabled;
+                SaveProjectButton.IsEnabled = enabled && hasProject;
             }
 
             if (ExportProjectButton != null)
             {
-                ExportProjectButton.IsEnabled = enabled;
+                ExportProjectButton.IsEnabled = enabled && hasProject;
+            }
+        }
+
+        private void OnAddonManagerPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName is nameof(AddonManager.HasProject) or nameof(AddonManager.ProjectName))
+            {
+                Dispatcher.BeginInvoke(new Action(() => SetTopBarActionsEnabled(!_topBarActionsBusy)));
             }
         }
 
@@ -978,6 +1019,10 @@ namespace grzyClothTool
         // if main window is closed, close CW window too
         private void Window_Closed(object sender, System.EventArgs e)
         {
+            if (_addonManager != null)
+            {
+                _addonManager.PropertyChanged -= OnAddonManagerPropertyChanged;
+            }
             PreviewHost?.ClosePreview();
             SaveHelper.Shutdown();
             LogHelper.Close();
@@ -993,6 +1038,11 @@ namespace grzyClothTool
 
         private void StatusBarItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            if (e.ClickCount != 2)
+            {
+                return;
+            }
+
             LogHelper.OpenLogWindow();
         }
 

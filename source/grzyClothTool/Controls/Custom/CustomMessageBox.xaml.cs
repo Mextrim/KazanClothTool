@@ -1,4 +1,5 @@
 ﻿using grzyClothTool.Helpers;
+using System;
 using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -17,8 +18,7 @@ namespace grzyClothTool.Controls
     /// </summary>
     public partial class CustomMessageBox : Window
     {
-        // Field that will temporarily store result before we return it and close CustomMessageBox
-        private static CustomMessageBoxResult result = CustomMessageBoxResult.OK;
+        private CustomMessageBoxResult _result = CustomMessageBoxResult.Cancel;
         public string TextBoxValue => CMBTextBox.Text;
 
         // Buttons defined as properties, because couldn't be created (initialized) with event subscription at same time "on-the-fly".
@@ -30,7 +30,8 @@ namespace grzyClothTool.Controls
             {
                 var b = GetDefaultButton();
                 b.Content = LocalizationHelper.Translate("ОК");
-                b.Click += delegate { result = CustomMessageBoxResult.OK; Close(); };
+                b.IsDefault = true;
+                b.Click += delegate { _result = CustomMessageBoxResult.OK; Close(); };
                 return b;
             }
         }
@@ -40,7 +41,8 @@ namespace grzyClothTool.Controls
             {
                 var b = GetDefaultButton();
                 b.Content = LocalizationHelper.Translate("Отмена");
-                b.Click += delegate { result = CustomMessageBoxResult.Cancel; Close(); };
+                b.IsCancel = true;
+                b.Click += delegate { _result = CustomMessageBoxResult.Cancel; Close(); };
                 return b;
             }
         }
@@ -50,7 +52,8 @@ namespace grzyClothTool.Controls
             {
                 var b = GetDefaultButton();
                 b.Content = LocalizationHelper.Translate("Да");
-                b.Click += delegate { result = CustomMessageBoxResult.Yes; Close(); };
+                b.IsDefault = true;
+                b.Click += delegate { _result = CustomMessageBoxResult.Yes; Close(); };
                 return b;
             }
         }
@@ -60,7 +63,8 @@ namespace grzyClothTool.Controls
             {
                 var b = GetDefaultButton();
                 b.Content = LocalizationHelper.Translate("Нет");
-                b.Click += delegate { result = CustomMessageBoxResult.No; Close(); };
+                b.IsCancel = true;
+                b.Click += delegate { _result = CustomMessageBoxResult.No; Close(); };
                 return b;
             }
         }
@@ -69,8 +73,8 @@ namespace grzyClothTool.Controls
             get
             {
                 var b = GetDefaultButton();
-                b.Content = "Открыть папку";
-                b.Click += delegate { result = CustomMessageBoxResult.OpenFolder; Close(); };
+                b.Content = LocalizationHelper.Translate("Открыть папку");
+                b.Click += delegate { _result = CustomMessageBoxResult.OpenFolder; Close(); };
                 return b;
             }
         }
@@ -81,7 +85,7 @@ namespace grzyClothTool.Controls
             {
                 var b = GetDefaultButton();
                 b.Content = LocalizationHelper.Translate("Удалить");
-                b.Click += delegate { result = CustomMessageBoxResult.Delete; Close(); };
+                b.Click += delegate { _result = CustomMessageBoxResult.Delete; Close(); };
                 return b;
             }
         }
@@ -92,7 +96,7 @@ namespace grzyClothTool.Controls
             {
                 var b = GetDefaultButton();
                 b.Content = LocalizationHelper.Translate("Заменить");
-                b.Click += delegate { result = CustomMessageBoxResult.Replace; Close(); };
+                b.Click += delegate { _result = CustomMessageBoxResult.Replace; Close(); };
                 return b;
             }
         }
@@ -103,7 +107,7 @@ namespace grzyClothTool.Controls
             {
                 var b = GetDefaultButton();
                 b.Content = LocalizationHelper.Translate("Мужской");
-                b.Click += delegate { result = CustomMessageBoxResult.Male; Close(); };
+                b.Click += delegate { _result = CustomMessageBoxResult.Male; Close(); };
                 return b;
             }
         }
@@ -114,7 +118,7 @@ namespace grzyClothTool.Controls
             {
                 var b = GetDefaultButton();
                 b.Content = LocalizationHelper.Translate("Женский");
-                b.Click += delegate { result = CustomMessageBoxResult.Female; Close(); };
+                b.Click += delegate { _result = CustomMessageBoxResult.Female; Close(); };
                 return b;
             }
         }
@@ -131,8 +135,25 @@ namespace grzyClothTool.Controls
                                  bool showTextBox = false)
         {
             InitializeComponent();
+
+            var workArea = SystemParameters.WorkArea;
+            MaxWidth = Math.Max(MinWidth, Math.Min(820, workArea.Width - 48));
+            MaxHeight = Math.Max(MinHeight, Math.Min(760, workArea.Height - 48));
+            Width = Math.Min(Width, MaxWidth);
+
             LocalizationHelper.ApplyTo(this);
-            Owner = Application.Current.MainWindow;
+            Window? activeOwner = Application.Current?.Windows
+                .OfType<Window>()
+                .FirstOrDefault(window => window.IsActive && window != this);
+            Window? mainOwner = Application.Current?.MainWindow;
+            if (activeOwner != null)
+            {
+                Owner = activeOwner;
+            }
+            else if (mainOwner != this)
+            {
+                Owner = mainOwner;
+            }
 
             // Handle Ctrl+C press to copy message from CustomMessageBox
             KeyDown += (sender, args) =>
@@ -221,55 +242,57 @@ namespace grzyClothTool.Controls
         // Shows CustomMessageBox with specified message and default "OK" button
         public static CustomMessageBoxResult Show(string message)
         {
-            _ = new CustomMessageBox(message).ShowDialog();
-            return result;
+            var dialog = new CustomMessageBox(message);
+            dialog.ShowDialog();
+            return dialog._result;
         }
 
         // Shows CustomMessageBox with specified message, caption and default "OK" button
         public static CustomMessageBoxResult Show(string message, string caption)
         {
-            _ = new CustomMessageBox(message, caption).ShowDialog();
-            return result;
+            var dialog = new CustomMessageBox(message, caption);
+            dialog.ShowDialog();
+            return dialog._result;
         }
 
         // Shows CustomMessageBox with specified message, caption and button(s)
         public static CustomMessageBoxResult Show(string message, string caption, CustomMessageBoxButtons cmbButtons)
         {
-            _ = new CustomMessageBox(message, caption, cmbButtons).ShowDialog();
-            return result;
+            var dialog = new CustomMessageBox(message, caption, cmbButtons);
+            dialog.ShowDialog();
+            return dialog._result;
         }
 
         // Shows CustomMessageBox with specified message, caption and button(s) and path
         public static CustomMessageBoxResult Show(string message, string caption, CustomMessageBoxButtons cmbButtons, string path)
         {
-            _ = new CustomMessageBox(message, caption, cmbButtons, path: path).ShowDialog();
+            var dialog = new CustomMessageBox(message, caption, cmbButtons, path: path);
+            dialog.ShowDialog();
 
-            if (result == CustomMessageBoxResult.OpenFolder)
+            if (dialog._result == CustomMessageBoxResult.OpenFolder)
             {
                 System.Diagnostics.Process.Start("explorer.exe", path);
             }
-            return result;
+            return dialog._result;
         }
 
         // Shows CustomMessageBox with specified message, caption, button(s) and icon.
         public static CustomMessageBoxResult Show(string message, string caption, CustomMessageBoxButtons cmbButtons, CustomMessageBoxIcon cmbIcon)
         {
-            _ = new CustomMessageBox(message, caption, cmbButtons, cmbIcon).ShowDialog();
-            return result;
+            var dialog = new CustomMessageBox(message, caption, cmbButtons, cmbIcon);
+            dialog.ShowDialog();
+            return dialog._result;
         }
 
         public static (CustomMessageBoxResult result, string textBoxValue) Show(string message, string caption, CustomMessageBoxButtons cmbButtons, CustomMessageBoxIcon cmbIcon, bool showTextBox)
         {
-            var customMessageBox = new CustomMessageBox(message, caption, cmbButtons, cmbIcon, showTextBox: showTextBox);
-            customMessageBox.ShowDialog();
+            var dialog = new CustomMessageBox(message, caption, cmbButtons, cmbIcon, showTextBox: showTextBox);
+            dialog.ShowDialog();
 
             // If the TextBox is visible, return its value along with the button result
-            if (showTextBox)
-            {
-                return (result, customMessageBox.TextBoxValue);
-            }
-
-            return (result, null);
+            return showTextBox
+                ? (dialog._result, dialog.TextBoxValue)
+                : (dialog._result, null);
         }
 
 

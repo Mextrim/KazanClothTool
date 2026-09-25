@@ -27,7 +27,7 @@
     <Color x:Key="ColorAccentHover">#06B6D4</Color>
     <Color x:Key="ColorAccentPressed">#0E7490</Color>
     <Color x:Key="ColorAccentDim">#CFFAFE</Color>
-    <Color x:Key="ColorOnPrimary">#FFFFFFFF</Color>
+    <Color x:Key="ColorOnPrimary">#FF001014</Color>
     <Color x:Key="ColorViewport">#FF07090D</Color>
     <Color x:Key="ColorSecondary">#7C3AED</Color>
     <Color x:Key="ColorSecondaryHover">#8B5CF6</Color>
@@ -61,6 +61,7 @@
     <SolidColorBrush x:Key="AccentDimBrush" Color="{StaticResource ColorAccentDim}" />
     <SolidColorBrush x:Key="OnPrimaryBrush" Color="{StaticResource ColorOnPrimary}" />
     <SolidColorBrush x:Key="ViewportBackgroundBrush" Color="{StaticResource ColorViewport}" />
+    <SolidColorBrush x:Key="ViewportForegroundBrush" Color="#E5E7EB" />
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource ColorSecondary}" />
     <SolidColorBrush x:Key="SecondaryHoverBrush" Color="{StaticResource ColorSecondaryHover}" />
     <SolidColorBrush x:Key="SecondaryDimBrush" Color="{StaticResource ColorSecondaryDim}" />

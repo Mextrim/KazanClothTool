@@ -58,13 +58,13 @@ public partial class SplashScreen : Window, ISplashScreen
             await Dispatcher.InvokeAsync(() =>
             {
                 _messageTimer.Stop();
-                updateTextBox.Text = "Редактор готов";
+                updateTextBox.Text = LocalizationHelper.Translate("Редактор готов");
             });
         }
         else
         {
             _messageTimer.Stop();
-            updateTextBox.Text = "Редактор готов";
+            updateTextBox.Text = LocalizationHelper.Translate("Редактор готов");
         }
 
         var shutdownSignal = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);

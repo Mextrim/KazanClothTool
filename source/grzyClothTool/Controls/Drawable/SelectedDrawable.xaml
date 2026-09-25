@@ -39,8 +39,8 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Opacity" Value="0.8"/>
-                                <Setter Property="Background" Value="red"/>
+                                <Setter Property="Opacity" Value="0.65"/>
+                                <Setter Property="Background" Value="{DynamicResource Brush100}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -101,6 +101,45 @@
 
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter TargetName="border" Property="Opacity" Value="0.4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TextureTabButtonStyle" TargetType="ToggleButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0,0,0,2" />
+            <Setter Property="Padding" Value="16,8" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="TextureTabBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="TextureTabBorder" Property="Background" Value="{DynamicResource Brush150}" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="TextureTabBorder" Property="Background" Value="{DynamicResource Brush75}" />
+                                <Setter TargetName="TextureTabBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="TextureTabBorder" Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.45" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -238,13 +277,13 @@
                                     <icons:MaterialIcon Kind="AlertCircle" 
                                                        Width="20" 
                                                        Height="20"
-                                                       Foreground="#dc2626"
+                                                       Foreground="{DynamicResource DangerBrush}"
                                                        Margin="0,0,8,0"
                                                        VerticalAlignment="Top" />
                                     <TextBlock Text="ПРЕДУПРЕЖДЕНИЕ"
                                                FontSize="13"
                                                FontWeight="Bold"
-                                               Foreground="#dc2626"
+                                               Foreground="{DynamicResource DangerBrush}"
                                                VerticalAlignment="Center" />
                                 </StackPanel>
                                 <TextBlock Text="Выбранные элементы одежды не полностью совпадают. Чтобы изменить общие параметры, выберите одинаковые элементы или нажмите кнопку ниже для принудительного применения." 
@@ -268,7 +307,7 @@
                                 <Style TargetType="Button">
                                     <Setter Property="Content" Value="Принудительно применить" />
                                     <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
-                                    <Setter Property="Foreground" Value="White" />
+                                    <Setter Property="Foreground" Value="{DynamicResource OnPrimaryBrush}" />
                                     <Setter Property="Cursor" Value="Hand" />
                                     <Setter Property="Template">
                                         <Setter.Value>
@@ -554,7 +593,7 @@
                 <Grid Margin="8">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="3*" />
-                        <ColumnDefinition Width="250" />
+                        <ColumnDefinition Width="220" />
                     </Grid.ColumnDefinitions>
 
                     <Border Grid.Column="0" Style="{StaticResource ModernCard}" Margin="0,0,4,0">
@@ -601,7 +640,7 @@
                                 IsUpdated="SelectedDrawable_Updated"/>
 
                                 <c:ModernLabelComboBox Grid.Column="1"
-                                                      Width="150"
+                                                      Width="130"
                                                       Label="Тип одежды" 
                                                       SelectedItem="{Binding SelectedAddon.SelectedDrawable.TypeName, Mode=TwoWay}" 
                                                       ItemsSource="{Binding SelectedAddon.SelectedDrawable.AvailableTypes}" 
@@ -609,7 +648,7 @@
                                                       Margin="0,0,8,0" />
 
                                 <c:ModernLabelComboBox Grid.Column="2"
-                                                      Width="120"
+                                                      Width="110"
                                                       Label="Пол" 
                                                       SelectedItem="{Binding SelectedAddon.SelectedDrawable.SexName, Mode=TwoWay}" 
                                                       ItemsSource="{Binding SelectedAddon.SelectedDrawable.AvailableSex}" 
@@ -627,9 +666,10 @@
                                                      IsFileSelection="True" 
                                                      FileExtension=".ydd" 
                                                      FontSize="12" 
-                                                     Text="{Binding SelectedAddon.SelectedDrawable.FirstPersonPath, Converter={StaticResource FilePathToShortVersionConverter}}" 
+                                                     Text="{Binding SelectedAddon.SelectedDrawable.FirstPersonPath, Converter={StaticResource FilePathToShortVersionConverter}, Mode=OneWay}"
                                                      ToolTip="{Binding SelectedAddon.SelectedDrawable.FirstPersonPath}" 
-                                                     ToolTipService.InitialShowDelay="200" 
+                                                     ToolTipService.InitialShowDelay="200"
+                                                     AutomationProperties.Name="Файл от первого лица"
                                                      IsUpdated="SelectedDrawable_Updated"
                                                      Margin="0,0,8,0" />
 
@@ -639,9 +679,10 @@
                                                      IsFileSelection="True" 
                                                      FileExtension=".yld" 
                                                      FontSize="12" 
-                                                     Text="{Binding SelectedAddon.SelectedDrawable.ClothPhysicsPath, Converter={StaticResource FilePathToShortVersionConverter}}" 
+                                                     Text="{Binding SelectedAddon.SelectedDrawable.ClothPhysicsPath, Converter={StaticResource FilePathToShortVersionConverter}, Mode=OneWay}"
                                                      ToolTip="{Binding SelectedAddon.SelectedDrawable.ClothPhysicsPath}" 
-                                                     ToolTipService.InitialShowDelay="400" 
+                                                     ToolTipService.InitialShowDelay="400"
+                                                     AutomationProperties.Name="Файл физики одежды"
                                                      Margin="8,0,4,0"
                                                       IsUpdated="SelectedDrawable_Updated" />
                             </Grid>
@@ -666,13 +707,11 @@
                                             BorderThickness="0,0,0,1"
                                             CornerRadius="8,8,0,0">
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                                            <Border x:Name="TexturesTab"
-                                                    Background="Transparent"
-                                                    BorderBrush="{DynamicResource Brush500}"
-                                                    BorderThickness="0,0,0,2"
-                                                    Padding="16,8"
-                                                    Cursor="Hand"
-                                                    MouseLeftButtonDown="TexturesTab_Click">
+                                            <ToggleButton x:Name="TexturesTab"
+                                                          Style="{StaticResource TextureTabButtonStyle}"
+                                                          IsChecked="True"
+                                                          AutomationProperties.Name="Текстуры"
+                                                          Click="TexturesTab_Click">
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock Text="Текстуры" 
                                                                FontSize="12"
@@ -708,15 +747,12 @@
                                                         </icons:MaterialIcon.Style>
                                                     </icons:MaterialIcon>
                                                 </StackPanel>
-                                            </Border>
+                                            </ToggleButton>
 
-                                            <Border x:Name="EmbeddedTexturesTab"
-                                                    Background="Transparent"
-                                                    BorderBrush="Transparent"
-                                                    BorderThickness="0,0,0,2"
-                                                    Padding="16,8"
-                                                    Cursor="Hand"
-                                                    MouseLeftButtonDown="EmbeddedTexturesTab_Click">
+                                            <ToggleButton x:Name="EmbeddedTexturesTab"
+                                                          Style="{StaticResource TextureTabButtonStyle}"
+                                                          AutomationProperties.Name="Встроенные текстуры"
+                                                          Click="EmbeddedTexturesTab_Click">
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock Text="Встроенные" 
                                                                FontSize="12"
@@ -742,7 +778,7 @@
                                                         </icons:MaterialIcon.Style>
                                                     </icons:MaterialIcon>
                                                 </StackPanel>
-                                            </Border>
+                                            </ToggleButton>
                                         </StackPanel>
                                     </Border>
 
@@ -777,12 +813,13 @@
                                                         <Setter Property="Padding" Value="0"/>
                                                         <Setter Property="Margin" Value="0"/>
                                                         <Setter Property="BorderThickness" Value="0"/>
-                                                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
                                                         <Setter Property="Template">
                                                             <Setter.Value>
                                                                 <ControlTemplate TargetType="ListBoxItem">
                                                                     <Border x:Name="ItemBorder"
                                                                             Background="{DynamicResource Brush100}"
+                                                                            BorderBrush="Transparent"
+                                                                            BorderThickness="1"
                                                                             SnapsToDevicePixels="True"
                                                                             IsHitTestVisible="True">
                                                                         <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
@@ -797,7 +834,10 @@
                                                                         <Trigger Property="IsSelected" Value="True">
                                                                             <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource Brush400}" />
                                                                         </Trigger>
-                                                                        <MultiTrigger>
+                                                                        <Trigger Property="IsKeyboardFocused" Value="True">
+                                                                             <Setter TargetName="ItemBorder" Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+                                                                         </Trigger>
+                                                                         <MultiTrigger>
                                                                             <MultiTrigger.Conditions>
                                                                                 <Condition Property="IsSelected" Value="True"/>
                                                                                 <Condition SourceName="ItemBorder" Property="IsMouseOver" Value="True"/>
@@ -838,7 +878,7 @@
                                                                 </icons:MaterialIcon>
 
                                                                 <ContentControl ToolTip="Эта текстура будет оптимизирована при сборке ресурса" ToolTipService.InitialShowDelay="0">
-                                                                    <icons:MaterialIcon Kind="CheckCircle" Width="16" Height="16" Foreground="#22c55e" Margin="0,0,2,0">
+                                                                    <icons:MaterialIcon Kind="CheckCircle" Width="16" Height="16" Foreground="{DynamicResource SuccessBrush}" Margin="0,0,2,0">
                                                                         <icons:MaterialIcon.Style>
                                                                             <Style TargetType="{x:Type icons:MaterialIcon}">
                                                                                 <Setter Property="Visibility" Value="Collapsed" />
@@ -872,7 +912,7 @@
                                                                 </ContentControl>
 
                                                                 <ContentControl ToolTip="Текстура не найдена. Вероятно, файл .ytd пуст" ToolTipService.InitialShowDelay="0">
-                                                                    <icons:MaterialIcon Kind="CloseCircle" Width="16" Height="16" Foreground="#ef4444" Margin="0,0,2,0">
+                                                                    <icons:MaterialIcon Kind="CloseCircle" Width="16" Height="16" Foreground="{DynamicResource DangerBrush}" Margin="0,0,2,0">
                                                                         <icons:MaterialIcon.Style>
                                                                             <Style TargetType="{x:Type icons:MaterialIcon}">
                                                                                 <Setter Property="Visibility" Value="Collapsed" />
@@ -963,7 +1003,7 @@
                                                                     Margin="0"
                                                                     Padding="8,4"
                                                                     Width="60"
-                                                                    Height="22"
+                                                                    Height="28" MinHeight="28"
                                                                     BorderThickness="0"
                                                                     Style="{StaticResource RoundedButton}"
                                                                     Background="{DynamicResource Brush300}"
@@ -1021,12 +1061,13 @@
                                                         <Setter Property="Padding" Value="0"/>
                                                         <Setter Property="Margin" Value="0"/>
                                                         <Setter Property="BorderThickness" Value="0"/>
-                                                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
                                                         <Setter Property="Template">
                                                             <Setter.Value>
                                                                 <ControlTemplate TargetType="ListBoxItem">
                                                                     <Border x:Name="ItemBorder"
                                                                             Background="{DynamicResource Brush100}"
+                                                                            BorderBrush="Transparent"
+                                                                            BorderThickness="1"
                                                                             SnapsToDevicePixels="True"
                                                                             IsHitTestVisible="True">
                                                                         <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
@@ -1041,7 +1082,10 @@
                                                                         <Trigger Property="IsSelected" Value="True">
                                                                             <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource Brush400}" />
                                                                         </Trigger>
-                                                                        <MultiTrigger>
+                                                                        <Trigger Property="IsKeyboardFocused" Value="True">
+                                                                             <Setter TargetName="ItemBorder" Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+                                                                         </Trigger>
+                                                                         <MultiTrigger>
                                                                             <MultiTrigger.Conditions>
                                                                                 <Condition Property="IsSelected" Value="True"/>
                                                                                 <Condition SourceName="ItemBorder" Property="IsMouseOver" Value="True"/>
@@ -1082,7 +1126,7 @@
                                                                 </icons:MaterialIcon>
 
                                                                 <ContentControl ToolTip="Эта текстура будет оптимизирована при сборке ресурса" ToolTipService.InitialShowDelay="0">
-                                                                    <icons:MaterialIcon Kind="CheckCircle" Width="16" Height="16" Foreground="#22c55e" Margin="0,0,2,0">
+                                                                    <icons:MaterialIcon Kind="CheckCircle" Width="16" Height="16" Foreground="{DynamicResource SuccessBrush}" Margin="0,0,2,0">
                                                                         <icons:MaterialIcon.Style>
                                                                             <Style TargetType="{x:Type icons:MaterialIcon}">
                                                                                 <Setter Property="Visibility" Value="Collapsed" />
@@ -1223,7 +1267,7 @@
                                                                     Margin="0"
                                                                     Padding="8,4"
                                                                     Width="60"
-                                                                    Height="22"
+                                                                    Height="28" MinHeight="28"
                                                                     BorderThickness="0"
                                                                     Style="{StaticResource RoundedButton}"
                                                                     Background="{DynamicResource Brush300}"

@@ -18,6 +18,7 @@
     <FontFamily x:Key="AppFontFamily">Segoe UI Variable Text, Segoe UI</FontFamily>
     <FontFamily x:Key="DisplayFontFamily">Segoe UI Variable Display, Segoe UI</FontFamily>
     <CornerRadius x:Key="ControlCornerRadius">9</CornerRadius>
+    <SolidColorBrush x:Key="ViewportForegroundBrush" Color="#E5E7EB" />
 
     <!-- Shared surface and emphasis styles keep every screen visually consistent. -->
     <Style x:Key="CardSurfaceStyle" TargetType="Border">
@@ -122,11 +123,11 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource Brush200}" />
+                            <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.92" />
                             <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="{DynamicResource Brush400}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource Brush250}" />
+                            <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.82" />
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
                             <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />

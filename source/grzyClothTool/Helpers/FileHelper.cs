@@ -491,7 +491,13 @@ public static class FileHelper
 
         return await Application.Current.Dispatcher.InvokeAsync(() =>
         {
-            var window = new DrawableSelectWindow(file);
+            var window = new DrawableSelectWindow(file)
+            {
+                Owner = Application.Current?.Windows
+                    .OfType<Window>()
+                    .FirstOrDefault(candidate => candidate.IsActive)
+                    ?? Application.Current?.MainWindow
+            };
             var result = window.ShowDialog();
             if (result == true)
             {

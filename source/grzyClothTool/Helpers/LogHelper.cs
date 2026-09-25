@@ -1,5 +1,6 @@
 ﻿using grzyClothTool.Views;
 using System;
+using System.Windows;
 
 namespace grzyClothTool.Helpers;
 
@@ -54,7 +55,20 @@ public static class LogHelper
 
     public static void OpenLogWindow()
     {
-        _logWindow.Show();
+        if (_logWindow == null)
+        {
+            return;
+        }
+
+        if (!_logWindow.IsVisible)
+        {
+            _logWindow.Owner = Application.Current?.MainWindow;
+            _logWindow.Show();
+        }
+        else
+        {
+            _logWindow.Activate();
+        }
     }
 
     public static void Close()

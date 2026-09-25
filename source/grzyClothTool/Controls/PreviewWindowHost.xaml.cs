@@ -28,18 +28,26 @@ namespace grzyClothTool.Controls
         public PreviewWindowHost()
         {
             InitializeComponent();
-            LocalizationHelper.LanguageChanged += (_, _) =>
-                Dispatcher.BeginInvoke(new Action(ApplyPreviewLocalization));
+            LocalizationHelper.LanguageChanged += OnLanguageChanged;
             this.Loaded += PreviewWindowHost_Loaded;
             this.Unloaded += PreviewWindowHost_Unloaded;
         }
 
         private void PreviewWindowHost_Loaded(object sender, RoutedEventArgs e)
         {
+            LocalizationHelper.LanguageChanged -= OnLanguageChanged;
+            LocalizationHelper.LanguageChanged += OnLanguageChanged;
             if (_isInitialized && _customPedsForm != null && !_customPedsForm.IsDisposed && PreviewHost.Child == null)
             {
                 PreviewHost.Child = _customPedsForm;
-                PlaceholderPanel.Visibility = Visibility.Collapsed;
+                if (MainWindow.AddonManager?.SelectedAddon?.SelectedDrawable is { IsEncrypted: false })
+                {
+                    PlaceholderPanel.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    ShowWaitingForSelection();
+                }
             }
             else if (!_isInitialized && SettingsHelper.Preview3DAvailable)
             {
@@ -49,6 +57,7 @@ namespace grzyClothTool.Controls
 
         private void PreviewWindowHost_Unloaded(object sender, RoutedEventArgs e)
         {
+            LocalizationHelper.LanguageChanged -= OnLanguageChanged;
             if (_customPedsForm != null && !_customPedsForm.IsDisposed && PreviewHost.Child != null)
             {
                 PreviewHost.Child = null;
@@ -68,7 +77,10 @@ namespace grzyClothTool.Controls
 
             if (_isInitialized && _customPedsForm != null && !_customPedsForm.IsDisposed)
             {
-                PlaceholderPanel.Visibility = Visibility.Collapsed;
+                if (MainWindow.AddonManager?.SelectedAddon?.SelectedDrawable is not { IsEncrypted: false })
+                {
+                    ShowWaitingForSelection();
+                }
                 return;
             }
 
@@ -87,7 +99,7 @@ namespace grzyClothTool.Controls
                 _customPedsForm.Show();
                 ApplyPreviewLocalization();
 
-                PlaceholderPanel.Visibility = Visibility.Collapsed;
+                ShowWaitingForSelection();
                 _isInitialized = true;
                 SettingsHelper.Preview3DAvailable = true;
                 Preview3DAvailabilityChanged?.Invoke(this, EventArgs.Empty);
@@ -136,6 +148,7 @@ namespace grzyClothTool.Controls
                 PreviewHost.Child = _customPedsForm;
                 _customPedsForm.Show();
                 ApplyPreviewLocalization();
+                ShowWaitingForSelection();
 
                 _isInitialized = true;
                 SettingsHelper.Preview3DAvailable = true;
@@ -148,6 +161,26 @@ namespace grzyClothTool.Controls
                 ErrorLogHelper.LogError("Не удалось инициализировать 3D-просмотр в фоне", ex);
                 SettingsHelper.Preview3DAvailable = false;
                 Preview3DAvailabilityChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        public void ShowWaitingForSelection()
+        {
+            PlaceholderText.Text = LocalizationHelper.Translate("Выберите одежду слева или перетащите YDD в список");
+            PlaceholderPanel.Visibility = Visibility.Visible;
+        }
+
+        public void ShowPreviewMessage(string message)
+        {
+            PlaceholderText.Text = LocalizationHelper.Translate(message);
+            PlaceholderPanel.Visibility = Visibility.Visible;
+        }
+
+        public void MarkModelRendered()
+        {
+            if (_isInitialized && _customPedsForm != null && !_customPedsForm.IsDisposed)
+            {
+                PlaceholderPanel.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -358,6 +391,11 @@ namespace grzyClothTool.Controls
                     LogHelper.Log($"Элемент одежды «{drawable.Name}» пропущен при подготовке экспорта PNG: {drawableEx.Message}", Views.LogType.Warning);
                 }
             }
+        }
+
+        private void OnLanguageChanged(object? sender, EventArgs e)
+        {
+            Dispatcher.BeginInvoke(new Action(ApplyPreviewLocalization));
         }
 
         private void ApplyPreviewLocalization()

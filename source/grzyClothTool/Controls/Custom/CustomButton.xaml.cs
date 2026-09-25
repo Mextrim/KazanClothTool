@@ -1,6 +1,8 @@
 ﻿using FontAwesome.Sharp;
+using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 
 namespace grzyClothTool.Controls
@@ -18,6 +20,12 @@ namespace grzyClothTool.Controls
 
         public static readonly DependencyProperty DropdownEnabledProperty = DependencyProperty
         .Register("DropdownEnabled",
+                typeof(bool),
+                typeof(CustomButton),
+                new FrameworkPropertyMetadata(false, OnDropdownEnabledChanged));
+
+        public static readonly DependencyProperty IsDropDownOpenProperty = DependencyProperty
+        .Register("IsDropDownOpen",
                 typeof(bool),
                 typeof(CustomButton),
                 new FrameworkPropertyMetadata(false));
@@ -122,9 +130,30 @@ namespace grzyClothTool.Controls
             set { SetValue(DropdownEnabledProperty, value); }
         }
 
+        public bool IsDropDownOpen
+        {
+            get { return (bool)GetValue(IsDropDownOpenProperty); }
+            set { SetValue(IsDropDownOpenProperty, value); }
+        }
+
         public CustomButton()
         {
             InitializeComponent();
+        }
+
+        private static void OnDropdownEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.NewValue is true)
+            {
+                return;
+            }
+
+            ((CustomButton)d).IsDropDownOpen = false;
+        }
+
+        private void DropdownPopup_Closed(object sender, EventArgs e)
+        {
+            IsDropDownOpen = false;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -28,11 +29,21 @@ namespace grzyClothTool.Views
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(IsValid));
                 OnPropertyChanged(nameof(ProjectExistsWarning));
+                OnPropertyChanged(nameof(ProjectNameValidationMessage));
                 OnPropertyChanged(nameof(ShowProjectExistsWarning));
             }
         }
         public string ProjectExistsWarning =>
-            LocalizationHelper.Format("Проект с названием \"{0}\" уже существует. Если продолжить, он будет перезаписан.", ProjectName);
+            LocalizationHelper.Format("Проект с названием \"{0}\" уже существует. Выберите другое название — существующие данные не будут удалены.", ProjectName);
+
+        public string ProjectNameValidationMessage
+        {
+            get
+            {
+                string? error = ProjectNameValidator.Validate(ProjectName);
+                return error == null ? string.Empty : LocalizationHelper.Translate(error);
+            }
+        }
 
         private bool _isSelfContained = true;
         public bool IsSelfContained
@@ -82,7 +93,7 @@ namespace grzyClothTool.Views
         {
             get
             {
-                if (string.IsNullOrWhiteSpace(ProjectName))
+                if (string.IsNullOrWhiteSpace(ProjectName) || !ProjectNameValidator.IsValid(ProjectName))
                     return false;
 
                 var mainFolder = PersistentSettingsHelper.Instance.MainProjectsFolder;
@@ -93,17 +104,7 @@ namespace grzyClothTool.Views
             }
         }
 
-        public bool IsValid
-        {
-            get
-            {
-                string name = ProjectName.Trim();
-                return !string.IsNullOrWhiteSpace(name) &&
-                       name is not "." and not ".." &&
-                       !Path.IsPathRooted(name) &&
-                       name.IndexOfAny(Path.GetInvalidFileNameChars()) < 0;
-            }
-        }
+        public bool IsValid => ProjectNameValidator.IsValid(ProjectName) && !ShowProjectExistsWarning;
 
         public bool Confirmed { get; private set; }
 
@@ -111,14 +112,21 @@ namespace grzyClothTool.Views
         {
             InitializeComponent();
             LocalizationHelper.ApplyTo(this);
-            LocalizationHelper.LanguageChanged += (_, _) => RefreshLocalizedText();
+            LocalizationHelper.LanguageChanged += OnLanguageChanged;
+            Closed += (_, _) => LocalizationHelper.LanguageChanged -= OnLanguageChanged;
             DataContext = this;
+        }
+
+        private void OnLanguageChanged(object? sender, EventArgs e)
+        {
+            RefreshLocalizedText();
         }
 
         private void RefreshLocalizedText()
         {
             OnPropertyChanged(nameof(DialogTitle));
             OnPropertyChanged(nameof(ProjectExistsWarning));
+            OnPropertyChanged(nameof(ProjectNameValidationMessage));
             OnPropertyChanged(nameof(ConfirmButtonText));
             OnPropertyChanged(nameof(DrawableCountMessage));
             LocalizationHelper.ApplyTo(this);

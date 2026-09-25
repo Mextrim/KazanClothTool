@@ -27,6 +27,7 @@
     <SolidColorBrush x:Key="AccentDimBrush" Color="#701A35" />
     <SolidColorBrush x:Key="OnPrimaryBrush" Color="#2B0712" />
     <SolidColorBrush x:Key="ViewportBackgroundBrush" Color="#0C0407" />
+    <SolidColorBrush x:Key="ViewportForegroundBrush" Color="#FFE4E6" />
     <SolidColorBrush x:Key="SecondaryBrush" Color="#F472B6" />
     <SolidColorBrush x:Key="SecondaryHoverBrush" Color="#F9A8D4" />
     <SolidColorBrush x:Key="SecondaryDimBrush" Color="#6B214B" />

@@ -61,6 +61,7 @@
     <SolidColorBrush x:Key="AccentDimBrush" Color="{StaticResource ColorAccentDim}" />
     <SolidColorBrush x:Key="OnPrimaryBrush" Color="{StaticResource ColorOnPrimary}" />
     <SolidColorBrush x:Key="ViewportBackgroundBrush" Color="{StaticResource ColorViewport}" />
+    <SolidColorBrush x:Key="ViewportForegroundBrush" Color="#DCFCE7" />
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource ColorSecondary}" />
     <SolidColorBrush x:Key="SecondaryHoverBrush" Color="{StaticResource ColorSecondaryHover}" />
     <SolidColorBrush x:Key="SecondaryDimBrush" Color="{StaticResource ColorSecondaryDim}" />

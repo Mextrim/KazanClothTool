@@ -6,10 +6,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 using static grzyClothTool.Controls.CustomMessageBox;
 using static grzyClothTool.Enums;
 
@@ -132,6 +130,13 @@ namespace grzyClothTool.Views
         public BuildWindow()
         {
             InitializeComponent();
+
+            var workArea = SystemParameters.WorkArea;
+            MaxWidth = Math.Max(MinWidth, Math.Min(700, workArea.Width - 32));
+            MaxHeight = Math.Max(MinHeight, Math.Min(800, workArea.Height - 32));
+            Width = Math.Min(Width, MaxWidth);
+            Height = Math.Min(Height, MaxHeight);
+
             LocalizationHelper.ApplyTo(this);
             DataContext = this;
 
@@ -147,7 +152,11 @@ namespace grzyClothTool.Views
 
         private void CheckAddons()
         {
-            if (string.IsNullOrEmpty(ProjectName))
+            IsWarningVisible = false;
+            WarningMessage = string.Empty;
+            CanBuild = true;
+
+            if (string.IsNullOrWhiteSpace(ProjectName))
             {
                 IsWarningVisible = true;
                 WarningMessage = LocalizationHelper.Translate("Проект не загружен. Сначала создайте или откройте проект.");
@@ -155,7 +164,7 @@ namespace grzyClothTool.Views
                 return;
             }
 
-            if (string.IsNullOrEmpty(BuildPath))
+            if (string.IsNullOrWhiteSpace(BuildPath))
             {
                 IsWarningVisible = true;
                 WarningMessage = LocalizationHelper.Translate("Не удалось определить путь сборки. Проверьте настройки проекта.");
@@ -172,9 +181,9 @@ namespace grzyClothTool.Views
             }
         }
 
-        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        private void ProjectInput_Updated(object sender, UpdatedEventArgs e)
         {
-            FocusManager.SetFocusedElement(this, this);
+            CheckAddons();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -205,7 +214,11 @@ namespace grzyClothTool.Views
             var error = ValidateProjectName();
             if (error != null)
             {
-                MessageBox.Show(LocalizationHelper.Translate(error));
+                CustomMessageBox.Show(
+                    LocalizationHelper.Translate(error),
+                    LocalizationHelper.Translate("Ошибка"),
+                    CustomMessageBoxButtons.OKOnly,
+                    CustomMessageBoxIcon.Warning);
                 return;
             }
 
@@ -227,10 +240,9 @@ namespace grzyClothTool.Views
             pbBuild.Maximum = totalSteps;
             IsBuilding = true;
 
-            await SaveHelper.SaveAsync();
-
             try
             {
+                await SaveHelper.SaveAsync();
                 var timer = new Stopwatch();
 
                 timer.Start();
@@ -247,7 +259,12 @@ namespace grzyClothTool.Views
             catch (Exception ex)
             {
                 LogHelper.Log($"Не удалось собрать ресурс: {ex}", LogType.Error);
-                CustomMessageBox.Show($"Не удалось собрать ресурс:\n\n{ex}", "Ошибка", CustomMessageBoxButtons.OKOnly, CustomMessageBoxIcon.Error);
+                ErrorLogHelper.LogError("Не удалось собрать ресурс", ex);
+                CustomMessageBox.Show(
+                    LocalizationHelper.Format("Не удалось собрать ресурс: {0}", ErrorMessageHelper.Friendly(ex)),
+                    LocalizationHelper.Translate("Ошибка"),
+                    CustomMessageBoxButtons.OKOnly,
+                    CustomMessageBoxIcon.Error);
             }
             finally
             {
@@ -291,27 +308,8 @@ namespace grzyClothTool.Views
 
         private string ValidateProjectName()
         {
-            string result = null;
-
-            if (string.IsNullOrEmpty(ProjectName))
-            {
-                result = "Название проекта не может быть пустым";
-            }
-            else if (ProjectName.Length < 3)
-            {
-                result = "Название проекта должно содержать не менее 3 символов";
-            }
-            else if (ProjectName.Length > 50)
-            {
-                result = "Название проекта не может быть длиннее 50 символов";
-            }
-            else if (!Regex.IsMatch(ProjectName, @"^[a-z0-9_]+$"))
-            {
-                result = "Название проекта может содержать только строчные буквы, цифры и подчёркивания";
-
-            }
-
-            return result == null ? null : LocalizationHelper.Translate(result);
+            string? error = ProjectNameValidator.Validate(ProjectName);
+            return error == null ? null : LocalizationHelper.Translate(error);
         }
     }
 }

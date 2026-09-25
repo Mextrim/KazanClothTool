@@ -6,7 +6,7 @@
         xmlns:icons="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
         Background="{DynamicResource Brush50}"
         mc:Ignorable="d"
-        Title="Журнал" Height="300" MinHeight="300" Width="500" MinWidth="400">
+        Title="Журнал" Height="360" MinHeight="300" MaxHeight="700" Width="600" MinWidth="400" MaxWidth="1000">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -39,7 +39,7 @@
 
                         <icons:MaterialIcon Grid.Column="0" Kind="{Binding TypeIcon}" Foreground="{DynamicResource Brush950}" Width="20" HorizontalAlignment="Left" Height="20" />
                         <TextBlock Grid.Column="1" Foreground="{DynamicResource Brush950}" Text="{Binding Timestamp, StringFormat='[{0}]'}" Margin="0,1" />
-                        <TextBlock Grid.Column="2" Foreground="{DynamicResource Brush950}" Text="{Binding Message}" Margin="0,1" />
+                        <TextBlock Grid.Column="2" Foreground="{DynamicResource Brush950}" Text="{Binding Message}" Margin="0,1" TextWrapping="Wrap" ToolTip="{Binding Message}" />
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>

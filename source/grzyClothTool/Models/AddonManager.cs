@@ -9,6 +9,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -61,7 +62,24 @@ namespace grzyClothTool.Models
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public string ProjectName { get; set; }
+        private string _projectName = string.Empty;
+        public string ProjectName
+        {
+            get => _projectName;
+            set
+            {
+                string normalized = value ?? string.Empty;
+                if (!string.Equals(_projectName, normalized, StringComparison.Ordinal))
+                {
+                    _projectName = normalized;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(HasProject));
+                }
+            }
+        }
+
+        [JsonIgnore]
+        public bool HasProject => !string.IsNullOrWhiteSpace(_projectName) && Addons.Count > 0;
 
         /// <summary>
         /// When true, files remain in their original external locations
@@ -84,11 +102,16 @@ namespace grzyClothTool.Models
             get { return _addons; }
             set
             {
-                if (_addons != value)
+                if (_addons == value)
                 {
-                    _addons = value;
-                    OnPropertyChanged();
+                    return;
                 }
+
+                _addons.CollectionChanged -= Addons_CollectionChanged;
+                _addons = value ?? [];
+                _addons.CollectionChanged += Addons_CollectionChanged;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasProject));
             }
         }
 
@@ -121,6 +144,12 @@ namespace grzyClothTool.Models
 
         public AddonManager()
         {
+            _addons.CollectionChanged += Addons_CollectionChanged;
+        }
+
+        private void Addons_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(HasProject));
         }
 
         private void EnsureDrawableQueueStarted()
@@ -797,10 +826,10 @@ namespace grzyClothTool.Models
                     {
                         foreach (var texture in drawable.Textures)
                         {
-                            DeleteManagedFileIfUnused(texture.FullFilePath, drawable);
+                            DeleteManagedFileIfUnused(texture.FullFilePath);
                         }
 
-                        DeleteManagedFileIfUnused(drawable.FullFilePath, drawable);
+                        DeleteManagedFileIfUnused(drawable.FullFilePath);
                     }
                     catch (Exception ex)
                     {
@@ -858,7 +887,7 @@ namespace grzyClothTool.Models
             }
         }
 
-        private void DeleteManagedFileIfUnused(string filePath, GDrawable owner)
+        public void DeleteManagedFileIfUnused(string filePath)
         {
             if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))
             {
@@ -871,7 +900,6 @@ namespace grzyClothTool.Models
             bool isManagedAsset = fullPath.StartsWith(assetsRoot, StringComparison.OrdinalIgnoreCase);
             bool isReferenced = Addons
                 .SelectMany(item => item.Drawables)
-                .Where(item => !ReferenceEquals(item, owner))
                 .Any(item => string.Equals(item.FullFilePath, fullPath, StringComparison.OrdinalIgnoreCase) ||
                              item.Textures.Any(texture => string.Equals(texture.FullFilePath, fullPath, StringComparison.OrdinalIgnoreCase)));
 

@@ -14,6 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
@@ -99,6 +100,11 @@ namespace grzyClothTool.Controls
             InitializeComponent();
         }
 
+        private static Brush GetThemeBrush(string resourceKey, Brush fallback)
+        {
+            return Application.Current?.TryFindResource(resourceKey) as Brush ?? fallback;
+        }
+
         private void TextureListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ListBox listBox = sender as ListBox;
@@ -137,8 +143,10 @@ namespace grzyClothTool.Controls
         {
             try
             {
-                Button btn = sender as Button;
-                GTexture gtxt = (GTexture)btn.DataContext;
+                if (sender is not Button btn || btn.DataContext is not GTexture gtxt)
+                {
+                    return;
+                }
 
                 var textureListBox = FindTextureListBox(this);
                 textureListBox.SelectedIndex = gtxt.TxtNumber;
@@ -171,6 +179,10 @@ namespace grzyClothTool.Controls
                 {
                     Text = $"{gtxt.DisplayName} ({w}x{h})",
                     HorizontalAlignment = HorizontalAlignment.Center,
+                    TextAlignment = System.Windows.TextAlignment.Center,
+                    TextWrapping = TextWrapping.Wrap,
+                    TextTrimming = TextTrimming.CharacterEllipsis,
+                    MaxWidth = 360,
                     Margin = new Thickness(5)
                 };
 
@@ -182,11 +194,12 @@ namespace grzyClothTool.Controls
                 {
                     CornerRadius = new CornerRadius(15),
                     BorderThickness = new Thickness(2),
-                    BorderBrush = System.Windows.Media.Brushes.Black,
-
-                    Background = System.Windows.Media.Brushes.White,
-                    Child = stackPanel
+                    BorderBrush = GetThemeBrush("Brush300", System.Windows.Media.Brushes.Gray),
+                    Background = GetThemeBrush("Brush50", System.Windows.Media.Brushes.White),
+                    Child = stackPanel,
+                    Focusable = true
                 };
+                AutomationProperties.SetName(border, textBlock.Text);
 
                 Popup popup = new()
                 {
@@ -195,14 +208,18 @@ namespace grzyClothTool.Controls
                     Placement = PlacementMode.Mouse,
                     StaysOpen = false,
                     Child = border,
-                    AllowsTransparency = true,
-
-                    IsOpen = true
+                    AllowsTransparency = true
                 };
-                popup.MouseMove += (s, args) =>
+                popup.KeyDown += (_, args) =>
                 {
-                    popup.IsOpen = false;
+                    if (args.Key == Key.Escape)
+                    {
+                        popup.IsOpen = false;
+                        args.Handled = true;
+                    }
                 };
+                popup.IsOpen = true;
+                border.Focus();
             }
             catch (Exception ex)
             {
@@ -250,6 +267,10 @@ namespace grzyClothTool.Controls
                 {
                     Text = $"({embeddedTexture.Details.Type}) {embeddedTexture.Details.Name} ({w}x{h}){statusText}",
                     HorizontalAlignment = HorizontalAlignment.Center,
+                    TextAlignment = System.Windows.TextAlignment.Center,
+                    TextWrapping = TextWrapping.Wrap,
+                    TextTrimming = TextTrimming.CharacterEllipsis,
+                    MaxWidth = 360,
                     Margin = new Thickness(5)
                 };
 
@@ -261,10 +282,12 @@ namespace grzyClothTool.Controls
                 {
                     CornerRadius = new CornerRadius(15),
                     BorderThickness = new Thickness(2),
-                    BorderBrush = System.Windows.Media.Brushes.Black,
-                    Background = System.Windows.Media.Brushes.White,
-                    Child = stackPanel
+                    BorderBrush = GetThemeBrush("Brush300", System.Windows.Media.Brushes.Gray),
+                    Background = GetThemeBrush("Brush50", System.Windows.Media.Brushes.White),
+                    Child = stackPanel,
+                    Focusable = true
                 };
+                AutomationProperties.SetName(border, textBlock.Text);
 
                 Popup popup = new()
                 {
@@ -273,14 +296,18 @@ namespace grzyClothTool.Controls
                     Placement = PlacementMode.Mouse,
                     StaysOpen = false,
                     Child = border,
-                    AllowsTransparency = true,
-                    IsOpen = true
+                    AllowsTransparency = true
                 };
-                
-                popup.MouseMove += (s, args) =>
+                popup.KeyDown += (_, args) =>
                 {
-                    popup.IsOpen = false;
+                    if (args.Key == Key.Escape)
+                    {
+                        popup.IsOpen = false;
+                        args.Handled = true;
+                    }
                 };
+                popup.IsOpen = true;
+                border.Focus();
             }
             catch (Exception ex)
             {
@@ -551,6 +578,19 @@ namespace grzyClothTool.Controls
                 return;
             }
 
+            int textureCount = SelectedTextures.Count;
+            string confirmation = textureCount == 1
+                ? LocalizationHelper.Translate("Удалить выбранную текстуру из проекта?")
+                : LocalizationHelper.Format("Удалить выбранные текстуры ({0}) из проекта?", textureCount);
+
+            if (Show(confirmation,
+                    LocalizationHelper.Translate("Подтверждение удаления"),
+                    CustomMessageBoxButtons.YesNo,
+                    CustomMessageBoxIcon.Warning) != CustomMessageBoxResult.Yes)
+            {
+                return;
+            }
+
             var textureListBox = FindTextureListBox(this);
             if (textureListBox == null)
             {
@@ -559,19 +599,19 @@ namespace grzyClothTool.Controls
 
             int removedIndex = textureListBox.SelectedIndex;
             var sel = SelectedDraw;
-            foreach (var texture in SelectedTextures)
+            foreach (var texture in SelectedTextures.ToList())
             {
                 sel.Textures.Remove(texture);
 
-                if (SettingsHelper.Instance.AutoDeleteFiles && File.Exists(texture.FullFilePath))
+                if (SettingsHelper.Instance.AutoDeleteFiles)
                 {
                     try
                     {
-                        File.Delete(texture.FullFilePath);
+                        MainWindow.AddonManager?.DeleteManagedFileIfUnused(texture.FullFilePath);
                     }
                     catch (Exception ex)
                     {
-                        LogHelper.Log($"Не удалось удалить файл {texture.FullFilePath}: {ex.Message}", LogType.Warning);
+                        LogHelper.Log($"Не удалось удалить файл проекта {texture.FullFilePath}: {ex.Message}", LogType.Warning);
                     }
                 }
             }
@@ -976,7 +1016,10 @@ namespace grzyClothTool.Controls
             }
 
             var multipleSelected = SelectedTextures.Count > 1;
-            var optimizeWindow = new OptimizeWindow([.. SelectedTextures.Cast<dynamic>()], multipleSelected);
+            var optimizeWindow = new OptimizeWindow([.. SelectedTextures.Cast<dynamic>()], multipleSelected)
+            {
+                Owner = Window.GetWindow(this)
+            };
             optimizeWindow.ShowDialog();
         }
 
@@ -1215,7 +1258,10 @@ namespace grzyClothTool.Controls
 
         private void OptimizeEmbeddedTexture(GTextureEmbedded embeddedTexture)
         {
-            var optimizeWindow = new OptimizeWindow([embeddedTexture]);
+            var optimizeWindow = new OptimizeWindow([embeddedTexture])
+            {
+                Owner = Window.GetWindow(this)
+            };
             optimizeWindow.ShowDialog();
         }
 
@@ -1444,19 +1490,19 @@ namespace grzyClothTool.Controls
             }
         }
 
-        private void TexturesTab_Click(object sender, MouseButtonEventArgs e)
+        private void TexturesTab_Click(object sender, RoutedEventArgs e)
         {
             SwitchToTab(isTextures: true, sender);
         }
 
-        private void EmbeddedTexturesTab_Click(object sender, MouseButtonEventArgs e)
+        private void EmbeddedTexturesTab_Click(object sender, RoutedEventArgs e)
         {
             SwitchToTab(isTextures: false, sender);
         }
 
         private void SwitchToTab(bool isTextures, object sender)
         {
-            if (sender is not Border clickedTab) return;
+            if (sender is not ToggleButton clickedTab) return;
 
             DependencyObject parent = VisualTreeHelper.GetParent(clickedTab);
             while (parent != null && !(parent is Grid))
@@ -1466,32 +1512,23 @@ namespace grzyClothTool.Controls
 
             if (parent == null) return;
 
-
-            if (FindChildByName(parent, "TexturesTab") is not Border texturesTab || FindChildByName(parent, "EmbeddedTexturesTab") is not Border embeddedTexturesTab ||
-                FindChildByName(parent, "TexturesContent") is not ScrollViewer texturesContent || FindChildByName(parent, "EmbeddedTexturesContent") is not ScrollViewer embeddedTexturesContent)
+            if (FindChildByName(parent, "TexturesTab") is not ToggleButton texturesTab ||
+                FindChildByName(parent, "EmbeddedTexturesTab") is not ToggleButton embeddedTexturesTab ||
+                FindChildByName(parent, "TexturesContent") is not ScrollViewer texturesContent ||
+                FindChildByName(parent, "EmbeddedTexturesContent") is not ScrollViewer embeddedTexturesContent)
+            {
                 return;
-
-            Border actionBarBorder = FindChildByName(parent, "ActionBarBorder") as Border;
-
-            if (isTextures)
-            {
-                texturesTab.BorderBrush = (System.Windows.Media.Brush)FindResource("Brush500");
-                embeddedTexturesTab.BorderBrush = System.Windows.Media.Brushes.Transparent;
-
-                texturesContent.Visibility = Visibility.Visible;
-                embeddedTexturesContent.Visibility = Visibility.Collapsed;
-                
-                if (actionBarBorder != null) actionBarBorder.Visibility = Visibility.Visible;
             }
-            else
-            {
-                embeddedTexturesTab.BorderBrush = (System.Windows.Media.Brush)FindResource("Brush500");
-                texturesTab.BorderBrush = System.Windows.Media.Brushes.Transparent;
 
-                texturesContent.Visibility = Visibility.Collapsed;
-                embeddedTexturesContent.Visibility = Visibility.Visible;
-                
-                if (actionBarBorder != null) actionBarBorder.Visibility = Visibility.Collapsed;
+            Border? actionBarBorder = FindChildByName(parent, "ActionBarBorder") as Border;
+            texturesTab.IsChecked = isTextures;
+            embeddedTexturesTab.IsChecked = !isTextures;
+            texturesContent.Visibility = isTextures ? Visibility.Visible : Visibility.Collapsed;
+            embeddedTexturesContent.Visibility = isTextures ? Visibility.Collapsed : Visibility.Visible;
+
+            if (actionBarBorder != null)
+            {
+                actionBarBorder.Visibility = isTextures ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 

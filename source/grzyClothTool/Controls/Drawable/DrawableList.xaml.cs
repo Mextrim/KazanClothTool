@@ -439,7 +439,26 @@ namespace grzyClothTool.Controls
 
         private void DeleteDrawable_Click(object sender, RoutedEventArgs e)
         {
-            var selectedDrawables = MainWindow.AddonManager.SelectedAddon.SelectedDrawables.ToList();
+            var addon = MainWindow.AddonManager?.SelectedAddon;
+            var selectedDrawables = addon?.SelectedDrawables?.ToList() ?? [];
+            if (selectedDrawables.Count == 0)
+            {
+                return;
+            }
+
+            string confirmation = selectedDrawables.Count == 1
+                ? LocalizationHelper.Translate("Удалить выбранный элемент одежды?")
+                : LocalizationHelper.Format("Удалить выбранные элементы одежды ({0})?", selectedDrawables.Count);
+
+            if (CustomMessageBox.Show(
+                    confirmation,
+                    LocalizationHelper.Translate("Подтверждение удаления"),
+                    CustomMessageBox.CustomMessageBoxButtons.YesNo,
+                    CustomMessageBox.CustomMessageBoxIcon.Warning) != CustomMessageBox.CustomMessageBoxResult.Yes)
+            {
+                return;
+            }
+
             MainWindow.AddonManager.DeleteDrawables(selectedDrawables);
         }
 

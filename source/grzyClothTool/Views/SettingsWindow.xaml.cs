@@ -1,5 +1,6 @@
 ﻿using grzyClothTool.Controls;
 using grzyClothTool.Helpers;
+using grzyClothTool.Models;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -96,13 +97,50 @@ namespace grzyClothTool.Views
         {
             InitializeComponent();
             LocalizationHelper.ApplyTo(this);
-            Loaded += (_, _) => LocalizationHelper.ApplyTo(this);
+            Loaded += (_, _) =>
+            {
+                if (MainWindow.AddonManager != null)
+                {
+                    MainWindow.AddonManager.PropertyChanged -= OnAddonManagerPropertyChanged;
+                    MainWindow.AddonManager.PropertyChanged += OnAddonManagerPropertyChanged;
+                }
+                LocalizationHelper.ApplyTo(this);
+                UpdateBackButtonState();
+            };
+            Unloaded += (_, _) =>
+            {
+                if (MainWindow.AddonManager != null)
+                {
+                    MainWindow.AddonManager.PropertyChanged -= OnAddonManagerPropertyChanged;
+                }
+            };
 
             _mainProjectsFolder = PersistentSettingsHelper.Instance.MainProjectsFolder;
             _selectedLanguage = LocalizationHelper.GetLanguage(PersistentSettingsHelper.Instance.Language);
             _selectedTheme = AppThemes.Get(PersistentSettingsHelper.Instance.Theme);
 
             DataContext = this;
+            if (MainWindow.AddonManager != null)
+            {
+                MainWindow.AddonManager.PropertyChanged += OnAddonManagerPropertyChanged;
+            }
+            UpdateBackButtonState();
+        }
+
+        private void OnAddonManagerPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName is nameof(AddonManager.HasProject) or nameof(AddonManager.ProjectName))
+            {
+                Dispatcher.BeginInvoke(new Action(UpdateBackButtonState));
+            }
+        }
+
+        private void UpdateBackButtonState()
+        {
+            bool hasProject = MainWindow.AddonManager?.HasProject == true;
+            string key = hasProject ? "Вернуться в редактор" : "Вернуться на главную";
+            BackButton.ToolTip = LocalizationHelper.Translate(key);
+            System.Windows.Automation.AutomationProperties.SetName(BackButton, BackButton.ToolTip?.ToString() ?? string.Empty);
         }
 
         private void SettingsScrollViewer_Loaded(object sender, RoutedEventArgs e)
@@ -112,7 +150,7 @@ namespace grzyClothTool.Views
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            if (MainWindow.AddonManager.Addons.Count > 0)
+            if (MainWindow.AddonManager?.HasProject == true)
             {
                 MainWindow.NavigationHelper.Navigate("Project");
             }
@@ -146,14 +184,26 @@ namespace grzyClothTool.Views
                 return;
             }
 
-            CWHelper.SetGTAFolder(selectedGTAPath.FolderName);
-            SettingsHelper.Preview3DAvailable = CWHelper.IsPreviewAvailable;
-            if (SettingsHelper.Preview3DAvailable)
+            try
             {
-                MainWindow.Instance?.PreviewHost?.InitializePreviewInBackground();
-            }
+                CWHelper.SetGTAFolder(selectedGTAPath.FolderName);
+                SettingsHelper.Preview3DAvailable = CWHelper.IsPreviewAvailable;
+                if (SettingsHelper.Preview3DAvailable)
+                {
+                    MainWindow.Instance?.PreviewHost?.InitializePreviewInBackground();
+                }
 
-            OnPropertyChanged(nameof(GTAVPath));
+                OnPropertyChanged(nameof(GTAVPath));
+            }
+            catch (Exception ex)
+            {
+                ErrorLogHelper.LogError("Не удалось настроить путь GTA V", ex);
+                Controls.CustomMessageBox.Show(
+                    LocalizationHelper.Format("Не удалось настроить путь GTA V: {0}", ErrorMessageHelper.Friendly(ex)),
+                    LocalizationHelper.Translate("Ошибка"),
+                    Controls.CustomMessageBox.CustomMessageBoxButtons.OKOnly,
+                    Controls.CustomMessageBox.CustomMessageBoxIcon.Error);
+            }
         }
 
         private void MainProjectsFolder_Click(object sender, RoutedEventArgs e)
@@ -205,9 +255,10 @@ namespace grzyClothTool.Views
             }
             catch (Exception ex)
             {
+                ErrorLogHelper.LogError("Не удалось настроить папку проектов", ex);
                 Controls.CustomMessageBox.Show(
-                    $"Не удалось настроить папку проектов: {ex.Message}",
-                    "Ошибка",
+                    LocalizationHelper.Format("Не удалось настроить папку проектов: {0}", ErrorMessageHelper.Friendly(ex)),
+                    LocalizationHelper.Translate("Ошибка"),
                     Controls.CustomMessageBox.CustomMessageBoxButtons.OKOnly,
                     Controls.CustomMessageBox.CustomMessageBoxIcon.Error);
             }

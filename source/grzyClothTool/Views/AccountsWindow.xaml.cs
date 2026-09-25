@@ -1,4 +1,5 @@
-﻿using grzyClothTool.Helpers;
+﻿using grzyClothTool.Controls;
+using grzyClothTool.Helpers;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -15,7 +16,7 @@ namespace grzyClothTool.Views
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public string IsLoggedInText => IsPatreonLoggedIn ? "Да" : "Нет";
+        public string IsLoggedInText => LocalizationHelper.Translate(IsPatreonLoggedIn ? "Да" : "Нет");
 
         private bool _isPatreonLoggedIn;
         public bool IsPatreonLoggedIn
@@ -116,15 +117,15 @@ namespace grzyClothTool.Views
                     PatreonUsername = App.patreonAuthPlugin?.Username;
                     PatreonImg = App.patreonAuthPlugin?.ImageUrl;
 
-                    PatreonStatus = App.patreonAuthPlugin?.Status == null ? "НЕ АКТИВЕН" : "АКТИВЕН";
+                    PatreonStatus = LocalizationHelper.Translate(App.patreonAuthPlugin?.Status == null ? "НЕ АКТИВЕН" : "АКТИВЕН");
                     PatreonLastChargeDate = (App.patreonAuthPlugin?.LastChargeDate) ?? "-";
                     PatreonNextChargeDate = (App.patreonAuthPlugin?.NextChargeDate) ?? "-";
                 }
             } 
-            catch
+            catch (Exception ex)
             {
-                Close();
-                throw new Exception("Ошибка инициализации AccountsWindow, вероятно, отсутствуют файлы. Сообщите, пожалуйста");
+                ErrorLogHelper.LogError("Не удалось инициализировать окно аккаунта", ex);
+                PatreonStatus = LocalizationHelper.Translate("Не удалось загрузить данные аккаунта");
             }
         }
 
@@ -141,14 +142,19 @@ namespace grzyClothTool.Views
                     PatreonUsername = App.patreonAuthPlugin.Username;
                     PatreonImg = App.patreonAuthPlugin.ImageUrl;
 
-                    PatreonStatus = App.patreonAuthPlugin.Status == null ? "НЕ АКТИВЕН" : "АКТИВЕН";
+                    PatreonStatus = LocalizationHelper.Translate(App.patreonAuthPlugin.Status == null ? "НЕ АКТИВЕН" : "АКТИВЕН");
                     PatreonLastChargeDate = (App.patreonAuthPlugin.LastChargeDate) ?? "-";
                     PatreonNextChargeDate = (App.patreonAuthPlugin.NextChargeDate) ?? "-";
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                MessageBox.Show("Не удалось войти");
+                ErrorLogHelper.LogError("Не удалось войти в Patreon", ex);
+                Controls.CustomMessageBox.Show(
+                    LocalizationHelper.Format("Не удалось войти: {0}", ErrorMessageHelper.Friendly(ex)),
+                    LocalizationHelper.Translate("Ошибка"),
+                    Controls.CustomMessageBox.CustomMessageBoxButtons.OKOnly,
+                    Controls.CustomMessageBox.CustomMessageBoxIcon.Error);
             }
         }
 
@@ -170,10 +176,25 @@ namespace grzyClothTool.Views
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-            Process p = new();
-            p.StartInfo.UseShellExecute = true;
-            p.StartInfo.FileName = e.Uri.AbsoluteUri;
-            p.Start();
+            e.Handled = true;
+            if (e.Uri == null ||
+                (e.Uri.Scheme != Uri.UriSchemeHttp && e.Uri.Scheme != Uri.UriSchemeHttps))
+            {
+                return;
+            }
+
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = e.Uri.AbsoluteUri,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                ErrorLogHelper.LogError("Не удалось открыть ссылку аккаунта", ex);
+            }
         }
     }
 }

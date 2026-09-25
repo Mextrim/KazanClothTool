@@ -13,7 +13,7 @@
     <Window.Resources>
         <Style x:Key="ConfirmButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="{DynamicResource Brush600}"/>
-            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Foreground" Value="{DynamicResource OnPrimaryBrush}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -122,8 +122,15 @@
                      Padding="12,10"
                      Background="{DynamicResource Brush100}"
                      Foreground="{DynamicResource Brush950}"
+                     AutomationProperties.Name="Название проекта"
                      BorderBrush="{DynamicResource Brush300}"
                      BorderThickness="1"/>
+
+            <TextBlock Text="{Binding ProjectNameValidationMessage}"
+                       Margin="0,6,0,0"
+                       FontSize="11"
+                       Foreground="{DynamicResource DangerBrush}"
+                       TextWrapping="Wrap" />
             
             <Border Background="{DynamicResource AccentDimBrush}"
                     BorderBrush="{DynamicResource AccentHoverBrush}"

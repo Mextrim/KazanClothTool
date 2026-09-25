@@ -73,11 +73,11 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="PanelButtonBorder" Property="Background" Value="{DynamicResource Brush200}" />
                                 <Setter TargetName="PanelButtonBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                                <Setter TargetName="PanelButtonBorder" Property="Opacity" Value="0.92" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="PanelButtonBorder" Property="Background" Value="{DynamicResource Brush250}" />
+                                <Setter TargetName="PanelButtonBorder" Property="Opacity" Value="0.82" />
                             </Trigger>
                             <Trigger Property="IsKeyboardFocused" Value="True">
                                 <Setter TargetName="PanelButtonBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
@@ -173,7 +173,7 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="400" />
+            <ColumnDefinition Width="360" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -214,9 +214,10 @@
                                 </Grid.RowDefinitions>
 
                                 <ScrollViewer Grid.Row="0"
-                                              HorizontalScrollBarVisibility="Disabled"
-                                              VerticalScrollBarVisibility="Disabled">
-                                    <WrapPanel IsItemsHost="True" Orientation="Horizontal" />
+                                              HorizontalScrollBarVisibility="Auto"
+                                              VerticalScrollBarVisibility="Disabled"
+                                              CanContentScroll="True">
+                                    <StackPanel IsItemsHost="True" Orientation="Horizontal" />
                                 </ScrollViewer>
 
                                 <Border Grid.Row="1"
@@ -280,6 +281,7 @@
                                                          Foreground="{DynamicResource Brush900}"
                                                          FontSize="11"
                                                          Padding="0,2"
+                                                         AutomationProperties.Name="Поиск одежды"
                                                          VerticalContentAlignment="Center" />
                                                 <TextBlock Grid.Column="1"
                                                            Text="Поиск одежды..."
@@ -363,6 +365,7 @@
                 </StackPanel>
 
                 <Border Grid.Row="1"
+                        IsEnabled="{Binding HasProject}"
                         Background="{DynamicResource Brush100}"
                         BorderBrush="{DynamicResource Brush250}"
                         BorderThickness="0,1,0,0"
@@ -487,7 +490,8 @@
                         <Button Grid.Column="4"
                                 Style="{StaticResource DangerIconButtonStyle}"
                                 Click="Delete_SelectedDrawable"
-                                ToolTip="Удалить выбранную одежду">
+                                ToolTip="Удалить выбранную одежду"
+                                AutomationProperties.Name="Удалить выбранную одежду">
                             <fa:IconBlock Icon="TrashCan"
                                           IconFont="Solid"
                                           Width="18"
@@ -509,6 +513,7 @@
 
         <Border Grid.Column="1"
                 Grid.Row="1"
+                IsEnabled="{Binding HasProject}"
                 Background="{DynamicResource Brush100}"
                 BorderBrush="{DynamicResource Brush250}"
                 BorderThickness="0,1,0,0"

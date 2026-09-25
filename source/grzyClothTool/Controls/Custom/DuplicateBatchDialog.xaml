@@ -142,7 +142,7 @@
                     Margin="4,0"
                     Background="{DynamicResource AccentBrush}"
                     BorderBrush="{DynamicResource AccentHoverBrush}"
-                    Foreground="White"
+                    Foreground="{DynamicResource OnPrimaryBrush}"
                     FontWeight="SemiBold"
                     Click="BtnConfirm_Click"/>
         </StackPanel>

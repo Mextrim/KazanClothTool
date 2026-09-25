@@ -7,19 +7,24 @@
         xmlns:local="clr-namespace:grzyClothTool.Views"
         mc:Ignorable="d"
         Title="Выбор свойств одежды"
-        ResizeMode="NoResize"
+        ResizeMode="CanResize"
         Background="{DynamicResource Brush50}"
         WindowStartupLocation="CenterOwner"
-        Height="350"
-        Width="400">
+        Height="390"
+        Width="460"
+         MinWidth="360"
+         MaxWidth="700"
+         MinHeight="320"
+         MaxHeight="700">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="50" />
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Margin="15">
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="15">
             <TextBlock Text="Не удалось распознать свойства одежды" FontSize="16" Foreground="{DynamicResource Brush950}" FontWeight="Medium"/>
-            <TextBlock x:Name="path" Text="{Binding AssetPath}" d:Text="C:\this\is\some\random\path\10.ydd" FontSize="12" Foreground="{DynamicResource Brush500}" FontWeight="Light" Margin="0 0 0 25" TextWrapping="WrapWithOverflow"/>
+            <TextBlock x:Name="path" Text="{Binding AssetPath}" d:Text="C:\this\is\some\random\path\10.ydd" FontSize="12" Foreground="{DynamicResource Brush500}" FontWeight="Light" Margin="0 0 0 25" TextWrapping="Wrap"/>
             <c:ModernLabelComboBox
                 x:Name="assetType"
                 Label="Тип актива"
@@ -38,7 +43,8 @@
                 Width="250"
                 Margin="0,0,0,5"
             />
-        </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
         <Grid Grid.Row="1" Margin="5">
             <c:CustomButton 
                 HorizontalAlignment="Left"

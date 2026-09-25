@@ -9,15 +9,15 @@
         xmlns:converters="clr-namespace:grzyClothTool.Converters"
         Background="{DynamicResource Brush50}"
         mc:Ignorable="d"
-        Title="Оптимизация текстур" MinHeight="420" MaxHeight="420" MinWidth="690" MaxWidth="690">
+        Title="Оптимизация текстур" Width="760" Height="520" MinWidth="560" MaxWidth="1000" MinHeight="420" MaxHeight="800" ResizeMode="CanResize">
     <Window.Resources>
         <converters:CompressionFormatConverter x:Key="CompressionFormatConverter" />
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="330" />
+            <ColumnDefinition Width="*" MinWidth="260" />
             <ColumnDefinition Width="10" />
-            <ColumnDefinition Width="330" />
+            <ColumnDefinition Width="*" MinWidth="260" />
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>

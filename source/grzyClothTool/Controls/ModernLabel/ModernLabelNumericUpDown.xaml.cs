@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace grzyClothTool.Controls
 {
@@ -8,13 +11,13 @@ namespace grzyClothTool.Controls
             .Register("Label", typeof(string), typeof(ModernLabelNumericUpDown), new FrameworkPropertyMetadata("Числовое поле"));
 
         public static readonly DependencyProperty ValueProperty = DependencyProperty
-            .Register("Value", typeof(decimal), typeof(ModernLabelNumericUpDown), new FrameworkPropertyMetadata(0.0M, OnUpdate));
+            .Register("Value", typeof(decimal), typeof(ModernLabelNumericUpDown), new FrameworkPropertyMetadata(0.0M, OnValuePropertyChanged));
 
         public static readonly DependencyProperty MinimumProperty = DependencyProperty
-            .Register("Minimum", typeof(decimal), typeof(ModernLabelNumericUpDown), new FrameworkPropertyMetadata(0.0M));
+            .Register("Minimum", typeof(decimal), typeof(ModernLabelNumericUpDown), new FrameworkPropertyMetadata(0.0M, OnBoundsPropertyChanged));
 
         public static readonly DependencyProperty MaximumProperty = DependencyProperty
-            .Register("Maximum", typeof(decimal), typeof(ModernLabelNumericUpDown), new FrameworkPropertyMetadata(0.0M));
+            .Register("Maximum", typeof(decimal), typeof(ModernLabelNumericUpDown), new FrameworkPropertyMetadata(0.0M, OnBoundsPropertyChanged));
 
         public static readonly DependencyProperty IncrementProperty = DependencyProperty
             .Register("Increment", typeof(decimal), typeof(ModernLabelNumericUpDown), new FrameworkPropertyMetadata(1.0M));
@@ -52,6 +55,51 @@ namespace grzyClothTool.Controls
         public ModernLabelNumericUpDown()
         {
             InitializeComponent();
+            Loaded += (_, _) => UpdateButtonStates();
+        }
+
+        private static void OnValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var control = (ModernLabelNumericUpDown)d;
+            OnUpdate(d, e);
+            control.Dispatcher.BeginInvoke(new Action(control.UpdateButtonStates));
+        }
+
+        private static void OnBoundsPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((ModernLabelNumericUpDown)d).UpdateButtonStates();
+        }
+
+        private void UpdateButtonStates()
+        {
+            if (NumericSurface?.Template == null)
+            {
+                return;
+            }
+
+            if (NumericSurface.Template.FindName("UpButtonElement", NumericSurface) is Button up)
+            {
+                up.IsEnabled = Value < Maximum;
+            }
+
+            if (NumericSurface.Template.FindName("DownButtonElement", NumericSurface) is Button down)
+            {
+                down.IsEnabled = Value > Minimum;
+            }
+        }
+
+        private void Number_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Up)
+            {
+                IncrementValue(sender, new RoutedEventArgs());
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Down)
+            {
+                DecrementValue(sender, new RoutedEventArgs());
+                e.Handled = true;
+            }
         }
 
         private void IncrementValue(object sender, RoutedEventArgs e)
@@ -61,6 +109,7 @@ namespace grzyClothTool.Controls
                 IsUserInitiated = true;
                 Value += Increment;
             }
+            UpdateButtonStates();
         }
 
         private void DecrementValue(object sender, RoutedEventArgs e)
@@ -70,6 +119,7 @@ namespace grzyClothTool.Controls
                 IsUserInitiated = true;
                 Value -= Increment;
             }
+            UpdateButtonStates();
         }
     }
 }

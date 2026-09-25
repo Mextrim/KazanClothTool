@@ -48,7 +48,7 @@ public partial class Home : UserControl, INotifyPropertyChanged
         "Проекты автоматически сохраняются каждую минуту после изменения."
     ];
 
-    public string QuickTip => LocalizationHelper.Translate(_quickTips[Math.Abs(Environment.TickCount) % _quickTips.Count]);
+    public string QuickTip => LocalizationHelper.Translate(_quickTips[(Environment.TickCount & int.MaxValue) % _quickTips.Count]);
 
     public Home()
     {
