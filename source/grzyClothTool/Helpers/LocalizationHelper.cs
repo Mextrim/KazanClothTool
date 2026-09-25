@@ -176,6 +176,7 @@ public static class LocalizationHelper
         ["Женский"] = new("Жіночий", "Female"),
 
         // Theme names and descriptions
+        ["Чистая"] = new("Чиста", "Purity"),
         ["Графит"] = new("Графіт", "Graphite"),
         ["Светлая"] = new("Світла", "Light"),
         ["Океан"] = new("Океан", "Ocean"),
@@ -189,6 +190,7 @@ public static class LocalizationHelper
         ["Роза"] = new("Троянда", "Rose"),
         ["Моно"] = new("Моно", "Mono"),
         ["Графит и бирюзовый акцент"] = new("Графіт і бірюзовий акцент", "Graphite with a turquoise accent"),
+        ["Мягкий Purity UI дашборд с фиолетовым акцентом"] = new("М'який Purity UI дашборд із фіолетовим акцентом", "Soft Purity UI dashboard with a violet accent"),
         ["Чистый и контрастный интерфейс"] = new("Чистий і контрастний інтерфейс", "Clean and high-contrast interface"),
         ["Классический синий"] = new("Класичний синій", "Classic blue"),
         ["Лавандовый и бирюзовый"] = new("Лавандовий і бірюзовий", "Lavender and turquoise"),

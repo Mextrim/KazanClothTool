@@ -16,13 +16,13 @@
     <UserControl.Resources>
         <Style x:Key="HomeActionButton" TargetType="Button">
             <Setter Property="Height" Value="44" />
-            <Setter Property="MinWidth" Value="140" />
-            <Setter Property="Padding" Value="17,0" />
+            <Setter Property="MinWidth" Value="142" />
+            <Setter Property="Padding" Value="18,0" />
             <Setter Property="Margin" Value="0,0,10,0" />
             <Setter Property="FontSize" Value="12" />
-            <Setter Property="Background" Value="{DynamicResource Brush150}" />
-            <Setter Property="Foreground" Value="{DynamicResource Brush950}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush350}" />
+            <Setter Property="Background" Value="{DynamicResource Brush100}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush900}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush250}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Template">
@@ -41,10 +41,10 @@
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="ActionBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
-                                <Setter TargetName="ActionBorder" Property="Opacity" Value="0.92" />
+                                <Setter TargetName="ActionBorder" Property="Background" Value="{DynamicResource AccentDimBrush}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="ActionBorder" Property="Opacity" Value="0.82" />
+                                <Setter TargetName="ActionBorder" Property="Background" Value="{DynamicResource Brush150}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -53,14 +53,17 @@
         </Style>
 
         <Style x:Key="PrimaryHomeActionButton" TargetType="Button" BasedOn="{StaticResource HomeActionButton}">
-            <Setter Property="MinWidth" Value="158" />
+            <Setter Property="MinWidth" Value="162" />
             <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
             <Setter Property="Foreground" Value="{DynamicResource OnPrimaryBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
                     <Setter Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource AccentPressedBrush}" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -76,7 +79,7 @@
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="ProjectBorder"
                                 Background="{DynamicResource Brush75}"
-                                BorderBrush="{DynamicResource Brush300}"
+                                BorderBrush="{DynamicResource Brush200}"
                                 BorderThickness="1"
                                 CornerRadius="12"
                                 Padding="14">
@@ -107,12 +110,12 @@
 
             <Border Grid.Row="0"
                     Background="{DynamicResource Brush100}"
-                    BorderBrush="{DynamicResource Brush300}"
+                    BorderBrush="{DynamicResource Brush200}"
                     BorderThickness="1"
                     CornerRadius="20"
-                    Padding="30">
+                    Padding="32">
                 <Border.Effect>
-                    <DropShadowEffect BlurRadius="26" ShadowDepth="7" Opacity="0.22" Color="Black" />
+                    <DropShadowEffect BlurRadius="28" ShadowDepth="6" Opacity="0.10" Color="Black" />
                 </Border.Effect>
 
                 <Grid>
@@ -121,14 +124,14 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,30,0">
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,36,0">
                         <Border Background="{DynamicResource AccentDimBrush}"
                                 BorderBrush="{DynamicResource AccentBrush}"
                                 BorderThickness="1"
-                                CornerRadius="12"
-                                Padding="10,5"
+                                CornerRadius="11"
+                                Padding="11,5"
                                 HorizontalAlignment="Left"
-                                Margin="0,0,0,16">
+                                Margin="0,0,0,18">
                             <StackPanel Orientation="Horizontal">
                                 <icons:MaterialIcon Kind="Circle" Width="8" Height="8" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
                                 <TextBlock Text="3D-РЕДАКТОР ОДЕЖДЫ"
@@ -140,12 +143,12 @@
                         </Border>
 
                         <TextBlock Text="Kazan Cloth Tool"
-                                   FontFamily="Segoe UI Variable Display, Segoe UI"
-                                   FontSize="32"
+                                   FontFamily="{StaticResource DisplayFontFamily}"
+                                   FontSize="30"
                                    FontWeight="SemiBold"
                                    Foreground="{DynamicResource Brush950}" />
 
-                        <TextBlock Margin="0,10,0,0"
+                        <TextBlock Margin="0,12,0,0"
                                    MaxWidth="720"
                                    TextWrapping="Wrap"
                                    Text="Создавайте, просматривайте и редактируйте элементы одежды, текстуры и физику в едином проекте. KazanClothTool показывает изменения в 3D и сразу проверяет файлы перед сборкой."
@@ -153,7 +156,7 @@
                                    LineHeight="22"
                                    Foreground="{DynamicResource Brush600}" />
 
-                        <StackPanel Orientation="Horizontal" Margin="0,22,0,0">
+                        <StackPanel Orientation="Horizontal" Margin="0,24,0,0">
                             <Button Style="{StaticResource PrimaryHomeActionButton}" Click="CreateNew_Click">
                                 <StackPanel Orientation="Horizontal">
                                     <fa:IconBlock Icon="Plus" IconFont="Solid" Width="18" Height="18" Margin="0,0,8,0" />
@@ -175,25 +178,91 @@
                         </StackPanel>
                     </StackPanel>
 
-                    <Grid Grid.Column="1" Width="230" Height="210" VerticalAlignment="Center">
-                        <Ellipse Width="210" Height="210" Fill="{DynamicResource Brush75}" Stroke="{DynamicResource Brush250}" StrokeThickness="1" />
-                        <Ellipse Width="164" Height="164" Fill="{DynamicResource Brush50}" Stroke="{DynamicResource AccentDimBrush}" StrokeThickness="2" />
-                        <icons:MaterialIcon Kind="Hanger"
-                                            Width="106"
-                                            Height="106"
-                                            Foreground="{DynamicResource AccentBrush}"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center" />
-                        <Border Background="{DynamicResource Brush200}"
-                                BorderBrush="{DynamicResource Brush350}"
+                    <Grid Grid.Column="1" Width="252" Height="216" VerticalAlignment="Center">
+                        <Border Background="{DynamicResource Brush100}"
+                                BorderBrush="{DynamicResource Brush200}"
                                 BorderThickness="1"
-                                CornerRadius="10"
-                                Padding="10,6"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Top">
-                            <TextBlock Text="{Binding LatestVersion, StringFormat='v{0}'}"
-                                       Foreground="{DynamicResource Brush700}"
-                                       FontSize="10" />
+                                CornerRadius="18"
+                                Padding="18">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="20" ShadowDepth="4" Opacity="0.08" Color="Black" />
+                            </Border.Effect>
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0"
+                                            Width="32" Height="32"
+                                            Background="{DynamicResource AccentDimBrush}"
+                                            CornerRadius="10">
+                                        <icons:MaterialIcon Kind="Hanger" Width="19" Height="19" Foreground="{DynamicResource AccentBrush}" />
+                                    </Border>
+                                    <TextBlock Grid.Column="1"
+                                               Text="KazanClothTool"
+                                               Margin="9,0,0,0"
+                                               VerticalAlignment="Center"
+                                               FontSize="12"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource Brush900}" />
+                                    <Border Grid.Column="2"
+                                            Background="{DynamicResource Brush150}"
+                                            CornerRadius="9"
+                                            Padding="8,3"
+                                            VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding LatestVersion, StringFormat='v{0}'}"
+                                                   Foreground="{DynamicResource Brush600}"
+                                                   FontSize="10" />
+                                    </Border>
+                                </Grid>
+
+                                <Grid Margin="0,18,0,0" Height="86">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="8" />
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="8" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="8" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="8" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="8" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Grid.Row="0" Grid.Column="0" Background="{DynamicResource AccentBrush}" CornerRadius="7,7,3,3" VerticalAlignment="Bottom" Height="52" />
+                                    <Border Grid.Row="0" Grid.Column="2" Background="{DynamicResource AccentBrush}" Opacity="0.75" CornerRadius="7,7,3,3" VerticalAlignment="Bottom" Height="72" />
+                                    <Border Grid.Row="0" Grid.Column="4" Background="{DynamicResource SecondaryBrush}" Opacity="0.8" CornerRadius="7,7,3,3" VerticalAlignment="Bottom" Height="60" />
+                                    <Border Grid.Row="0" Grid.Column="6" Background="{DynamicResource AccentBrush}" Opacity="0.55" CornerRadius="7,7,3,3" VerticalAlignment="Bottom" Height="40" />
+
+                                    <Border Grid.Row="2" Grid.Column="0" Background="{DynamicResource Brush250}" CornerRadius="3" VerticalAlignment="Bottom" Height="34" />
+                                    <Border Grid.Row="2" Grid.Column="2" Background="{DynamicResource AccentBrush}" Opacity="0.85" CornerRadius="7,7,3,3" VerticalAlignment="Bottom" Height="58" />
+                                    <Border Grid.Row="2" Grid.Column="4" Background="{DynamicResource Brush250}" CornerRadius="3" VerticalAlignment="Bottom" Height="28" />
+                                    <Border Grid.Row="2" Grid.Column="6" Background="{DynamicResource SecondaryBrush}" Opacity="0.7" CornerRadius="7,7,3,3" VerticalAlignment="Bottom" Height="46" />
+
+                                    <Border Grid.Row="4" Grid.Column="0" Background="{DynamicResource Brush250}" CornerRadius="3" VerticalAlignment="Bottom" Height="46" />
+                                    <Border Grid.Row="4" Grid.Column="2" Background="{DynamicResource Brush250}" CornerRadius="3" VerticalAlignment="Bottom" Height="24" />
+                                    <Border Grid.Row="4" Grid.Column="4" Background="{DynamicResource AccentBrush}" Opacity="0.7" CornerRadius="7,7,3,3" VerticalAlignment="Bottom" Height="38" />
+                                    <Border Grid.Row="4" Grid.Column="6" Background="{DynamicResource Brush250}" CornerRadius="3" VerticalAlignment="Bottom" Height="30" />
+                                </Grid>
+
+                                <Grid Margin="0,16,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" Height="7" Background="{DynamicResource AccentBrush}" Opacity="0.85" CornerRadius="4" Margin="0,0,6,0" />
+                                    <Border Grid.Column="1" Height="7" Background="{DynamicResource SecondaryBrush}" Opacity="0.8" CornerRadius="4" Margin="0,0,6,0" />
+                                    <Border Grid.Column="2" Height="7" Background="{DynamicResource SuccessBrush}" Opacity="0.8" CornerRadius="4" />
+                                </Grid>
+                            </StackPanel>
                         </Border>
                     </Grid>
                 </Grid>
@@ -207,13 +276,13 @@
                 </Grid.ColumnDefinitions>
 
                 <Border Grid.Column="0"
-                        Background="{DynamicResource Brush75}"
-                        BorderBrush="{DynamicResource Brush300}"
+                        Background="{DynamicResource Brush100}"
+                        BorderBrush="{DynamicResource Brush200}"
                         BorderThickness="1"
                         CornerRadius="18"
-                        Padding="20">
+                        Padding="22">
                     <Border.Effect>
-                        <DropShadowEffect BlurRadius="22" ShadowDepth="4" Opacity="0.14" Color="Black" />
+                        <DropShadowEffect BlurRadius="24" ShadowDepth="5" Opacity="0.08" Color="Black" />
                     </Border.Effect>
                     <Grid>
                         <Grid.RowDefinitions>
@@ -222,14 +291,15 @@
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <Grid Grid.Row="0" Margin="2,0,2,14">
+                        <Grid Grid.Row="0" Margin="2,0,2,16">
                             <StackPanel Orientation="Horizontal">
                                 <icons:MaterialIcon Kind="History" Width="20" Height="20" Foreground="{DynamicResource AccentBrush}" />
                                 <TextBlock Text="Недавние проекты" Margin="9,0,0,0" FontSize="17" FontWeight="SemiBold" />
                             </StackPanel>
                             <Button Style="{StaticResource HomeActionButton}"
                                     Height="34"
-                                    Padding="12,0"
+                                    Padding="13,0"
+                                    MinWidth="0"
                                     Margin="0"
                                     HorizontalAlignment="Right"
                                     Click="OpenSave_Click"
@@ -241,7 +311,7 @@
                             </Button>
                         </Grid>
 
-                        <Border Grid.Row="1" Height="1" Background="{DynamicResource Brush300}" Margin="0,0,0,12" />
+                        <Border Grid.Row="1" Height="1" Background="{DynamicResource Brush200}" Margin="0,0,0,14" />
 
                         <Grid Grid.Row="2" MinHeight="180">
                             <ItemsControl ItemsSource="{Binding RecentlyOpened}">
@@ -263,8 +333,6 @@
                                                             Width="44"
                                                             Height="44"
                                                             Background="{DynamicResource AccentDimBrush}"
-                                                            BorderBrush="{DynamicResource AccentBrush}"
-                                                            BorderThickness="1"
                                                             CornerRadius="12">
                                                         <icons:MaterialIcon Kind="FolderOutline" Width="23" Height="23" Foreground="{DynamicResource AccentBrush}" />
                                                     </Border>
@@ -285,14 +353,14 @@
                                                     </StackPanel>
 
                                                     <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                                                        <Border Background="{DynamicResource Brush200}" CornerRadius="8" Padding="8,3" Margin="0,0,8,0">
-                                                            <TextBlock Foreground="{DynamicResource Brush700}" FontSize="10">
+                                                        <Border Background="{DynamicResource AccentDimBrush}" CornerRadius="9" Padding="9,3" Margin="0,0,8,0">
+                                                            <TextBlock Foreground="{DynamicResource AccentBrush}" FontSize="10" FontWeight="SemiBold">
                                                                 <Run Text="{Binding AddonCount}" />
                                                                 <Run Text=" аддонов" />
                                                             </TextBlock>
                                                         </Border>
-                                                        <Border Background="{DynamicResource Brush200}" CornerRadius="8" Padding="8,3" Margin="0,0,8,0">
-                                                            <TextBlock Foreground="{DynamicResource Brush700}" FontSize="10">
+                                                        <Border Background="{DynamicResource AccentDimBrush}" CornerRadius="9" Padding="9,3" Margin="0,0,8,0">
+                                                            <TextBlock Foreground="{DynamicResource AccentBrush}" FontSize="10" FontWeight="SemiBold">
                                                                 <Run Text="{Binding DrawableCount}" />
                                                                 <Run Text=" вещей" />
                                                             </TextBlock>
@@ -333,14 +401,11 @@
                 </Border>
 
                 <StackPanel Grid.Column="2">
-                    <Border Background="{DynamicResource Brush100}"
-                            BorderBrush="{DynamicResource Brush300}"
+                    <Border Background="{DynamicResource AccentDimBrush}"
+                            BorderBrush="{DynamicResource AccentBrush}"
                             BorderThickness="1"
                             CornerRadius="18"
                             Padding="20">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="20" ShadowDepth="4" Opacity="0.12" Color="Black" />
-                        </Border.Effect>
                         <StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <icons:MaterialIcon Kind="LightbulbOnOutline" Width="20" Height="20" Foreground="{DynamicResource AccentBrush}" />
@@ -356,35 +421,35 @@
                     </Border>
 
                     <Border Margin="0,16,0,0"
-                            Background="{DynamicResource Brush75}"
-                            BorderBrush="{DynamicResource Brush300}"
+                            Background="{DynamicResource Brush100}"
+                            BorderBrush="{DynamicResource Brush200}"
                             BorderThickness="1"
                             CornerRadius="18"
                             Padding="20">
                         <Border.Effect>
-                            <DropShadowEffect BlurRadius="20" ShadowDepth="4" Opacity="0.12" Color="Black" />
+                            <DropShadowEffect BlurRadius="24" ShadowDepth="5" Opacity="0.08" Color="Black" />
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Рабочий процесс" FontSize="15" FontWeight="SemiBold" />
-                            <Border Height="1" Background="{DynamicResource Brush300}" Margin="0,12,0,12" />
+                            <Border Height="1" Background="{DynamicResource Brush200}" Margin="0,14,0,14" />
 
                             <StackPanel Orientation="Horizontal">
-                                <Border Width="28" Height="28" Background="{DynamicResource AccentDimBrush}" CornerRadius="8">
-                                    <TextBlock Text="1" Foreground="{DynamicResource AccentBrush}" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                <Border Width="28" Height="28" Background="{DynamicResource AccentBrush}" CornerRadius="14">
+                                    <TextBlock Text="1" Foreground="{DynamicResource OnPrimaryBrush}" FontWeight="SemiBold" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Border>
-                                <TextBlock Text="Добавьте YDD и текстуры" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="12" Foreground="{DynamicResource Brush700}" />
+                                <TextBlock Text="Добавьте YDD и текстуры" Margin="12,0,0,0" VerticalAlignment="Center" FontSize="12" Foreground="{DynamicResource Brush700}" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
-                                <Border Width="28" Height="28" Background="{DynamicResource AccentDimBrush}" CornerRadius="8">
-                                    <TextBlock Text="2" Foreground="{DynamicResource AccentBrush}" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                <Border Width="28" Height="28" Background="{DynamicResource AccentBrush}" CornerRadius="14">
+                                    <TextBlock Text="2" Foreground="{DynamicResource OnPrimaryBrush}" FontWeight="SemiBold" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Border>
-                                <TextBlock Text="Настройте свойства и теги" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="12" Foreground="{DynamicResource Brush700}" />
+                                <TextBlock Text="Настройте свойства и теги" Margin="12,0,0,0" VerticalAlignment="Center" FontSize="12" Foreground="{DynamicResource Brush700}" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
-                                <Border Width="28" Height="28" Background="{DynamicResource AccentDimBrush}" CornerRadius="8">
-                                    <TextBlock Text="3" Foreground="{DynamicResource AccentBrush}" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                <Border Width="28" Height="28" Background="{DynamicResource AccentBrush}" CornerRadius="14">
+                                    <TextBlock Text="3" Foreground="{DynamicResource OnPrimaryBrush}" FontWeight="SemiBold" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Border>
-                                <TextBlock Text="Проверьте в 3D и соберите" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="12" Foreground="{DynamicResource Brush700}" />
+                                <TextBlock Text="Проверьте в 3D и соберите" Margin="12,0,0,0" VerticalAlignment="Center" FontSize="12" Foreground="{DynamicResource Brush700}" />
                             </StackPanel>
                         </StackPanel>
                     </Border>
@@ -404,9 +469,9 @@
                                FontSize="10" />
                 </StackPanel>
                 <Border Grid.Column="1"
-                        Padding="12,7"
-                        Background="{DynamicResource Brush75}"
-                        BorderBrush="{DynamicResource Brush300}"
+                        Padding="13,7"
+                        Background="{DynamicResource Brush100}"
+                        BorderBrush="{DynamicResource Brush200}"
                         BorderThickness="1"
                         CornerRadius="10">
                     <StackPanel Orientation="Horizontal">

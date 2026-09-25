@@ -21,21 +21,21 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="TabItem">
                         <Border x:Name="TabBorder"
-                                Background="{DynamicResource Brush100}"
-                                BorderBrush="{DynamicResource Brush300}"
-                                BorderThickness="0,0,0,2"
-                                CornerRadius="8,8,0,0"
-                                Padding="12,8"
-                                Margin="0,0,4,0">
+                                Background="Transparent"
+                                BorderBrush="Transparent"
+                                BorderThickness="1"
+                                CornerRadius="10"
+                                Padding="13,8"
+                                Margin="0,0,5,0">
                             <TextBlock x:Name="TabText"
                                        Text="{TemplateBinding Header}"
                                        FontSize="11"
                                        FontWeight="SemiBold"
-                                       Foreground="{DynamicResource Brush700}" />
+                                       Foreground="{DynamicResource Brush600}" />
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource Brush50}" />
+                                <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource AccentDimBrush}" />
                                 <Setter TargetName="TabBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
                                 <Setter TargetName="TabText" Property="Foreground" Value="{DynamicResource AccentBrush}" />
                             </Trigger>
@@ -50,9 +50,9 @@
 
         <Style x:Key="PanelButtonStyle" TargetType="Button">
             <Setter Property="Height" Value="38" />
-            <Setter Property="Background" Value="{DynamicResource Brush150}" />
+            <Setter Property="Background" Value="{DynamicResource Brush100}" />
             <Setter Property="Foreground" Value="{DynamicResource Brush900}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush350}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush250}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Padding" Value="14,0" />
             <Setter Property="FontSize" Value="12" />
@@ -65,7 +65,7 @@
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="9">
+                                CornerRadius="10">
                             <ContentPresenter Margin="{TemplateBinding Padding}"
                                               HorizontalAlignment="Center"
                                               VerticalAlignment="Center"
@@ -73,11 +73,11 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="PanelButtonBorder" Property="Background" Value="{DynamicResource AccentDimBrush}" />
                                 <Setter TargetName="PanelButtonBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
-                                <Setter TargetName="PanelButtonBorder" Property="Opacity" Value="0.92" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="PanelButtonBorder" Property="Opacity" Value="0.82" />
+                                <Setter TargetName="PanelButtonBorder" Property="Background" Value="{DynamicResource Brush150}" />
                             </Trigger>
                             <Trigger Property="IsKeyboardFocused" Value="True">
                                 <Setter TargetName="PanelButtonBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
@@ -185,7 +185,7 @@
                 Grid.Row="0"
                 Grid.RowSpan="2"
                 Background="{DynamicResource Brush75}"
-                BorderBrush="{DynamicResource Brush250}"
+                BorderBrush="{DynamicResource Brush200}"
                 BorderThickness="0,0,1,0">
             <Grid>
                 <Grid.RowDefinitions>

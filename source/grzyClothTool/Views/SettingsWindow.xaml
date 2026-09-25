@@ -11,14 +11,14 @@
              d:Background="{DynamicResource Brush50}">
     <UserControl.Resources>
         <Style x:Key="SettingsCard" TargetType="Border">
-            <Setter Property="Background" Value="{DynamicResource Brush75}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush300}" />
+            <Setter Property="Background" Value="{DynamicResource Brush100}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush200}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="18" />
-            <Setter Property="Padding" Value="22" />
+            <Setter Property="Padding" Value="24" />
             <Setter Property="Effect">
                 <Setter.Value>
-                    <DropShadowEffect BlurRadius="24" ShadowDepth="5" Opacity="0.14" Color="Black" />
+                    <DropShadowEffect BlurRadius="26" ShadowDepth="5" Opacity="0.08" Color="Black" />
                 </Setter.Value>
             </Setter>
         </Style>
@@ -54,8 +54,8 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ListBoxItem">
                         <Border x:Name="ThemeCardBorder"
-                                Background="{DynamicResource Brush100}"
-                                BorderBrush="{DynamicResource Brush300}"
+                                Background="{DynamicResource Brush75}"
+                                BorderBrush="{DynamicResource Brush200}"
                                 BorderThickness="1"
                                 CornerRadius="14"
                                 Padding="0">
@@ -63,8 +63,8 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ThemeCardBorder" Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
-                                <Setter TargetName="ThemeCardBorder" Property="Background" Value="{DynamicResource Brush150}" />
+                                <Setter TargetName="ThemeCardBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                                <Setter TargetName="ThemeCardBorder" Property="Background" Value="{DynamicResource AccentDimBrush}" />
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter TargetName="ThemeCardBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
@@ -77,16 +77,16 @@
         </Style>
 
         <DataTemplate x:Key="ThemeCardTemplate">
-            <Grid Width="205" Height="78">
+            <Grid Width="212" Height="80">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="7" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Border Grid.Column="0" Background="{Binding AccentBrush}" CornerRadius="11,0,0,11" />
-                <StackPanel Grid.Column="1" Margin="13,10,10,8">
+                <Border Grid.Column="0" Background="{Binding AccentBrush}" CornerRadius="13,0,0,13" />
+                <StackPanel Grid.Column="1" Margin="14,11,11,9">
                     <StackPanel Orientation="Horizontal">
                         <Ellipse Width="9" Height="9" Fill="{Binding AccentBrush}" VerticalAlignment="Center" />
-                        <TextBlock Text="{Binding LocalizedName}" Margin="7,0,0,0" FontWeight="SemiBold" Foreground="{DynamicResource Brush950}" />
+                        <TextBlock Text="{Binding LocalizedName}" Margin="8,0,0,0" FontWeight="SemiBold" Foreground="{DynamicResource Brush950}" />
                     </StackPanel>
                     <TextBlock Text="{Binding LocalizedDescription}" Margin="0,6,0,0" FontSize="10" Foreground="{DynamicResource Brush500}" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" />
                 </StackPanel>
@@ -122,7 +122,7 @@
             </StackPanel>
 
             <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                <Border Padding="13,8" Background="{DynamicResource Brush100}" BorderBrush="{DynamicResource Brush300}" BorderThickness="1" CornerRadius="12">
+                <Border Padding="13,8" Background="{DynamicResource Brush100}" BorderBrush="{DynamicResource Brush200}" BorderThickness="1" CornerRadius="12">
                     <StackPanel Orientation="Horizontal">
                         <icons:MaterialIcon Kind="PaletteOutline" Width="18" Height="18" Foreground="{Binding SelectedTheme.AccentBrush}" />
                         <StackPanel Margin="9,0,0,0">
@@ -135,7 +135,7 @@
                         Margin="10,0,0,0"
                         Padding="12,6"
                         Background="{DynamicResource Brush100}"
-                        BorderBrush="{DynamicResource Brush300}"
+                        BorderBrush="{DynamicResource Brush200}"
                         BorderThickness="1"
                         CornerRadius="12">
                     <StackPanel>

@@ -49,10 +49,10 @@
         </Style>
 
         <Style TargetType="Border" x:Key="ModernCard">
-            <Setter Property="Background" Value="{DynamicResource Brush50}" />
+            <Setter Property="Background" Value="{DynamicResource Brush100}" />
             <Setter Property="BorderBrush" Value="{DynamicResource Brush200}" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="CornerRadius" Value="12" />
             <Setter Property="Padding" Value="16" />
             <Setter Property="Margin" Value="8" />
         </Style>
@@ -85,18 +85,19 @@
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="4">
+                                CornerRadius="9">
                             <ContentPresenter HorizontalAlignment="Center"
                                               VerticalAlignment="Center"/>
                         </Border>
 
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="{DynamicResource Brush400}"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource AccentDimBrush}"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
                             </Trigger>
 
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="{DynamicResource Brush500}"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource Brush200}"/>
                             </Trigger>
 
                             <Trigger Property="IsEnabled" Value="False">

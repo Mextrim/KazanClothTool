@@ -50,6 +50,31 @@ public class PersistentSettingsHelper
             Console.WriteLine($"Error loading persistent settings: {ex.Message}");
             _settings = new PersistentSettings();
         }
+
+        ApplyPurityLookMigration();
+    }
+
+    /// <summary>
+    /// v1.3.0 ships the Purity UI look as the default interface. Settings written by older builds
+    /// stay valid, but the legacy default theme is moved to the new dashboard theme once, so the
+    /// refreshed interface is what returning users see on the first launch after the update.
+    /// </summary>
+    private void ApplyPurityLookMigration()
+    {
+        if (_settings.PurityLookMigrated)
+        {
+            return;
+        }
+
+        _settings.PurityLookMigrated = true;
+
+        if (string.IsNullOrWhiteSpace(_settings.Theme)
+            || string.Equals(_settings.Theme, AppThemes.Dark, StringComparison.OrdinalIgnoreCase))
+        {
+            _settings.Theme = AppThemes.Purity;
+        }
+
+        SaveSettings();
     }
 
     private void SaveSettings()
@@ -186,7 +211,8 @@ public class PersistentSettingsHelper
 public class PersistentSettings
 {
     public bool IsFirstRun { get; set; } = true;
-    public string Theme { get; set; } = AppThemes.Dark;
+    public string Theme { get; set; } = AppThemes.Purity;
+    public bool PurityLookMigrated { get; set; }
     public string MainProjectsFolder { get; set; } = string.Empty;
     public string Language { get; set; } = LocalizationHelper.Russian;
     public List<RecentProject> RecentlyOpenedProjects { get; set; } = [];

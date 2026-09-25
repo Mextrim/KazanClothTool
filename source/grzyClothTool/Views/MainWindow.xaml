@@ -37,15 +37,15 @@
 
     <Window.Resources>
         <Style x:Key="TopBarButtonStyle" TargetType="Button">
-            <Setter Property="Height" Value="36" />
-            <Setter Property="MinWidth" Value="36" />
-            <Setter Property="Padding" Value="12,0" />
-            <Setter Property="Margin" Value="2,0" />
+            <Setter Property="Height" Value="38" />
+            <Setter Property="MinWidth" Value="38" />
+            <Setter Property="Padding" Value="13,0" />
+            <Setter Property="Margin" Value="3,0" />
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="{DynamicResource Brush800}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush700}" />
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="FontFamily" Value="{DynamicResource DisplayFontFamily}" />
+            <Setter Property="FontFamily" Value="{StaticResource DisplayFontFamily}" />
             <Setter Property="FontSize" Value="12" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -56,7 +56,7 @@
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="9"
+                                CornerRadius="10"
                                 SnapsToDevicePixels="True">
                             <ContentPresenter HorizontalAlignment="Center"
                                               VerticalAlignment="Center"
@@ -64,15 +64,15 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="{DynamicResource Brush400}" />
-                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.92" />
-                                <Setter Property="Foreground" Value="{DynamicResource Brush950}" />
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource Brush150}" />
+                                <Setter Property="Foreground" Value="{DynamicResource Brush900}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.82" />
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource Brush200}" />
                             </Trigger>
                             <Trigger Property="IsKeyboardFocused" Value="True">
-                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                                <Setter TargetName="ButtonBorder" Property="BorderThickness" Value="1.5" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter Property="Opacity" Value="0.4" />
@@ -85,9 +85,9 @@
         </Style>
 
         <Style x:Key="TopBarActionButtonStyle" TargetType="Button" BasedOn="{StaticResource TopBarButtonStyle}">
-            <Setter Property="Background" Value="{DynamicResource Brush75}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush300}" />
-            <Setter Property="Padding" Value="12,0" />
+            <Setter Property="Background" Value="{DynamicResource Brush100}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush250}" />
+            <Setter Property="Padding" Value="13,0" />
         </Style>
 
         <Style x:Key="TopBarPrimaryActionButtonStyle" TargetType="Button" BasedOn="{StaticResource TopBarActionButtonStyle}">
@@ -114,8 +114,8 @@
             <Setter Property="MinWidth" Value="92" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding DataContext.IsHomePage, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
-                    <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
-                    <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+                    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource OnPrimaryBrush}" />
                     <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
                 </DataTrigger>
             </Style.Triggers>
@@ -125,8 +125,8 @@
             <Setter Property="MinWidth" Value="98" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding DataContext.IsProjectPage, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
-                    <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
-                    <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+                    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource OnPrimaryBrush}" />
                     <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
                 </DataTrigger>
             </Style.Triggers>
@@ -136,8 +136,8 @@
             <Setter Property="MinWidth" Value="104" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding DataContext.IsSettingsPage, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
-                    <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
-                    <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+                    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource OnPrimaryBrush}" />
                     <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
                 </DataTrigger>
             </Style.Triggers>
@@ -145,26 +145,26 @@
 
         <Style x:Key="TopBarGroupStyle" TargetType="Border">
             <Setter Property="Background" Value="{DynamicResource Brush75}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush300}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush200}" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="CornerRadius" Value="13" />
             <Setter Property="Padding" Value="4" />
         </Style>
 
         <Style x:Key="TopBarSeparatorStyle" TargetType="Border">
             <Setter Property="Width" Value="1" />
-            <Setter Property="Height" Value="22" />
-            <Setter Property="Margin" Value="5,0" />
-            <Setter Property="Background" Value="{DynamicResource Brush300}" />
+            <Setter Property="Height" Value="24" />
+            <Setter Property="Margin" Value="6,0" />
+            <Setter Property="Background" Value="{DynamicResource Brush250}" />
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
 
         <Style x:Key="WindowControlButtonStyle" TargetType="Button">
             <Setter Property="Width" Value="46" />
-            <Setter Property="Height" Value="54" />
+            <Setter Property="Height" Value="60" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="{DynamicResource Brush700}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush600}" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -180,14 +180,14 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="WindowButtonBorder" Property="Background" Value="{DynamicResource Brush200}" />
-                                <Setter Property="Foreground" Value="{DynamicResource Brush950}" />
+                                <Setter TargetName="WindowButtonBorder" Property="Background" Value="{DynamicResource Brush150}" />
+                                <Setter Property="Foreground" Value="{DynamicResource Brush900}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="WindowButtonBorder" Property="Background" Value="{DynamicResource Brush250}" />
+                                <Setter TargetName="WindowButtonBorder" Property="Background" Value="{DynamicResource Brush200}" />
                             </Trigger>
                             <Trigger Property="IsKeyboardFocused" Value="True">
-                                <Setter TargetName="WindowButtonBorder" Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+                                <Setter TargetName="WindowButtonBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
                                 <Setter TargetName="WindowButtonBorder" Property="BorderThickness" Value="1" />
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -197,10 +197,10 @@
         </Style>
 
         <Style x:Key="CloseWindowButtonStyle" TargetType="Button" BasedOn="{StaticResource WindowControlButtonStyle}">
-            <Setter Property="Foreground" Value="{DynamicResource Brush700}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush600}" />
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#E5484D" />
+                    <Setter Property="Background" Value="{DynamicResource DangerBrush}" />
                     <Setter Property="Foreground" Value="{DynamicResource OnPrimaryBrush}" />
                 </Trigger>
             </Style.Triggers>
@@ -208,25 +208,25 @@
     </Window.Resources>
 
     <Border x:Name="WindowFrame"
-            BorderBrush="{DynamicResource Brush300}"
+            BorderBrush="{DynamicResource Brush200}"
             BorderThickness="1"
             Background="{DynamicResource Brush50}"
-            CornerRadius="12">
+            CornerRadius="14">
         <Border.Effect>
-            <DropShadowEffect BlurRadius="30" ShadowDepth="8" Opacity="0.26" Color="Black" />
+            <DropShadowEffect BlurRadius="34" ShadowDepth="10" Opacity="0.18" Color="Black" />
         </Border.Effect>
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="54" />
+                <RowDefinition Height="60" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="32" />
+                <RowDefinition Height="34" />
             </Grid.RowDefinitions>
 
             <Border Grid.Row="0"
                     Background="{DynamicResource Brush100}"
-                    BorderBrush="{DynamicResource Brush250}"
+                    BorderBrush="{DynamicResource Brush200}"
                     BorderThickness="0,0,0,1"
-                    CornerRadius="11,11,0,0"
+                    CornerRadius="13,13,0,0"
                     MouseLeftButtonDown="TitleBar_MouseDown">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -239,26 +239,24 @@
 
                     <StackPanel Grid.Column="0"
                                 Orientation="Horizontal"
-                                Margin="16,0,10,0"
+                                Margin="18,0,10,0"
                                 VerticalAlignment="Center">
-                        <Border Width="36"
-                                Height="36"
-                                Background="{DynamicResource Brush50}"
-                                BorderBrush="{DynamicResource AccentBrush}"
-                                BorderThickness="1"
-                                CornerRadius="11">
-                            <Image Width="28" Source="pack://application:,,,/Resources/KazanClothTool.png" />
+                        <Border Width="38"
+                                Height="38"
+                                Background="{DynamicResource AccentDimBrush}"
+                                CornerRadius="12">
+                            <Image Width="29" Source="pack://application:,,,/Resources/KazanClothTool.png" />
                         </Border>
-                        <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                        <StackPanel Margin="11,0,0,0" VerticalAlignment="Center">
                             <TextBlock Text="KazanClothTool"
-                                       FontFamily="{DynamicResource DisplayFontFamily}"
-                                       FontSize="14"
+                                       FontFamily="{StaticResource DisplayFontFamily}"
+                                       FontSize="15"
                                        FontWeight="SemiBold"
                                        Foreground="{DynamicResource Brush950}" />
                             <TextBlock Text="РЕДАКТОР ОДЕЖДЫ"
-                                       FontSize="8"
+                                       FontSize="9"
                                        FontWeight="SemiBold"
-                                       Foreground="{DynamicResource AccentBrush}" />
+                                       Foreground="{DynamicResource Brush500}" />
                         </StackPanel>
                     </StackPanel>
 
@@ -454,7 +452,7 @@
 
             <Border Grid.Row="2"
                     Background="{DynamicResource Brush100}"
-                    BorderBrush="{DynamicResource Brush250}"
+                    BorderBrush="{DynamicResource Brush200}"
                     BorderThickness="0,1,0,0">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -488,8 +486,8 @@
                                    AutomationProperties.LiveSetting="Polite" />
                     </StackPanel>
 
-                    <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="0,0,12,0" VerticalAlignment="Center">
-                        <Border Background="{DynamicResource Brush200}" CornerRadius="8" Padding="8,2">
+                    <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="0,0,14,0" VerticalAlignment="Center">
+                        <Border Background="{DynamicResource Brush150}" CornerRadius="9" Padding="9,3">
                             <TextBlock Text="{Binding AppVersion, RelativeSource={RelativeSource AncestorType=Window}}"
                                        Foreground="{DynamicResource Brush600}"
                                        FontSize="10" />

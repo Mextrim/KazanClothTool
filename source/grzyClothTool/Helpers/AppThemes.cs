@@ -67,6 +67,7 @@ public sealed class AppThemeOption : INotifyPropertyChanged
 
 public static class AppThemes
 {
+    public const string Purity = "Purity";
     public const string Dark = "Dark";
     public const string Light = "Light";
     public const string Bootstrap = "Bootstrap";
@@ -84,6 +85,7 @@ public static class AppThemes
 
     public static IReadOnlyList<AppThemeOption> All { get; } =
     [
+        new(Purity, "Чистая", "Мягкий Purity UI дашборд с фиолетовым акцентом", false, "#6C5CE7", "#F7F8FA", "#14B8A6"),
         new(Dark, "Графит", "Графит и бирюзовый акцент", true, "#22D3EE", "#090C12", "#8B5CF6"),
         new(Light, "Светлая", "Чистый и контрастный интерфейс", false, "#0891B2", "#F5F7FB", "#7C3AED"),
         new(Bootstrap, "Bootstrap", "Классический синий", false, "#0D6EFD", "#F8F9FA", "#6F42C1"),
@@ -103,7 +105,7 @@ public static class AppThemes
     public static string Normalize(string? key)
     {
         return All.FirstOrDefault(theme => string.Equals(theme.Key, key, StringComparison.OrdinalIgnoreCase))?.Key
-            ?? Dark;
+            ?? Purity;
     }
 
     public static AppThemeOption Get(string? key)

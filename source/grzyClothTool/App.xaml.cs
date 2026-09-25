@@ -147,6 +147,7 @@ public partial class App : Application
         AppThemeOption theme = AppThemes.Get(themeKey);
         string resourcePath = theme.Key switch
         {
+            AppThemes.Purity => "Themes/Purity.xaml",
             AppThemes.Light => "Themes/Light.xaml",
             AppThemes.Bootstrap => "Themes/Bootstrap.xaml",
             AppThemes.Material => "Themes/Material.xaml",
@@ -160,7 +161,7 @@ public partial class App : Application
             AppThemes.Sand => "Themes/Sand.xaml",
             AppThemes.Rose => "Themes/Rose.xaml",
             AppThemes.Mono => "Themes/Mono.xaml",
-            _ => "Themes/Dark.xaml"
+            _ => "Themes/Purity.xaml"
         };
 
         var dictionary = new ResourceDictionary
