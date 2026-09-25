@@ -1,7 +1,11 @@
 # Kazan Cloth Tool
+## Скриншоты программы:
 <img width="1439" height="898" alt="image" src="https://github.com/user-attachments/assets/a9d6f69f-3ea7-4658-b69a-77aac6dc61d2" />
+<img width="1431" height="898" alt="image" src="https://github.com/user-attachments/assets/b585e76d-776b-43dd-b02d-4f08fdea815d" />
+<img width="1438" height="901" alt="image" src="https://github.com/user-attachments/assets/cb28051a-7611-4891-8878-31dfdf69b814" />
+<img width="1440" height="900" alt="image" src="https://github.com/user-attachments/assets/142de650-afe2-4490-ad4e-0665a7ac3a2e" />
 
-Kazan Cloth Tool — редактор одежды для GTA V с просмотром, редактированием свойств, проверкой файлов и сборкой ресурсов.
+<b>Kazan Cloth Tool — редактор одежды для GTA V с просмотром, редактированием свойств, проверкой файлов и сборкой ресурсов. </b>
 
 ## Скачать
 
