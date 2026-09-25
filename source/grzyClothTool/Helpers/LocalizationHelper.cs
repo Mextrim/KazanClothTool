@@ -193,6 +193,7 @@ public static class LocalizationHelper
         ["Моно"] = new("Моно", "Mono"),
         ["Графит и бирюзовый акцент"] = new("Графіт і бірюзовий акцент", "Graphite with a turquoise accent"),
         ["Мягкий Purity UI дашборд с фиолетовым акцентом"] = new("М'який Purity UI дашборд із фіолетовим акцентом", "Soft Purity UI dashboard with a violet accent"),
+        ["Тёмный DesignCode UI: индиго-поверхности и ледяной акцент"] = new("Темний DesignCode UI: індіго-поверхні та крижаний акцент", "Dark DesignCode UI: indigo surfaces with an ice-blue accent"),
         ["Чистый и контрастный интерфейс"] = new("Чистий і контрастний інтерфейс", "Clean and high-contrast interface"),
         ["Классический синий"] = new("Класичний синій", "Classic blue"),
         ["Лавандовый и бирюзовый"] = new("Лавандовий і бірюзовий", "Lavender and turquoise"),

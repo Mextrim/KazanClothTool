@@ -148,6 +148,7 @@ public partial class App : Application
         string resourcePath = theme.Key switch
         {
             AppThemes.Purity => "Themes/Purity.xaml",
+            AppThemes.DesignCode => "Themes/DesignCode.xaml",
             AppThemes.Light => "Themes/Light.xaml",
             AppThemes.Bootstrap => "Themes/Bootstrap.xaml",
             AppThemes.Material => "Themes/Material.xaml",
