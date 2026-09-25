@@ -74,6 +74,7 @@ public static class AppThemes
     public const string UntitledUI = "UntitledUI";
     public const string AntDesign = "AntDesign";
     public const string Carbon = "Carbon";
+    public const string CarbonGray100 = "CarbonGray100";
     public const string Fluent = "Fluent";
     public const string Radix = "Radix";
     public const string RadixDark = "RadixDark";
@@ -108,6 +109,7 @@ public static class AppThemes
         new(UntitledUI, "Untitled UI", "Untitled UI: фиолетовый #6941c6 и глубокий текст", false, "#6941C6", "#FFFFFF", "#0075FF"),
         new(AntDesign, "Ant Design", "Ant Design: синий #1677ff и геометрия 4/8/12", false, "#1677FF", "#F5F5F5", "#722ED1"),
         new(Carbon, "IBM Carbon", "IBM Carbon: синий #0f62fe и строгая сетка", false, "#0F62FE", "#F4F4F4", "#4589FF"),
+        new(CarbonGray100, "Carbon Gray 100", "Монохромный Carbon: база #262626 и белые элементы", true, "#FFFFFF", "#262626", "#4589FF"),
         new(Fluent, "Fluent 2", "Microsoft Fluent 2: тёмный #1f1f1f и #479ef5", true, "#479EF5", "#1F1F1F", "#62ABF5"),
         new(Radix, "Radix Themes", "Radix Themes v3: индиго #3e63dd на светлой шкале", false, "#3E63DD", "#F9F9FB", "#12A594"),
         new(RadixDark, "Radix Themes Dark", "Radix Themes v3: тёмный режим #1c1e22 с индиго", true, "#3E63DD", "#1C1E22", "#2CC8B7"),

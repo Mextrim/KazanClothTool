@@ -154,6 +154,7 @@ public partial class App : Application
             AppThemes.UntitledUI => "Themes/UntitledUI.xaml",
             AppThemes.AntDesign => "Themes/AntDesign.xaml",
             AppThemes.Carbon => "Themes/Carbon.xaml",
+            AppThemes.CarbonGray100 => "Themes/CarbonGray100.xaml",
             AppThemes.Fluent => "Themes/Fluent.xaml",
             AppThemes.Radix => "Themes/Radix.xaml",
             AppThemes.RadixDark => "Themes/RadixDark.xaml",

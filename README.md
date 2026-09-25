@@ -10,7 +10,7 @@
 
 <br>
 
-<a href="https://github.com/Mextrim/KazanClothTool/releases/download/v1.11.0/KazanClothTool-v1.11.0-win-x64.zip"><img alt="Скачать v1.11.0" src="https://img.shields.io/badge/%E2%86%95%20Download%20v1.11.0-007AFF?style=for-the-badge&logo=windows&logoColor=white"></a>
+<a href="https://github.com/Mextrim/KazanClothTool/releases/download/v1.12.0/KazanClothTool-v1.12.0-win-x64.zip"><img alt="Скачать v1.12.0" src="https://img.shields.io/badge/%E2%86%95%20Download%20v1.12.0-FFFFFF?style=for-the-badge&logo=windows&logoColor=white"></a>
 <a href="https://github.com/Mextrim/KazanClothTool/wiki"><img alt="Wiki" src="https://img.shields.io/badge/Wiki-6F42C1?style=for-the-badge&logo=github&logoColor=white"></a>
 <a href="https://github.com/Mextrim/KazanClothTool/releases"><img alt="Релизы" src="https://img.shields.io/github/v/release/Mextrim/KazanClothTool?label=Release&style=for-the-badge&logo=github&logoColor=white"></a>
 <a href="https://github.com/Mextrim/KazanClothTool/issues"><img alt="Issues" src="https://img.shields.io/github/issues/Mextrim/KazanClothTool?style=for-the-badge&logo=github&logoColor=white"></a>
@@ -19,7 +19,7 @@
 
 <img alt="Windows x64" src="https://img.shields.io/badge/Windows_x64-0D6EFD?style=flat-square&logo=windows&logoColor=white">
 <img alt=".NET 10" src="https://img.shields.io/badge/.NET_10-512BD4?style=flat-square&logo=dotnet&logoColor=white">
-<img alt="Количество тем" src="https://img.shields.io/badge/32_%D1%82%D0%B5%D0%BC-6F42C1?style=flat-square">
+<img alt="Количество тем" src="https://img.shields.io/badge/33_%D1%82%D0%B5%D0%BC-6F42C1?style=flat-square">
 <img alt="Языки" src="https://img.shields.io/badge/3_%D1%8F%D0%B7%D1%8B%D0%BA%D0%B0-E83E8C?style=flat-square">
 <img alt="Поддерживаемые платформы сборки" src="https://img.shields.io/badge/FiveM%20%C2%B7%20Alt%3AV%20%C2%B7%20Singleplayer-198754?style=flat-square">
 <img alt="Лицензия" src="https://img.shields.io/badge/GPL_v3-198754?style=flat-square">
@@ -75,7 +75,7 @@
 : Вращение и масштаб · автосмена модели персонажа · экспорт всех текстур в PNG
 
 **Интерфейс**
-: 32 темы · русский, украинский и английский · переключение мгновенное, без перезапуска
+: 33 темы · русский, украинский и английский · переключение мгновенное, без перезапуска
 
 **Каталог иконок**
 : 7 400+ иконок Material Design Icons с поиском, выбором размера и копированием разметки по клику · *Настройки → Каталог иконок Material*
@@ -126,7 +126,7 @@ Portable-сборка, установка не требуется.
 
 ## 🎨 Темы и языки
 
-**32 темы** · 19 светлых и 13 тёмных · переключение мгновенное, выбор сохраняется автоматически.
+**33 темы** · 19 светлых и 14 тёмных · переключение мгновенное, выбор сохраняется автоматически.
 
 <details>
 <summary>Показать список</summary>
@@ -137,7 +137,7 @@ Bootstrap 5 *(по умолчанию)* · iOS 16 · Horizon UI · Material UI �
 
 **Тёмные**
 
-iOS 16 Dark · Radix Themes Dark · Fluent 2 · DesignCode · Графит · Material Design · Океан · Закат · Лес · Неон · Аврора · Рубин · Кобальт
+Carbon Gray 100 · iOS 16 Dark · Radix Themes Dark · Fluent 2 · DesignCode · Графит · Material Design · Океан · Закат · Лес · Неон · Аврора · Рубин · Кобальт
 
 </details>
 
@@ -169,7 +169,7 @@ iOS 16 Dark · Radix Themes Dark · Fluent 2 · DesignCode · Графит · Ma
 | Параметр | Значение |
 | --- | --- |
 | Язык | русский, украинский, английский |
-| Тема | 32 темы, сохраняется автоматически |
+| Тема | 33 темы, сохраняется автоматически |
 | Папка проектов | общая папка для всех проектов |
 | Папка GTA V | только для 3D-просмотра |
 | Лимит полигонов | 35 000 / 20 000 / 10 000 по уровням LOD |

@@ -214,6 +214,7 @@ public static class LocalizationHelper
         ["Untitled UI: фиолетовый #6941c6 и глубокий текст"] = new("Untitled UI: фіолетовий #6941c6 і глибокий текст", "Untitled UI: violet #6941c6 with deep text"),
         ["Ant Design: синий #1677ff и геометрия 4/8/12"] = new("Ant Design: синій #1677ff і геометрія 4/8/12", "Ant Design: blue #1677ff with 4/8/12 geometry"),
         ["IBM Carbon: синий #0f62fe и строгая сетка"] = new("IBM Carbon: синій #0f62fe і сувора сітка", "IBM Carbon: blue #0f62fe with strict geometry"),
+        ["Монохромный Carbon: база #262626 и белые элементы"] = new("Монохромний Carbon: база #262626 та білі елементи", "Monochrome Carbon: #262626 base with white elements"),
         ["Microsoft Fluent 2: тёмный #1f1f1f и #479ef5"] = new("Microsoft Fluent 2: темний #1f1f1f і #479ef5", "Microsoft Fluent 2: dark #1f1f1f with #479ef5"),
         ["Radix: цинковые нейтрали и синий #0090ff"] = new("Radix: цинкові нейтралі та синій #0090ff", "Radix: zinc neutrals with blue #0090ff"),
         ["Radix Themes v3: индиго #3e63dd на светлой шкале"] = new("Radix Themes v3: індіго #3e63dd на світлій шкалі", "Radix Themes v3: indigo #3e63dd on the light scale"),
