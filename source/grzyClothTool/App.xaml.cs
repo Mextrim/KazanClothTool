@@ -159,6 +159,7 @@ public partial class App : Application
             AppThemes.Radix => "Themes/Radix.xaml",
             AppThemes.RadixDark => "Themes/RadixDark.xaml",
             AppThemes.NeonGlow => "Themes/NeonGlow.xaml",
+            AppThemes.FlatUI => "Themes/FlatUI.xaml",
             AppThemes.IOS => "Themes/IOS.xaml",
             AppThemes.IOSDark => "Themes/IOSDark.xaml",
             AppThemes.PrimeVue => "Themes/PrimeVue.xaml",
