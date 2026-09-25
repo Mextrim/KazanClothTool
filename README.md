@@ -1,4 +1,5 @@
 # Kazan Cloth Tool
+<img width="1439" height="898" alt="image" src="https://github.com/user-attachments/assets/a9d6f69f-3ea7-4658-b69a-77aac6dc61d2" />
 
 Kazan Cloth Tool — редактор одежды для GTA V с просмотром, редактированием свойств, проверкой файлов и сборкой ресурсов.
 
