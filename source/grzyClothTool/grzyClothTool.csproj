@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
@@ -12,7 +12,7 @@
 	  <Copyright>© 2026 MeX. ПО переделал MeX под чутким руководством Evelentdev</Copyright>
 	  <Description>KazanClothTool</Description>
 	  <ApplicationIcon>Resources\KazanClothToolIcon.ico</ApplicationIcon>
-	  <FileVersion>1.7.0</FileVersion>
+	  <FileVersion>1.8.0</FileVersion>
 	  
 	  <SelfContained>true</SelfContained>
 	  <PublishSingleFile>false</PublishSingleFile>

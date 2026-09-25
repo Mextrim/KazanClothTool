@@ -1,0 +1,91 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Shared.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <!--
+        Spectre.css (Figma Community kit). Minimal purple #5755d9 with compact 2/4/6 shapes.
+    -->
+
+    <!-- Theme geometry: radii 2/4/6/8/12/16 px. -->
+    <CornerRadius x:Key="RadiusXs">2</CornerRadius>
+    <CornerRadius x:Key="RadiusSm">4</CornerRadius>
+    <CornerRadius x:Key="RadiusMd">6</CornerRadius>
+    <CornerRadius x:Key="RadiusLg">8</CornerRadius>
+    <CornerRadius x:Key="RadiusXl">12</CornerRadius>
+    <CornerRadius x:Key="RadiusXxl">16</CornerRadius>
+
+    <DropShadowEffect x:Key="ElevationLow" BlurRadius="18" ShadowDepth="3" Opacity="0.10" Color="#161616" />
+    <DropShadowEffect x:Key="ElevationMedium" BlurRadius="28" ShadowDepth="7" Opacity="0.14" Color="#161616" />
+    <DropShadowEffect x:Key="ElevationHigh" BlurRadius="38" ShadowDepth="12" Opacity="0.20" Color="#161616" />
+
+    <Color x:Key="Color50">#F8F8F8</Color>
+    <Color x:Key="Color75">#F4F4F4</Color>
+    <Color x:Key="Color100">#FFFFFF</Color>
+    <Color x:Key="Color125">#FBFBFB</Color>
+    <Color x:Key="Color150">#F7F7F7</Color>
+    <Color x:Key="Color175">#F2F2F2</Color>
+    <Color x:Key="Color200">#EDEDED</Color>
+    <Color x:Key="Color250">#E5E5E5</Color>
+    <Color x:Key="Color300">#DBDBDB</Color>
+    <Color x:Key="Color350">#C5C5C5</Color>
+    <Color x:Key="Color400">#ADADAD</Color>
+    <Color x:Key="Color450">#959595</Color>
+    <Color x:Key="Color500">#7D7D7D</Color>
+    <Color x:Key="Color600">#646464</Color>
+    <Color x:Key="Color700">#505050</Color>
+    <Color x:Key="Color800">#404040</Color>
+    <Color x:Key="Color900">#3D3D3D</Color>
+    <Color x:Key="Color950">#2B2B2B</Color>
+
+    <Color x:Key="ColorAccent">#5755D9</Color>
+    <Color x:Key="ColorAccentHover">#4B49C4</Color>
+    <Color x:Key="ColorAccentPressed">#3D3BB0</Color>
+    <Color x:Key="ColorAccentDim">#EDEDFB</Color>
+    <Color x:Key="ColorOnPrimary">#FFFFFFFF</Color>
+    <Color x:Key="ColorViewport">#F8F8F8</Color>
+    <Color x:Key="ColorSecondary">#7B6CF6</Color>
+    <Color x:Key="ColorSecondaryHover">#9186F8</Color>
+    <Color x:Key="ColorSecondaryDim">#F1EFFF</Color>
+    <Color x:Key="ColorSuccess">#2AC57E</Color>
+    <Color x:Key="ColorWarning">#F1A748</Color>
+    <Color x:Key="ColorDanger">#E8534F</Color>
+
+    <SolidColorBrush x:Key="Brush50" Color="{StaticResource Color50}" />
+    <SolidColorBrush x:Key="Brush75" Color="{StaticResource Color75}" />
+    <SolidColorBrush x:Key="Brush100" Color="{StaticResource Color100}" />
+    <SolidColorBrush x:Key="Brush125" Color="{StaticResource Color125}" />
+    <SolidColorBrush x:Key="Brush150" Color="{StaticResource Color150}" />
+    <SolidColorBrush x:Key="Brush175" Color="{StaticResource Color175}" />
+    <SolidColorBrush x:Key="Brush200" Color="{StaticResource Color200}" />
+    <SolidColorBrush x:Key="Brush250" Color="{StaticResource Color250}" />
+    <SolidColorBrush x:Key="Brush300" Color="{StaticResource Color300}" />
+    <SolidColorBrush x:Key="Brush350" Color="{StaticResource Color350}" />
+    <SolidColorBrush x:Key="Brush400" Color="{StaticResource Color400}" />
+    <SolidColorBrush x:Key="Brush450" Color="{StaticResource Color450}" />
+    <SolidColorBrush x:Key="Brush500" Color="{StaticResource Color500}" />
+    <SolidColorBrush x:Key="Brush600" Color="{StaticResource Color600}" />
+    <SolidColorBrush x:Key="Brush700" Color="{StaticResource Color700}" />
+    <SolidColorBrush x:Key="Brush800" Color="{StaticResource Color800}" />
+    <SolidColorBrush x:Key="Brush900" Color="{StaticResource Color900}" />
+    <SolidColorBrush x:Key="Brush950" Color="{StaticResource Color950}" />
+
+    <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource ColorAccent}" />
+    <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource ColorAccentHover}" />
+    <SolidColorBrush x:Key="AccentPressedBrush" Color="{StaticResource ColorAccentPressed}" />
+    <SolidColorBrush x:Key="AccentDimBrush" Color="{StaticResource ColorAccentDim}" />
+    <SolidColorBrush x:Key="OnPrimaryBrush" Color="{StaticResource ColorOnPrimary}" />
+    <SolidColorBrush x:Key="ViewportBackgroundBrush" Color="{StaticResource ColorViewport}" />
+    <SolidColorBrush x:Key="ViewportForegroundBrush" Color="{StaticResource Color500}" />
+    <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource ColorSecondary}" />
+    <SolidColorBrush x:Key="SecondaryHoverBrush" Color="{StaticResource ColorSecondaryHover}" />
+    <SolidColorBrush x:Key="SecondaryDimBrush" Color="{StaticResource ColorSecondaryDim}" />
+    <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource ColorSuccess}" />
+    <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource ColorWarning}" />
+    <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource ColorDanger}" />
+
+    <SolidColorBrush x:Key="White" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="Black" Color="#FF000000" />
+    <SolidColorBrush x:Key="GroupBoxBorder" Color="{StaticResource Color250}" />
+</ResourceDictionary>

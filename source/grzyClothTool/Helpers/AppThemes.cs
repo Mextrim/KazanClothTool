@@ -71,6 +71,17 @@ public static class AppThemes
     public const string DesignCode = "DesignCode";
     public const string Horizon = "Horizon";
     public const string MaterialUI = "MaterialUI";
+    public const string UntitledUI = "UntitledUI";
+    public const string AntDesign = "AntDesign";
+    public const string Carbon = "Carbon";
+    public const string Fluent = "Fluent";
+    public const string Radix = "Radix";
+    public const string PrimeVue = "PrimeVue";
+    public const string Mantine = "Mantine";
+    public const string Bulma = "Bulma";
+    public const string Spectre = "Spectre";
+    public const string Shadcn = "Shadcn";
+    public const string Primer = "Primer";
     public const string Dark = "Dark";
     public const string Light = "Light";
     public const string Bootstrap = "Bootstrap";
@@ -91,6 +102,17 @@ public static class AppThemes
         new(Bootstrap, "Bootstrap 5", "Классический Bootstrap: синий #0d6efd, плоские карточки", false, "#0D6EFD", "#F8F9FA", "#6C757D"),
         new(Horizon, "Horizon UI", "Мягкий Soft UI дашборд: индиго #4318ff и голубые акценты", false, "#4318FF", "#F4F7FE", "#36BFFA"),
         new(MaterialUI, "Material UI", "Официальный MUI: синий #0072e5, фиолетовый и Material 3 формы", false, "#0072E5", "#F3F6F9", "#A259FF"),
+        new(UntitledUI, "Untitled UI", "Untitled UI: фиолетовый #6941c6 и глубокий текст", false, "#6941C6", "#FFFFFF", "#0075FF"),
+        new(AntDesign, "Ant Design", "Ant Design: синий #1677ff и геометрия 4/8/12", false, "#1677FF", "#F5F5F5", "#722ED1"),
+        new(Carbon, "IBM Carbon", "IBM Carbon: синий #0f62fe и строгая сетка", false, "#0F62FE", "#F4F4F4", "#4589FF"),
+        new(Fluent, "Fluent 2", "Microsoft Fluent 2: тёмный #1f1f1f и #479ef5", true, "#479EF5", "#1F1F1F", "#62ABF5"),
+        new(Radix, "Radix Themes", "Radix: цинковые нейтрали и синий #0090ff", false, "#0090FF", "#FAFAFA", "#12A594"),
+        new(PrimeVue, "PrimeVue Aura", "PrimeVue Aura: изумрудный #10b981", false, "#10B981", "#F8F9FA", "#6366F1"),
+        new(Mantine, "Mantine", "Mantine: синий #228be6 и фиолетовый", false, "#228BE6", "#F8F9FA", "#7950F2"),
+        new(Bulma, "Bulma", "Bulma: бирюзовый #00d1b2", false, "#00D1B2", "#F5F5F5", "#485FC7"),
+        new(Spectre, "Spectre.css", "Spectre.css: минимализм и фиолетовый #5755d9", false, "#5755D9", "#F8F8F8", "#7B6CF6"),
+        new(Shadcn, "shadcn/ui", "shadcn/ui: цинк и чёрные кнопки", false, "#18181B", "#FAFAFA", "#3B82F6"),
+        new(Primer, "GitHub Primer", "GitHub Primer: синий #0969da и холст #f6f8fa", false, "#0969DA", "#F6F8FA", "#8250DF"),
         new(DesignCode, "DesignCode", "Тёмный DesignCode UI: индиго-поверхности и ледяной акцент", true, "#2F6BFF", "#050715", "#9ED0EE"),
         new(Purity, "Чистая", "Мягкий Purity UI дашборд с фиолетовым акцентом", false, "#6C5CE7", "#F7F8FA", "#14B8A6"),
         new(Dark, "Графит", "Графит и бирюзовый акцент", true, "#22D3EE", "#090C12", "#8B5CF6"),
