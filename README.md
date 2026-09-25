@@ -9,8 +9,8 @@
   **Просмотр моделей, редактирование свойств, проверка качества и сборка игровых ресурсов — в одном приложении.**
 
   <p>
-    <a href="https://github.com/Mextrim/KazanClothTool/releases/download/v1.6.0/KazanClothTool-v1.6.0-win-x64.zip">
-      <img alt="Скачать Kazan Cloth Tool v1.6.0" src="https://img.shields.io/badge/%E2%86%95%20%D0%A1%D0%BA%D0%B0%D1%87%D0%B0%D1%82%D1%8C%20v1.6.0-4318ff?style=for-the-badge&logo=windows&logoColor=white">
+    <a href="https://github.com/Mextrim/KazanClothTool/releases/download/v1.7.0/KazanClothTool-v1.7.0-win-x64.zip">
+      <img alt="Скачать Kazan Cloth Tool v1.7.0" src="https://img.shields.io/badge/%E2%86%95%20%D0%A1%D0%BA%D0%B0%D1%87%D0%B0%D1%82%D1%8C%20v1.7.0-0072e5?style=for-the-badge&logo=windows&logoColor=white">
     </a>
     <a href="https://github.com/Mextrim/KazanClothTool/wiki">
       <img alt="Wiki" src="https://img.shields.io/badge/%F0%9F%93%9A%20Wiki-6f42c1?style=for-the-badge&logo=github&logoColor=white">
@@ -166,7 +166,7 @@
 <td valign="top">
 
 ### 🎨 Интерфейс
-- **17 тем** оформления
+- **18 тем** оформления
 - **3 языка**: русский, украинский, английский
 - Смена темы и языка мгновенно, без перезапуска
 - Журнал событий в приложении
@@ -241,8 +241,8 @@ GitHub не выполняет JavaScript и CSS внутри `README.md`, по�
 </td>
 <td width="40%" align="center" valign="middle">
 
-<a href="https://github.com/Mextrim/KazanClothTool/releases/download/v1.6.0/KazanClothTool-v1.6.0-win-x64.zip">
-  <img alt="Скачать Kazan Cloth Tool v1.6.0" src="https://img.shields.io/badge/%E2%86%95%20%D0%A1%D0%BA%D0%B0%D1%87%D0%B0%D1%82%D1%8C%20v1.6.0-4318ff?style=for-the-badge&logo=windows&logoColor=white">
+<a href="https://github.com/Mextrim/KazanClothTool/releases/download/v1.7.0/KazanClothTool-v1.7.0-win-x64.zip">
+  <img alt="Скачать Kazan Cloth Tool v1.7.0" src="https://img.shields.io/badge/%E2%86%95%20%D0%A1%D0%BA%D0%B0%D1%87%D0%B0%D1%82%D1%8C%20v1.7.0-0072e5?style=for-the-badge&logo=windows&logoColor=white">
 </a>
 
 <br><br>
@@ -435,7 +435,7 @@ KazanClothTool\
 
 ## 🎨 Темы и языки
 
-**17 тем** — переключаются мгновенно, выбор сохраняется автоматически.
+**18 тем** — переключаются мгновенно, выбор сохраняется автоматически.
 
 <table>
 <tr>
@@ -444,8 +444,9 @@ KazanClothTool\
 **Светлые**
 
 - Bootstrap 5 *(по умолчанию)*
-- **Horizon UI** *(новинка)*
-- Purity UI
+- **Material UI** *(новинка)*
+- **Horizon UI**
+- Чистая (Purity UI)
 - Светлая
 - Песок
 - Роза
@@ -476,6 +477,8 @@ KazanClothTool\
 <br>
 
 *Тема Bootstrap 5*: синий `#0d6efd`, серый `#6c757d`, плоские карточки, радиус `0.375rem`.
+<br>
+*Тема Material UI*: официальный MUI — синий `#0072e5`, фиолетовый `#a259ff`, холст `#f3f6f9`, формы Material 3.
 <br><br>
 *Тема Horizon UI*: Soft UI дашборд, индиго `#4318ff`, голубой `#36bffa`, фон `#f4f7fe`, крупные скругления и мягкие тени.
 <br><br>

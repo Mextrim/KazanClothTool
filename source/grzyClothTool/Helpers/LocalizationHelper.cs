@@ -195,6 +195,7 @@ public static class LocalizationHelper
         ["Мягкий Purity UI дашборд с фиолетовым акцентом"] = new("М'який Purity UI дашборд із фіолетовим акцентом", "Soft Purity UI dashboard with a violet accent"),
         ["Тёмный DesignCode UI: индиго-поверхности и ледяной акцент"] = new("Темний DesignCode UI: індіго-поверхні та крижаний акцент", "Dark DesignCode UI: indigo surfaces with an ice-blue accent"),
         ["Мягкий Soft UI дашборд: индиго #4318ff и голубые акценты"] = new("М'який Soft UI дашборд: індиго #4318ff і блакитні акценти", "Soft UI dashboard: indigo #4318ff with sky-blue accents"),
+        ["Официальный MUI: синий #0072e5, фиолетовый и Material 3 формы"] = new("Офіційний MUI: синій #0072e5, фіолетовий та форми Material 3", "Official MUI: blue #0072e5, violet and Material 3 shapes"),
         ["Чистый и контрастный интерфейс"] = new("Чистий і контрастний інтерфейс", "Clean and high-contrast interface"),
         ["Классический синий"] = new("Класичний синій", "Classic blue"),
         ["Лавандовый и бирюзовый"] = new("Лавандовий і бірюзовий", "Lavender and turquoise"),

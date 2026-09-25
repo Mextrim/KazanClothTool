@@ -150,6 +150,7 @@ public partial class App : Application
             AppThemes.Purity => "Themes/Purity.xaml",
             AppThemes.DesignCode => "Themes/DesignCode.xaml",
             AppThemes.Horizon => "Themes/Horizon.xaml",
+            AppThemes.MaterialUI => "Themes/MaterialUI.xaml",
             AppThemes.Light => "Themes/Light.xaml",
             AppThemes.Bootstrap => "Themes/Bootstrap.xaml",
             AppThemes.Material => "Themes/Material.xaml",
