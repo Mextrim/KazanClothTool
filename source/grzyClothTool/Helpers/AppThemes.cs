@@ -78,6 +78,7 @@ public static class AppThemes
     public const string Fluent = "Fluent";
     public const string Radix = "Radix";
     public const string RadixDark = "RadixDark";
+    public const string NeonGlow = "NeonGlow";
     public const string IOS = "IOS";
     public const string IOSDark = "IOSDark";
     public const string PrimeVue = "PrimeVue";
@@ -113,6 +114,7 @@ public static class AppThemes
         new(Fluent, "Fluent 2", "Microsoft Fluent 2: тёмный #1f1f1f и #479ef5", true, "#479EF5", "#1F1F1F", "#62ABF5"),
         new(Radix, "Radix Themes", "Radix Themes v3: индиго #3e63dd на светлой шкале", false, "#3E63DD", "#F9F9FB", "#12A594"),
         new(RadixDark, "Radix Themes Dark", "Radix Themes v3: тёмный режим #1c1e22 с индиго", true, "#3E63DD", "#1C1E22", "#2CC8B7"),
+        new(NeonGlow, "Neon Glow", "Неоновые градиенты: база #131126 и светящийся циан", true, "#22D3EE", "#131126", "#FF6B9A"),
         new(IOS, "iOS 16", "Системные цвета iOS: синий #007aff и фон #f2f2f7", false, "#007AFF", "#F2F2F7", "#AF52DE"),
         new(IOSDark, "iOS 16 Dark", "Тёмный iOS: чёрный фон и #0a84ff", true, "#0A84FF", "#000000", "#BF5AF2"),
         new(PrimeVue, "PrimeVue Aura", "PrimeVue Aura: изумрудный #10b981", false, "#10B981", "#F8F9FA", "#6366F1"),

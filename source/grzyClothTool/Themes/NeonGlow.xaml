@@ -1,0 +1,94 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Shared.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <!--
+        Glowing Buttons in Neon Gradients (Figma Community kit by theres.art studio).
+        Base sampled from the kit: deep indigo #131126, neon cyan and orange button fills.
+        Instead of plain black shadows this theme tints the elevation with colored glows,
+        which is what the kit is actually about: light on near-black.
+    -->
+
+    <CornerRadius x:Key="RadiusXs">8</CornerRadius>
+    <CornerRadius x:Key="RadiusSm">10</CornerRadius>
+    <CornerRadius x:Key="RadiusMd">12</CornerRadius>
+    <CornerRadius x:Key="RadiusLg">16</CornerRadius>
+    <CornerRadius x:Key="RadiusXl">20</CornerRadius>
+    <CornerRadius x:Key="RadiusXxl">28</CornerRadius>
+
+    <!-- Elevation is used as a neon glow rather than a neutral drop shadow. -->
+    <DropShadowEffect x:Key="ElevationLow" BlurRadius="18" ShadowDepth="4" Opacity="0.28" Color="#1B2A6B" />
+    <DropShadowEffect x:Key="ElevationMedium" BlurRadius="28" ShadowDepth="8" Opacity="0.38" Color="#22D3EE" />
+    <DropShadowEffect x:Key="ElevationHigh" BlurRadius="42" ShadowDepth="12" Opacity="0.45" Color="#7C3AED" />
+
+    <Color x:Key="Color50">#131126</Color>
+    <Color x:Key="Color75">#17162E</Color>
+    <Color x:Key="Color100">#1C1A33</Color>
+    <Color x:Key="Color125">#22203C</Color>
+    <Color x:Key="Color150">#282545</Color>
+    <Color x:Key="Color175">#2E2A50</Color>
+    <Color x:Key="Color200">#35315C</Color>
+    <Color x:Key="Color250">#423D6E</Color>
+    <Color x:Key="Color300">#524C85</Color>
+    <Color x:Key="Color350">#6A639F</Color>
+    <Color x:Key="Color400">#8A83B5</Color>
+    <Color x:Key="Color450">#ABA4CC</Color>
+    <Color x:Key="Color500">#C9C3E8</Color>
+    <Color x:Key="Color600">#DCD8F2</Color>
+    <Color x:Key="Color700">#EBE8FA</Color>
+    <Color x:Key="Color800">#F4F2FF</Color>
+    <Color x:Key="Color900">#FBFAFF</Color>
+    <Color x:Key="Color950">#FFFFFFFF</Color>
+
+    <Color x:Key="ColorAccent">#22D3EE</Color>
+    <Color x:Key="ColorAccentHover">#67E8F9</Color>
+    <Color x:Key="ColorAccentPressed">#0E9FBD</Color>
+    <Color x:Key="ColorAccentDim">#123A47</Color>
+    <Color x:Key="ColorOnPrimary">#04141C</Color>
+    <Color x:Key="ColorViewport">#FF131126</Color>
+    <Color x:Key="ColorSecondary">#FF6B9A</Color>
+    <Color x:Key="ColorSecondaryHover">#FF9CBE</Color>
+    <Color x:Key="ColorSecondaryDim">#3A1526</Color>
+    <Color x:Key="ColorSuccess">#4ADE80</Color>
+    <Color x:Key="ColorWarning">#FFAF5B</Color>
+    <Color x:Key="ColorDanger">#FF5C7A</Color>
+
+    <SolidColorBrush x:Key="Brush50" Color="{StaticResource Color50}" />
+    <SolidColorBrush x:Key="Brush75" Color="{StaticResource Color75}" />
+    <SolidColorBrush x:Key="Brush100" Color="{StaticResource Color100}" />
+    <SolidColorBrush x:Key="Brush125" Color="{StaticResource Color125}" />
+    <SolidColorBrush x:Key="Brush150" Color="{StaticResource Color150}" />
+    <SolidColorBrush x:Key="Brush175" Color="{StaticResource Color175}" />
+    <SolidColorBrush x:Key="Brush200" Color="{StaticResource Color200}" />
+    <SolidColorBrush x:Key="Brush250" Color="{StaticResource Color250}" />
+    <SolidColorBrush x:Key="Brush300" Color="{StaticResource Color300}" />
+    <SolidColorBrush x:Key="Brush350" Color="{StaticResource Color350}" />
+    <SolidColorBrush x:Key="Brush400" Color="{StaticResource Color400}" />
+    <SolidColorBrush x:Key="Brush450" Color="{StaticResource Color450}" />
+    <SolidColorBrush x:Key="Brush500" Color="{StaticResource Color500}" />
+    <SolidColorBrush x:Key="Brush600" Color="{StaticResource Color600}" />
+    <SolidColorBrush x:Key="Brush700" Color="{StaticResource Color700}" />
+    <SolidColorBrush x:Key="Brush800" Color="{StaticResource Color800}" />
+    <SolidColorBrush x:Key="Brush900" Color="{StaticResource Color900}" />
+    <SolidColorBrush x:Key="Brush950" Color="{StaticResource Color950}" />
+
+    <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource ColorAccent}" />
+    <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource ColorAccentHover}" />
+    <SolidColorBrush x:Key="AccentPressedBrush" Color="{StaticResource ColorAccentPressed}" />
+    <SolidColorBrush x:Key="AccentDimBrush" Color="{StaticResource ColorAccentDim}" />
+    <SolidColorBrush x:Key="OnPrimaryBrush" Color="{StaticResource ColorOnPrimary}" />
+    <SolidColorBrush x:Key="ViewportBackgroundBrush" Color="{StaticResource ColorViewport}" />
+    <SolidColorBrush x:Key="ViewportForegroundBrush" Color="#C9C3E8" />
+    <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource ColorSecondary}" />
+    <SolidColorBrush x:Key="SecondaryHoverBrush" Color="{StaticResource ColorSecondaryHover}" />
+    <SolidColorBrush x:Key="SecondaryDimBrush" Color="{StaticResource ColorSecondaryDim}" />
+    <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource ColorSuccess}" />
+    <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource ColorWarning}" />
+    <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource ColorDanger}" />
+
+    <SolidColorBrush x:Key="White" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="Black" Color="#FF000000" />
+    <SolidColorBrush x:Key="GroupBoxBorder" Color="{StaticResource Color250}" />
+</ResourceDictionary>
