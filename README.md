@@ -1,8 +1,5 @@
 <div align="center">
-
-  <img src="https://raw.githubusercontent.com/Mextrim/KazanClothTool/main/source/grzyClothTool/Resources/KazanClothTool.png" alt="Kazan Cloth Tool" width="104">
-
-  # ✂️ Kazan Cloth Tool
+  #  Kazan Cloth Tool
 
   ### Редактор одежды и текстур для GTA V
 
