@@ -69,6 +69,7 @@ public static class AppThemes
 {
     public const string Purity = "Purity";
     public const string DesignCode = "DesignCode";
+    public const string Horizon = "Horizon";
     public const string Dark = "Dark";
     public const string Light = "Light";
     public const string Bootstrap = "Bootstrap";
@@ -87,6 +88,7 @@ public static class AppThemes
     public static IReadOnlyList<AppThemeOption> All { get; } =
     [
         new(Bootstrap, "Bootstrap 5", "Классический Bootstrap: синий #0d6efd, плоские карточки", false, "#0D6EFD", "#F8F9FA", "#6C757D"),
+        new(Horizon, "Horizon UI", "Мягкий Soft UI дашборд: индиго #4318ff и голубые акценты", false, "#4318FF", "#F4F7FE", "#36BFFA"),
         new(DesignCode, "DesignCode", "Тёмный DesignCode UI: индиго-поверхности и ледяной акцент", true, "#2F6BFF", "#050715", "#9ED0EE"),
         new(Purity, "Чистая", "Мягкий Purity UI дашборд с фиолетовым акцентом", false, "#6C5CE7", "#F7F8FA", "#14B8A6"),
         new(Dark, "Графит", "Графит и бирюзовый акцент", true, "#22D3EE", "#090C12", "#8B5CF6"),
