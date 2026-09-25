@@ -1,5 +1,5 @@
 # Kazan Cloth Tool
-## Скриншоты программы:
+### Скриншоты программы:
 <img width="1439" height="898" alt="image" src="https://github.com/user-attachments/assets/a9d6f69f-3ea7-4658-b69a-77aac6dc61d2" />
 <img width="1431" height="898" alt="image" src="https://github.com/user-attachments/assets/b585e76d-776b-43dd-b02d-4f08fdea815d" />
 <img width="1438" height="901" alt="image" src="https://github.com/user-attachments/assets/cb28051a-7611-4891-8878-31dfdf69b814" />
