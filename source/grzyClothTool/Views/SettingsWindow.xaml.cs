@@ -160,6 +160,11 @@ namespace grzyClothTool.Views
             }
         }
 
+        private void OpenIconCatalog_Click(object sender, RoutedEventArgs e)
+        {
+            IconCatalogHelper.Open();
+        }
+
         private void GTAVPath_Click(object sender, RoutedEventArgs e)
         {
             OpenFolderDialog selectedGTAPath = new()
