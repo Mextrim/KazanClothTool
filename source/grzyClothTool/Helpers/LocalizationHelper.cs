@@ -216,6 +216,8 @@ public static class LocalizationHelper
         ["IBM Carbon: синий #0f62fe и строгая сетка"] = new("IBM Carbon: синій #0f62fe і сувора сітка", "IBM Carbon: blue #0f62fe with strict geometry"),
         ["Microsoft Fluent 2: тёмный #1f1f1f и #479ef5"] = new("Microsoft Fluent 2: темний #1f1f1f і #479ef5", "Microsoft Fluent 2: dark #1f1f1f with #479ef5"),
         ["Radix: цинковые нейтрали и синий #0090ff"] = new("Radix: цинкові нейтралі та синій #0090ff", "Radix: zinc neutrals with blue #0090ff"),
+        ["Radix Themes v3: индиго #3e63dd на светлой шкале"] = new("Radix Themes v3: індіго #3e63dd на світлій шкалі", "Radix Themes v3: indigo #3e63dd on the light scale"),
+        ["Radix Themes v3: тёмный режим #1c1e22 с индиго"] = new("Radix Themes v3: темний режим #1c1e22 з індиго", "Radix Themes v3: dark mode #1c1e22 with indigo"),
         ["PrimeVue Aura: изумрудный #10b981"] = new("PrimeVue Aura: смарагдовий #10b981", "PrimeVue Aura: emerald #10b981"),
         ["Mantine: синий #228be6 и фиолетовый"] = new("Mantine: синій #228be6 і фіолетовий", "Mantine: blue #228be6 with violet"),
         ["Bulma: бирюзовый #00d1b2"] = new("Bulma: бірюзовий #00d1b2", "Bulma: turquoise #00d1b2"),

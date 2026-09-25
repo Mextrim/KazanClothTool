@@ -5,12 +5,11 @@
     </ResourceDictionary.MergedDictionaries>
 
     <!--
-        Radix Themes v3.0 (Figma Community kit by Radix), light mode.
-        Radix gray scale, indigo accent #3e63dd, green #30a46c and the 2/4/6/8/12/20 radius ramp.
-        Dark mode of the same kit lives in RadixDark.xaml.
+        Radix Themes v3.0 (Figma Community kit by Radix), dark mode.
+        Radix dark gray scale (#1c1e22 canvas, #25292e surfaces), the same indigo #3e63dd accent
+        and depth expressed with borders rather than heavy shadows.
     -->
 
-    <!-- Radix geometry: radius ramp 4/6/8/12/16/20. -->
     <CornerRadius x:Key="RadiusXs">4</CornerRadius>
     <CornerRadius x:Key="RadiusSm">6</CornerRadius>
     <CornerRadius x:Key="RadiusMd">8</CornerRadius>
@@ -18,41 +17,41 @@
     <CornerRadius x:Key="RadiusXl">16</CornerRadius>
     <CornerRadius x:Key="RadiusXxl">20</CornerRadius>
 
-    <DropShadowEffect x:Key="ElevationLow" BlurRadius="16" ShadowDepth="2" Opacity="0.08" Color="#1C1E22" />
-    <DropShadowEffect x:Key="ElevationMedium" BlurRadius="24" ShadowDepth="6" Opacity="0.10" Color="#1C1E22" />
-    <DropShadowEffect x:Key="ElevationHigh" BlurRadius="34" ShadowDepth="12" Opacity="0.14" Color="#1C1E22" />
+    <DropShadowEffect x:Key="ElevationLow" BlurRadius="14" ShadowDepth="2" Opacity="0.24" Color="#000000" />
+    <DropShadowEffect x:Key="ElevationMedium" BlurRadius="22" ShadowDepth="6" Opacity="0.30" Color="#000000" />
+    <DropShadowEffect x:Key="ElevationHigh" BlurRadius="32" ShadowDepth="12" Opacity="0.38" Color="#000000" />
 
-    <Color x:Key="Color50">#F9F9FB</Color>
-    <Color x:Key="Color75">#F3F3F6</Color>
-    <Color x:Key="Color100">#FCFCFD</Color>
-    <Color x:Key="Color125">#F6F6F8</Color>
-    <Color x:Key="Color150">#F3F3F6</Color>
-    <Color x:Key="Color175">#EEEFF3</Color>
-    <Color x:Key="Color200">#E9E9EE</Color>
-    <Color x:Key="Color250">#E4E4E9</Color>
-    <Color x:Key="Color300">#DCDEE4</Color>
-    <Color x:Key="Color350">#C9CDD4</Color>
-    <Color x:Key="Color400">#B6BBC5</Color>
-    <Color x:Key="Color450">#A3A9B4</Color>
-    <Color x:Key="Color500">#7A8089</Color>
-    <Color x:Key="Color600">#656B74</Color>
-    <Color x:Key="Color700">#52565C</Color>
-    <Color x:Key="Color800">#3C3F43</Color>
-    <Color x:Key="Color900">#25292E</Color>
-    <Color x:Key="Color950">#1C1E22</Color>
+    <Color x:Key="Color50">#1C1E22</Color>
+    <Color x:Key="Color75">#212225</Color>
+    <Color x:Key="Color100">#25292E</Color>
+    <Color x:Key="Color125">#292D33</Color>
+    <Color x:Key="Color150">#2E3138</Color>
+    <Color x:Key="Color175">#34373E</Color>
+    <Color x:Key="Color200">#3B3F46</Color>
+    <Color x:Key="Color250">#474B54</Color>
+    <Color x:Key="Color300">#565B65</Color>
+    <Color x:Key="Color350">#6A6F7A</Color>
+    <Color x:Key="Color400">#7D828C</Color>
+    <Color x:Key="Color450">#91959D</Color>
+    <Color x:Key="Color500">#A9ADB4</Color>
+    <Color x:Key="Color600">#C4C7CE</Color>
+    <Color x:Key="Color700">#DADCE1</Color>
+    <Color x:Key="Color800">#E6E8EC</Color>
+    <Color x:Key="Color900">#F1F2F4</Color>
+    <Color x:Key="Color950">#FCFCFD</Color>
 
     <Color x:Key="ColorAccent">#3E63DD</Color>
-    <Color x:Key="ColorAccentHover">#3455C4</Color>
+    <Color x:Key="ColorAccentHover">#5678E4</Color>
     <Color x:Key="ColorAccentPressed">#2C49A5</Color>
-    <Color x:Key="ColorAccentDim">#EEF0FC</Color>
+    <Color x:Key="ColorAccentDim">#1C2440</Color>
     <Color x:Key="ColorOnPrimary">#FFFFFFFF</Color>
-    <Color x:Key="ColorViewport">#FFF9F9FB</Color>
-    <Color x:Key="ColorSecondary">#12A594</Color>
-    <Color x:Key="ColorSecondaryHover">#0D9488</Color>
-    <Color x:Key="ColorSecondaryDim">#E4F5F2</Color>
+    <Color x:Key="ColorViewport">#FF1C1E22</Color>
+    <Color x:Key="ColorSecondary">#2CC8B7</Color>
+    <Color x:Key="ColorSecondaryHover">#43D3C4</Color>
+    <Color x:Key="ColorSecondaryDim">#10322F</Color>
     <Color x:Key="ColorSuccess">#30A46C</Color>
     <Color x:Key="ColorWarning">#F76B15</Color>
-    <Color x:Key="ColorDanger">#E5484D</Color>
+    <Color x:Key="ColorDanger">#FF6369</Color>
 
     <SolidColorBrush x:Key="Brush50" Color="{StaticResource Color50}" />
     <SolidColorBrush x:Key="Brush75" Color="{StaticResource Color75}" />
@@ -79,7 +78,7 @@
     <SolidColorBrush x:Key="AccentDimBrush" Color="{StaticResource ColorAccentDim}" />
     <SolidColorBrush x:Key="OnPrimaryBrush" Color="{StaticResource ColorOnPrimary}" />
     <SolidColorBrush x:Key="ViewportBackgroundBrush" Color="{StaticResource ColorViewport}" />
-    <SolidColorBrush x:Key="ViewportForegroundBrush" Color="#7A8089" />
+    <SolidColorBrush x:Key="ViewportForegroundBrush" Color="#A9ADB4" />
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource ColorSecondary}" />
     <SolidColorBrush x:Key="SecondaryHoverBrush" Color="{StaticResource ColorSecondaryHover}" />
     <SolidColorBrush x:Key="SecondaryDimBrush" Color="{StaticResource ColorSecondaryDim}" />
