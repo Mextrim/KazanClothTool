@@ -218,6 +218,8 @@ public static class LocalizationHelper
         ["Radix: цинковые нейтрали и синий #0090ff"] = new("Radix: цинкові нейтралі та синій #0090ff", "Radix: zinc neutrals with blue #0090ff"),
         ["Radix Themes v3: индиго #3e63dd на светлой шкале"] = new("Radix Themes v3: індіго #3e63dd на світлій шкалі", "Radix Themes v3: indigo #3e63dd on the light scale"),
         ["Radix Themes v3: тёмный режим #1c1e22 с индиго"] = new("Radix Themes v3: темний режим #1c1e22 з індиго", "Radix Themes v3: dark mode #1c1e22 with indigo"),
+        ["Системные цвета iOS: синий #007aff и фон #f2f2f7"] = new("Системні кольори iOS: синій #007aff і тло #f2f2f7", "iOS system colors: blue #007aff on #f2f2f7"),
+        ["Тёмный iOS: чёрный фон и #0a84ff"] = new("Темний iOS: чорний фон і #0a84ff", "Dark iOS: black canvas with #0a84ff"),
         ["PrimeVue Aura: изумрудный #10b981"] = new("PrimeVue Aura: смарагдовий #10b981", "PrimeVue Aura: emerald #10b981"),
         ["Mantine: синий #228be6 и фиолетовый"] = new("Mantine: синій #228be6 і фіолетовий", "Mantine: blue #228be6 with violet"),
         ["Bulma: бирюзовый #00d1b2"] = new("Bulma: бірюзовий #00d1b2", "Bulma: turquoise #00d1b2"),

@@ -157,6 +157,8 @@ public partial class App : Application
             AppThemes.Fluent => "Themes/Fluent.xaml",
             AppThemes.Radix => "Themes/Radix.xaml",
             AppThemes.RadixDark => "Themes/RadixDark.xaml",
+            AppThemes.IOS => "Themes/IOS.xaml",
+            AppThemes.IOSDark => "Themes/IOSDark.xaml",
             AppThemes.PrimeVue => "Themes/PrimeVue.xaml",
             AppThemes.Mantine => "Themes/Mantine.xaml",
             AppThemes.Bulma => "Themes/Bulma.xaml",
