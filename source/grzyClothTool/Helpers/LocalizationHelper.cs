@@ -1049,8 +1049,12 @@ public static class LocalizationHelper
     {
         foreach (DependencyProperty property in GetStringDependencyProperties(element.GetType()))
         {
+            // ComboBox.Text is part of selection coercion: writing a translated
+            // display value can silently select another item (for example, reset
+            // the language selector to English). The selected item is data-bound.
             if (property == TextBlock.TextProperty ||
                 property == TextBox.TextProperty ||
+                property == ComboBox.TextProperty ||
                 property.ReadOnly)
             {
                 continue;
