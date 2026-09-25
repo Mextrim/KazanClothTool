@@ -85,10 +85,10 @@ public static class AppThemes
 
     public static IReadOnlyList<AppThemeOption> All { get; } =
     [
+        new(Bootstrap, "Bootstrap 5", "Классический Bootstrap: синий #0d6efd, плоские карточки", false, "#0D6EFD", "#F8F9FA", "#6C757D"),
         new(Purity, "Чистая", "Мягкий Purity UI дашборд с фиолетовым акцентом", false, "#6C5CE7", "#F7F8FA", "#14B8A6"),
         new(Dark, "Графит", "Графит и бирюзовый акцент", true, "#22D3EE", "#090C12", "#8B5CF6"),
         new(Light, "Светлая", "Чистый и контрастный интерфейс", false, "#0891B2", "#F5F7FB", "#7C3AED"),
-        new(Bootstrap, "Bootstrap", "Классический синий", false, "#0D6EFD", "#F8F9FA", "#6F42C1"),
         new(Material, "Material Design", "Лавандовый и бирюзовый", true, "#D0BCFF", "#121016", "#03DAC6"),
         new(Ocean, "Океан", "Глубокий синий и морская бирюза", true, "#38BDF8", "#071522", "#2DD4BF"),
         new(Sunset, "Закат", "Тёплый Sunset-градиент", true, "#FB923C", "#1B1018", "#F472B6"),
@@ -105,7 +105,7 @@ public static class AppThemes
     public static string Normalize(string? key)
     {
         return All.FirstOrDefault(theme => string.Equals(theme.Key, key, StringComparison.OrdinalIgnoreCase))?.Key
-            ?? Purity;
+            ?? Bootstrap;
     }
 
     public static AppThemeOption Get(string? key)

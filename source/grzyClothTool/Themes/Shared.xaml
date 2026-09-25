@@ -20,32 +20,33 @@
     <CornerRadius x:Key="ControlCornerRadius">10</CornerRadius>
     <SolidColorBrush x:Key="ViewportForegroundBrush" Color="#E5E7EB" />
 
-    <!-- Design tokens: Purity UI / Chakra inspired scale for radius, type, controls and elevation. -->
-    <CornerRadius x:Key="RadiusXs">6</CornerRadius>
-    <CornerRadius x:Key="RadiusSm">8</CornerRadius>
-    <CornerRadius x:Key="RadiusMd">10</CornerRadius>
-    <CornerRadius x:Key="RadiusLg">12</CornerRadius>
-    <CornerRadius x:Key="RadiusXl">16</CornerRadius>
-    <CornerRadius x:Key="RadiusXxl">20</CornerRadius>
+    <!-- Design tokens. Base geometry follows Bootstrap 5.3 metrics; themes may override them. -->
+    <CornerRadius x:Key="RadiusXs">4</CornerRadius>
+    <CornerRadius x:Key="RadiusSm">4</CornerRadius>
+    <CornerRadius x:Key="RadiusMd">6</CornerRadius>
+    <CornerRadius x:Key="RadiusLg">8</CornerRadius>
+    <CornerRadius x:Key="RadiusXl">12</CornerRadius>
+    <CornerRadius x:Key="RadiusXxl">16</CornerRadius>
+    <CornerRadius x:Key="RadiusPill">100</CornerRadius>
 
-    <system:Double x:Key="FontSizeCaption">11</system:Double>
+    <system:Double x:Key="FontSizeCaption">12</system:Double>
     <system:Double x:Key="FontSizeBody">13</system:Double>
-    <system:Double x:Key="FontSizeSubheading">16</system:Double>
-    <system:Double x:Key="FontSizeHeading">20</system:Double>
-    <system:Double x:Key="FontSizeDisplay">28</system:Double>
+    <system:Double x:Key="FontSizeSubheading">17</system:Double>
+    <system:Double x:Key="FontSizeHeading">21</system:Double>
+    <system:Double x:Key="FontSizeDisplay">30</system:Double>
 
-    <system:Double x:Key="ControlHeightSm">34</system:Double>
+    <system:Double x:Key="ControlHeightSm">32</system:Double>
     <system:Double x:Key="ControlHeightMd">38</system:Double>
     <system:Double x:Key="ControlHeightLg">44</system:Double>
 
-    <DropShadowEffect x:Key="ElevationLow" BlurRadius="16" ShadowDepth="2" Opacity="0.06" Color="Black" />
-    <DropShadowEffect x:Key="ElevationMedium" BlurRadius="24" ShadowDepth="6" Opacity="0.09" Color="Black" />
-    <DropShadowEffect x:Key="ElevationHigh" BlurRadius="34" ShadowDepth="12" Opacity="0.16" Color="Black" />
+    <DropShadowEffect x:Key="ElevationLow" BlurRadius="16" ShadowDepth="2" Opacity="0.10" Color="Black" />
+    <DropShadowEffect x:Key="ElevationMedium" BlurRadius="24" ShadowDepth="4" Opacity="0.12" Color="Black" />
+    <DropShadowEffect x:Key="ElevationHigh" BlurRadius="32" ShadowDepth="8" Opacity="0.16" Color="Black" />
 
-    <!-- Shared surface and emphasis styles keep every screen visually consistent. -->
+    <!-- Bootstrap 5 component styles: card, badge, alert, nav pills and buttons. -->
     <Style x:Key="CardSurfaceStyle" TargetType="Border">
         <Setter Property="Background" Value="{DynamicResource Brush100}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush200}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush250}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="{StaticResource RadiusXl}" />
         <Setter Property="Padding" Value="24" />
@@ -53,8 +54,8 @@
     </Style>
 
     <Style x:Key="SubtleCardStyle" TargetType="Border" BasedOn="{StaticResource CardSurfaceStyle}">
-        <Setter Property="Background" Value="{DynamicResource Brush75}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush200}" />
+        <Setter Property="Background" Value="{DynamicResource Brush150}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush250}" />
         <Setter Property="Effect" Value="{x:Null}" />
         <Setter Property="Padding" Value="18" />
     </Style>
@@ -68,12 +69,12 @@
         <Setter Property="FontFamily" Value="{StaticResource DisplayFontFamily}" />
         <Setter Property="FontSize" Value="{StaticResource FontSizeSubheading}" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Foreground" Value="{DynamicResource Brush900}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush800}" />
     </Style>
 
     <Style x:Key="MutedTextStyle" TargetType="TextBlock">
         <Setter Property="FontSize" Value="{StaticResource FontSizeCaption}" />
-        <Setter Property="Foreground" Value="{DynamicResource Brush500}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush600}" />
     </Style>
 
     <!-- Reusable button family: ghost, solid, primary and pill. -->
@@ -138,6 +139,89 @@
         <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+    </Style>
+
+    <Style x:Key="OutlineButtonStyle" TargetType="Button" BasedOn="{StaticResource SolidButtonStyle}">
+        <Setter Property="Background" Value="{DynamicResource Brush100}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush300}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush800}" />
+    </Style>
+
+    <!-- Bootstrap badge -->
+    <Style x:Key="BadgeStyle" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource Brush200}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="{StaticResource RadiusPill}" />
+        <Setter Property="Padding" Value="9,3" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="BadgeTextStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush700}" />
+    </Style>
+
+    <Style x:Key="PrimaryBadgeStyle" TargetType="Border" BasedOn="{StaticResource BadgeStyle}">
+        <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+    </Style>
+
+    <Style x:Key="PrimaryBadgeTextStyle" TargetType="TextBlock" BasedOn="{StaticResource BadgeTextStyle}">
+        <Setter Property="Foreground" Value="{DynamicResource OnPrimaryBrush}" />
+    </Style>
+
+    <Style x:Key="SubtleBadgeStyle" TargetType="Border" BasedOn="{StaticResource BadgeStyle}">
+        <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+    </Style>
+
+    <Style x:Key="SubtleBadgeTextStyle" TargetType="TextBlock" BasedOn="{StaticResource BadgeTextStyle}">
+        <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+    </Style>
+
+    <!-- Bootstrap alert: tinted surface, colored border and a strong left rule. -->
+    <Style x:Key="AlertStyle" TargetType="Border">
+        <Setter Property="CornerRadius" Value="{StaticResource RadiusMd}" />
+        <Setter Property="Padding" Value="16" />
+        <Setter Property="BorderThickness" Value="4,1,1,1" />
+        <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+    </Style>
+
+    <Style x:Key="AlertInfoStyle" TargetType="Border" BasedOn="{StaticResource AlertStyle}">
+        <Setter Property="Background" Value="{DynamicResource SecondaryDimBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource SecondaryBrush}" />
+    </Style>
+
+    <Style x:Key="AlertSuccessStyle" TargetType="Border" BasedOn="{StaticResource AlertStyle}">
+        <Setter Property="Background" Value="{DynamicResource Brush150}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource SuccessBrush}" />
+    </Style>
+
+    <Style x:Key="AlertWarningStyle" TargetType="Border" BasedOn="{StaticResource AlertStyle}">
+        <Setter Property="Background" Value="{DynamicResource Brush150}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource WarningBrush}" />
+    </Style>
+
+    <Style x:Key="AlertDangerStyle" TargetType="Border" BasedOn="{StaticResource AlertStyle}">
+        <Setter Property="Background" Value="{DynamicResource Brush150}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource DangerBrush}" />
+    </Style>
+
+    <Style x:Key="AlertTextStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="LineHeight" Value="20" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush800}" />
+    </Style>
+
+    <!-- Bootstrap nav pills -->
+    <Style x:Key="NavPillButtonStyle" TargetType="Button" BasedOn="{StaticResource GhostButtonStyle}">
+        <Setter Property="MinHeight" Value="{StaticResource ControlHeightMd}" />
+        <Setter Property="Padding" Value="15,0" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush700}" />
+        <Setter Property="Background" Value="Transparent" />
     </Style>
 
     <Style TargetType="{x:Type Window}">

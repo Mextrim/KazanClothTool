@@ -51,30 +51,47 @@ public class PersistentSettingsHelper
             _settings = new PersistentSettings();
         }
 
-        ApplyPurityLookMigration();
+        ApplyThemeMigrations();
     }
 
     /// <summary>
-    /// v1.3.0 ships the Purity UI look as the default interface. Settings written by older builds
-    /// stay valid, but the legacy default theme is moved to the new dashboard theme once, so the
-    /// refreshed interface is what returning users see on the first launch after the update.
+    /// v1.3.0 introduced the Purity UI look and v1.4.0 switches the default interface to the
+    /// Bootstrap 5 design system. Settings written by older builds stay valid; only the legacy
+    /// default themes are migrated, so a theme picked by the user is never overwritten.
     /// </summary>
-    private void ApplyPurityLookMigration()
+    private void ApplyThemeMigrations()
     {
-        if (_settings.PurityLookMigrated)
+        bool changed = false;
+
+        if (!_settings.PurityLookMigrated)
         {
-            return;
+            _settings.PurityLookMigrated = true;
+            changed = true;
+
+            if (string.IsNullOrWhiteSpace(_settings.Theme)
+                || string.Equals(_settings.Theme, AppThemes.Dark, StringComparison.OrdinalIgnoreCase))
+            {
+                _settings.Theme = AppThemes.Purity;
+            }
         }
 
-        _settings.PurityLookMigrated = true;
-
-        if (string.IsNullOrWhiteSpace(_settings.Theme)
-            || string.Equals(_settings.Theme, AppThemes.Dark, StringComparison.OrdinalIgnoreCase))
+        if (!_settings.BootstrapLookMigrated)
         {
-            _settings.Theme = AppThemes.Purity;
+            _settings.BootstrapLookMigrated = true;
+            changed = true;
+
+            if (string.IsNullOrWhiteSpace(_settings.Theme)
+                || string.Equals(_settings.Theme, AppThemes.Dark, StringComparison.OrdinalIgnoreCase)
+                || string.Equals(_settings.Theme, AppThemes.Purity, StringComparison.OrdinalIgnoreCase))
+            {
+                _settings.Theme = AppThemes.Bootstrap;
+            }
         }
 
-        SaveSettings();
+        if (changed)
+        {
+            SaveSettings();
+        }
     }
 
     private void SaveSettings()
@@ -211,8 +228,9 @@ public class PersistentSettingsHelper
 public class PersistentSettings
 {
     public bool IsFirstRun { get; set; } = true;
-    public string Theme { get; set; } = AppThemes.Purity;
+    public string Theme { get; set; } = AppThemes.Bootstrap;
     public bool PurityLookMigrated { get; set; }
+    public bool BootstrapLookMigrated { get; set; }
     public string MainProjectsFolder { get; set; } = string.Empty;
     public string Language { get; set; } = LocalizationHelper.Russian;
     public List<RecentProject> RecentlyOpenedProjects { get; set; } = [];

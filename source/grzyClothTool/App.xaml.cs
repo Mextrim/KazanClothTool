@@ -161,7 +161,7 @@ public partial class App : Application
             AppThemes.Sand => "Themes/Sand.xaml",
             AppThemes.Rose => "Themes/Rose.xaml",
             AppThemes.Mono => "Themes/Mono.xaml",
-            _ => "Themes/Purity.xaml"
+            _ => "Themes/Bootstrap.xaml"
         };
 
         var dictionary = new ResourceDictionary

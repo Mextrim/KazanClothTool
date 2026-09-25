@@ -4,6 +4,14 @@
         <ResourceDictionary Source="Shared.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
+    <!-- Purity keeps softer, larger corner radii than the Bootstrap 5 base metrics. -->
+    <CornerRadius x:Key="RadiusXs">8</CornerRadius>
+    <CornerRadius x:Key="RadiusSm">8</CornerRadius>
+    <CornerRadius x:Key="RadiusMd">10</CornerRadius>
+    <CornerRadius x:Key="RadiusLg">12</CornerRadius>
+    <CornerRadius x:Key="RadiusXl">16</CornerRadius>
+    <CornerRadius x:Key="RadiusXxl">20</CornerRadius>
+
     <!-- Purity UI / Chakra UI inspired light palette: soft neutral surfaces, violet accent. -->
     <Color x:Key="Color50">#F7F8FA</Color>
     <Color x:Key="Color75">#F1F3F7</Color>

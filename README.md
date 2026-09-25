@@ -5,8 +5,8 @@
   <p><strong>Просмотр моделей, редактирование свойств, проверка файлов и сборка ресурсов — в одном приложении.</strong></p>
 
   <p>
-    <a href="https://github.com/Mextrim/KazanClothTool/releases/download/v1.3.0/KazanClothTool-v1.3.0-win-x64.zip">
-      <img alt="Скачать KazanClothTool v1.3.0" src="https://img.shields.io/badge/%E2%86%95%20Download%20v1.3.0-6c5ce7&amp;style=for-the-badge&amp;logo=windows&amp;logoColor=white">
+    <a href="https://github.com/Mextrim/KazanClothTool/releases/download/v1.4.0/KazanClothTool-v1.4.0-win-x64.zip">
+      <img alt="Скачать KazanClothTool v1.4.0" src="https://img.shields.io/badge/%E2%86%95%20Download%20v1.4.0-0d6efd&amp;style=for-the-badge&amp;logo=windows&amp;logoColor=white">
     </a>
     <a href="https://github.com/Mextrim/KazanClothTool/releases">
       <img alt="GitHub Releases" src="https://img.shields.io/badge/Releases-6c757d&amp;style=for-the-badge&amp;logo=github&amp;logoColor=white">
@@ -57,16 +57,17 @@
   <sub>Если фрейм выше не отображается — <a href="https://mextrim.github.io/KazanClothTool/">откройте страницу проекта</a> напрямую.</sub>
 </p>
 
-## 🎨 Интерфейс v1.3.0 — Purity UI / Chakra UI
+## 🎨 Интерфейс v1.4.0 — Bootstrap 5
 
-> Полностью обновлённый интерфейс в стиле **Purity UI Dashboard** и **Chakra UI**: мягкий светлый фон, белые карточки с большим радиусом, тонкие границы, спокойные тени и единый фиолетовый акцент.
+> Полностью обновлённый интерфейс по дизайн-системе **Bootstrap 5.3**: `#0d6efd` primary, `#6c757d` secondary, плоские карточки с границей `#dee2e6`, радиус `0.375rem` и «коробочные» тени.
 
-- **Новая тема «Чистая» (Purity)** — стала темой по умолчанию; все 15 прежних тем сохранены и доступны в настройках.
-- **Единые дизайн-токены** — шкала радиусов, размеров контролов, типографики и трёх уровней теней вместо разрозненных значений.
-- **Общие стили** — `CardSurfaceStyle`, `PrimaryButtonStyle`, `GhostButtonStyle`, `PillButtonStyle`, `FixedGroupBox` и другие переиспользуемые компоненты.
-- **Новый дашборд** — главный экран с панелями-графиками и аккуратными чипами вместо декоративных кругов.
-- **Единые состояния** — фокус, наведение, нажатие и Disabled у полей, кнопок, чекбоксов, вкладок, списков и радиокнопок.
-- **Три языка** — русский, украинский и английский, включая новую тему.
+- **Тема «Bootstrap 5» по умолчанию** — синяя, с серой вторичной палитрой; остальные темы сохранены в настройках.
+- **Bootstrap-компоненты** — карточки, бейджи, алерты, nav-pills, кнопки primary/outline/ghost и pill-вариант.
+- **Сетка и типографика** — размеры контролов 32/38/44 px, заголовки 17/21/30 px, шкала радиусов 4/6/8/12/16 px.
+- **Формы** — поля, выпадающие списки, чекбоксы и радиокнопки в стиле `form-control` / `form-check-input` с фокус-кольцом.
+- **Дашборд** — карточки с плоскими границами, прогресс-панели и alert-подсказка вместо декоративных кругов.
+- **Три языка** — русский, украинский и английский.
+- **Совместимость** — v1.2.6 и все прежние темы продолжают работать, тема выбранная пользователем не перезаписывается.
 
 ## 📸 Скриншоты программы
 
@@ -178,8 +179,8 @@ KazanClothTool\
 ```
 
 <p align="center">
-  <a href="https://github.com/Mextrim/KazanClothTool/releases/download/v1.3.0/KazanClothTool-v1.3.0-win-x64.zip">
-    <img alt="Скачать Kazan Cloth Tool v1.3.0" src="https://img.shields.io/badge/%E2%86%95%20%D0%A1%D0%BA%D0%B0%D1%87%D0%B0%D1%82%D1%8C%20v1.3.0-6c5ce7&amp;style=for-the-badge&amp;logo=windows&amp;logoColor=white">
+  <a href="https://github.com/Mextrim/KazanClothTool/releases/download/v1.4.0/KazanClothTool-v1.4.0-win-x64.zip">
+    <img alt="Скачать Kazan Cloth Tool v1.4.0" src="https://img.shields.io/badge/%E2%86%95%20%D0%A1%D0%BA%D0%B0%D1%87%D0%B0%D1%82%D1%8C%20v1.4.0-0d6efd&amp;style=for-the-badge&amp;logo=windows&amp;logoColor=white">
   </a>
 </p>
 

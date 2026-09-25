@@ -176,6 +176,8 @@ public static class LocalizationHelper
         ["Женский"] = new("Жіночий", "Female"),
 
         // Theme names and descriptions
+        ["Bootstrap 5"] = new("Bootstrap 5", "Bootstrap 5"),
+        ["Классический Bootstrap: синий #0d6efd, плоские карточки"] = new("Класичний Bootstrap: синій #0d6efd, пласкі картки", "Classic Bootstrap: blue #0d6efd, flat cards"),
         ["Чистая"] = new("Чиста", "Purity"),
         ["Графит"] = new("Графіт", "Graphite"),
         ["Светлая"] = new("Світла", "Light"),
